@@ -2,7 +2,7 @@
 // Mirrors IslandRootView.swift + IslandWindowController.swift.
 
 import { Tracked, Spring, clamp } from "../core/anim";
-import { Bridge, IS_TAURI, onDragDrop } from "../core/bridge";
+import { Bridge, IS_TAURI, onDragDrop, onEvent } from "../core/bridge";
 import {
   EXPANDED_CORNER, EXPANDED_W, NOTCH_W, PANEL_H, PANEL_W,
   ROUNDED_CORNER, VIEW_LAYOUTS, botGlowColor, botGlowOpacity, botPosition, chatPromptHeight,
@@ -98,6 +98,17 @@ export class Island {
     State.subscribe(() => {
       this.dirty = true;
       this.ensureRunning();
+    });
+
+    // Wake word: auto-expand to chat view when "Halo Bubu" is detected
+    void onEvent("wakeword-detected", () => {
+      this.expand("prompt");
+    });
+    void onEvent("voice-text", () => {
+      // Make sure we're in prompt view when voice text arrives
+      if (State.mode !== "expanded" || State.view !== "prompt") {
+        this.expand("prompt");
+      }
     });
   }
 

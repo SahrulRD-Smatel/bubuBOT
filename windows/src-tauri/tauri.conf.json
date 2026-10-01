@@ -52,7 +52,7 @@
     ],
     "resources": {
       "../target/release/bubu-hook.exe": "bubu-hook.exe",
-      "bubu-voice.exe": "bubu-voice.exe"
+      "bubu-voice-engine.exe": "bubu-voice-engine.exe"
     },
     "copyright": "© Sahrul Ramadhani",
     "category": "DeveloperTool",

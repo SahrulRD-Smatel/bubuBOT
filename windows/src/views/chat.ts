@@ -3,11 +3,10 @@
 
 import { h, svg, clear } from "./dom";
 import { ICONS } from "./icons";
-import { Bridge, type ChatContext } from "../core/bridge";
+import { Bridge, type ChatContext, onEvent } from "../core/bridge";
 import { Sound } from "../core/sound";
 import { State, type ChatMessage } from "../core/state";
-import type { ViewHost } from "./views";
-import { listen } from "@tauri-apps/api/event";
+import type { ViewHost, ViewActions } from "./views";
 
 let nextId = 1;
 
@@ -37,7 +36,7 @@ function contextChip(label: string): HTMLElement {
   return chip;
 }
 
-export function buildPrompt(onHeightChange: () => void): ViewHost {
+export function buildPrompt(actions: ViewActions, onHeightChange: () => void): ViewHost {
   const chipRow = h("div", { class: "chip-row" });
   const log = h("div", { class: "chat-log" });
   const input = h("input", {
@@ -77,13 +76,25 @@ export function buildPrompt(onHeightChange: () => void): ViewHost {
       if (lowerQuery.startsWith("buka ") || lowerQuery.startsWith("open ")) {
         const appName = query.substring(5).trim();
         const success = await Bridge.launchApp(appName);
-        const replyText = success 
-            ? `Membuka ${appName}... 🚀` 
-            : `Maaf, saya tidak bisa menemukan aplikasi "${appName}".`;
-            
+        const replyText = success
+          ? `Membuka ${appName}... 🚀`
+          : `Maaf, Bubu tidak bisa menemukan aplikasi "${appName}".`;
+
         State.chatHistory.push({ id: nextId++, role: "assistant", content: replyText });
         State.stateOverride = null;
         Sound.play(success ? "finish" : "error");
+      } else if (lowerQuery.startsWith("cari ") || lowerQuery.startsWith("search ")) {
+        const searchQuery = lowerQuery.startsWith("cari ") ? query.substring(5).trim() : query.substring(7).trim();
+        if (searchQuery) {
+          const url = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
+          await Bridge.openUrl(url);
+          State.chatHistory.push({ id: nextId++, role: "assistant", content: `Mencarikan "${searchQuery}" di browser... 🔍` });
+          State.stateOverride = null;
+          Sound.play("finish");
+        } else {
+          State.stateOverride = null;
+          Sound.play("error");
+        }
       } else {
         const file = State.droppedFile;
         const context: ChatContext | null =
@@ -117,34 +128,106 @@ export function buildPrompt(onHeightChange: () => void): ViewHost {
   });
 
   let isRecording = false;
-  
-  listen("voice-ready", () => {
-    isRecording = true;
-    mic.classList.add("recording");
-    input.placeholder = "Mendengarkan...";
-  });
+  let speechRec: any = null;
+  if ('webkitSpeechRecognition' in window) {
+    const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+    speechRec = new SpeechRecognition();
+    speechRec.continuous = false;
+    speechRec.interimResults = true;
+    speechRec.lang = 'id-ID';
 
-  mic.addEventListener("click", async () => {
-    if (isRecording) return; // Prevent multiple clicks
-    
-    // Optimistically set to listening state
-    isRecording = true;
-    mic.classList.add("recording");
-    input.placeholder = "Memulai mesin suara...";
+    speechRec.onresult = (event: any) => {
+      let interimTranscript = '';
+      let finalTranscript = '';
 
-    try {
-      const text = await Bridge.startVoiceRecognition();
-      if (text) {
-        input.value = text;
-        void submit();
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          finalTranscript += event.results[i][0].transcript;
+        } else {
+          interimTranscript += event.results[i][0].transcript;
+        }
       }
-    } catch (err) {
-      console.error("Voice error", err);
-    } finally {
+
+      if (finalTranscript) {
+        input.value = finalTranscript;
+        Sound.play("send");
+        void submit();
+      } else if (interimTranscript) {
+        input.value = interimTranscript;
+      }
+    };
+
+    speechRec.onerror = (event: any) => {
+      console.error("[Bubu Voice] Web Speech API error:", event);
+    };
+
+    speechRec.onend = () => {
       isRecording = false;
       mic.classList.remove("recording");
       input.placeholder = State.chatHistory.length === 0 ? "Ask me anything…" : "Continue…";
+      // Auto-collapse if nothing was transcribed
+      if (!input.value.trim()) {
+        actions.collapse();
+      }
+    };
+  }
+
+  function startWebSpeech() {
+    if (speechRec) {
+      if (isRecording) {
+        speechRec.stop();
+      } else {
+        isRecording = true;
+        mic.classList.add("recording");
+        input.placeholder = "🎤 Bubu mendengarkan...";
+        input.value = "";
+        try {
+          speechRec.start();
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    } else {
+      input.placeholder = "Web Speech API not supported.";
     }
+  }
+
+  void onEvent("wakeword-detected", () => {
+    console.log("[Bubu Voice] Wake word detected!");
+    Sound.play("blip");
+    void Bridge.focusWindow(true);
+    startWebSpeech();
+  });
+
+  // We can ignore backend voice-text since we use Web Speech API now,
+  // but let's keep it just in case Web Speech is not supported.
+  void onEvent<string>("voice-text", (text) => {
+    if (speechRec) return; // Ignore if we have web speech
+    console.log("[Bubu Voice] Heard text:", text);
+    isRecording = false;
+    mic.classList.remove("recording");
+    input.placeholder = State.chatHistory.length === 0 ? "Ask me anything…" : "Continue…";
+
+    if (text) {
+      input.value = text;
+      Sound.play("send");
+      void submit();
+    }
+  });
+
+  void onEvent("voice-timeout", () => {
+    if (speechRec) return; // Ignore backend timeout if using web speech
+    console.log("[Bubu Voice] Timeout - no command heard");
+    isRecording = false;
+    mic.classList.remove("recording");
+    input.placeholder = State.chatHistory.length === 0 ? "Ask me anything…" : "Continue…";
+    if (!input.value.trim()) {
+      actions.collapse();
+    }
+  });
+
+  mic.addEventListener("click", () => {
+    startWebSpeech();
   });
 
   return {

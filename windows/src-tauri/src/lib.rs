@@ -192,51 +192,91 @@ fn launch_app(app_name: String) -> bool {
 }
 
 #[tauri::command]
-async fn start_voice_recognition(app: tauri::AppHandle) -> Result<String, String> {
+async fn start_voice_recognition(_app: tauri::AppHandle) -> Result<String, String> {
+
+
+    // No longer needed, voice engine handles it
+    Ok("".to_string())
+}
+
+fn spawn_voice_engine(app: tauri::AppHandle) {
     use std::io::BufRead;
     
-    let resource_path = app
-        .path()
-        .resource_dir()
-        .map(|r| r.join("bubu-voice.exe"))
-        .unwrap_or_else(|_| std::path::PathBuf::from("bubu-voice.exe"));
+    std::thread::spawn(move || {
+        let resource_path = app
+            .path()
+            .resource_dir()
+            .map(|r| r.join("bubu-voice-engine.exe"))
+            .unwrap_or_else(|_| std::path::PathBuf::from("bubu-voice-engine.exe"));
 
-    let exe_path = if resource_path.exists() {
-        resource_path
-    } else {
-        std::path::PathBuf::from("bubu-voice.exe")
-    };
+        let exe_path = if resource_path.exists() {
+            resource_path
+        } else {
+            std::path::PathBuf::from("bubu-voice-engine.exe")
+        };
 
-    let mut child = match Command::new(exe_path)
-        .creation_flags(CREATE_NO_WINDOW)
-        .stdout(std::process::Stdio::piped())
-        .spawn()
-    {
-        Ok(child) => child,
-        Err(_) => return Ok("".to_string()),
-    };
-
-    let stdout = child.stdout.take().unwrap();
-    let mut reader = std::io::BufReader::new(stdout);
-    let mut line = String::new();
-    let mut result_text = String::new();
-
-    while reader.read_line(&mut line).unwrap_or(0) > 0 {
-        let trimmed = line.trim();
-        if trimmed == "READY" {
-            let _ = app.emit("voice-ready", ());
-        } else if trimmed.starts_with("HEARD:") {
-            result_text = trimmed[6..].to_string();
-            break;
-        } else if trimmed == "TIMEOUT" || trimmed.starts_with("ERROR:") {
-            break;
+        loop {
+            crate::log::line(format!("Voice Engine: spawning from {:?}", &exe_path));
+            match Command::new(&exe_path)
+                .creation_flags(CREATE_NO_WINDOW)
+                .stdout(std::process::Stdio::piped())
+                .stderr(std::process::Stdio::piped())
+                .spawn()
+            {
+                Ok(mut child) => {
+                    if let Some(stdout) = child.stdout.take() {
+                        let mut reader = std::io::BufReader::new(stdout);
+                        let mut line = String::new();
+                        
+                        while reader.read_line(&mut line).unwrap_or(0) > 0 {
+                            let trimmed = line.trim();
+                            if trimmed == "WAKE" {
+                                crate::log::line("Voice Engine: WAKE detected!".to_string());
+                                // Uncollapse the island
+                                let shared = app.state::<crate::Shared>();
+                                shared.gate.collapsed.store(false, std::sync::atomic::Ordering::Relaxed);
+                                let screen = shared.settings.lock().unwrap().screen.clone();
+                                crate::island::apply_geometry(&app, &screen, false);
+                                
+                                let _ = app.emit("wakeword-detected", ());
+                            } else if trimmed.starts_with("HEARD:") {
+                                let text = trimmed[6..].to_string();
+                                crate::log::line(format!("Voice Engine: HEARD '{}'", text));
+                                let _ = app.emit("voice-text", text);
+                            } else if trimmed == "TIMEOUT" {
+                                crate::log::line("Voice Engine: TIMEOUT".to_string());
+                                let _ = app.emit("voice-timeout", ());
+                            } else if trimmed.starts_with("ERROR:") {
+                                crate::log::line(format!("Voice Engine Error: {}", trimmed));
+                                let _ = app.emit("voice-timeout", ());
+                            } else if trimmed.starts_with("DEBUG") {
+                                crate::log::line(format!("Voice Engine: {}", trimmed));
+                            } else if trimmed == "ENGINE_READY" {
+                                crate::log::line("Voice Engine: ENGINE_READY".to_string());
+                            }
+                            line.clear();
+                        }
+                    }
+                    // Read stderr before waiting
+                    if let Some(mut stderr) = child.stderr.take() {
+                        let mut err_out = String::new();
+                        let _ = std::io::Read::read_to_string(&mut stderr, &mut err_out);
+                        if !err_out.trim().is_empty() {
+                            crate::log::line(format!("Voice Engine STDERR: {}", err_out.trim()));
+                        }
+                    }
+                    let status = child.wait();
+                    crate::log::line(format!("Voice Engine: process exited with {:?}", status));
+                }
+                Err(e) => {
+                    crate::log::line(format!("Voice Engine: failed to spawn: {}", e));
+                }
+            }
+            std::thread::sleep(std::time::Duration::from_secs(2));
         }
-        line.clear();
-    }
-    
-    let _ = child.kill();
-    Ok(result_text)
+    });
 }
+
 
 #[tauri::command]
 fn open_url(url: String) {
@@ -541,6 +581,7 @@ pub fn run() {
             gate.collapsed.store(false, Ordering::Relaxed);
             gate.set_active(true);
             island::spawn_cursor_poll(handle.clone(), gate.clone());
+            spawn_voice_engine(handle.clone());
 
             log::line(format!("--- Bubu {} started ---", env!("CARGO_PKG_VERSION")));
             hooks::ensure_hook_exe(&handle);

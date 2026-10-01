@@ -57,6 +57,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.activate(ignoringOtherApps: true)
     }
 
+    // MARK: - Wake Word (NSSpeechRecognizer)
+
+    private var speechRecognizer: NSSpeechRecognizer?
+
+    private func setupWakeWord() {
+        speechRecognizer = NSSpeechRecognizer()
+        speechRecognizer?.commands = ["Hey Bubu", "Hey Pupu", "Halo Bubu", "Halo Pupu"]
+        speechRecognizer?.delegate = self
+        speechRecognizer?.startListening()
+    }
+
     // MARK: - Island setup
 
     private func setupIsland() {
@@ -73,5 +84,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NotionPoller.shared.start()
         NotificationCenter.default.addObserver(self, selector: #selector(openSettings),
                                                name: .openFullSettings, object: nil)
+        setupWakeWord()
+    }
+}
+
+extension AppDelegate: NSSpeechRecognizerDelegate {
+    func speechRecognizer(_ sender: NSSpeechRecognizer, didRecognizeCommand command: String) {
+        // Open the island and prepare for listening
+        openIsland()
+        // Wait for it to open, then trigger a state transition (or post a notification)
+        NotificationCenter.default.post(name: NSNotification.Name("wakeword-detected"), object: nil)
     }
 }
