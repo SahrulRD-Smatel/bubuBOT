@@ -108,7 +108,8 @@ export class IslandStateMachine {
     this.clear("petitHide");
     this.petitHide = window.setTimeout(() => {
       this.petitHide = null;
-      if (this.state === "petit") this.transition("hidden");
+      // Disable auto-hide so it permanently stays on screen as a small island
+      // if (this.state === "petit") this.transition("hidden");
     }, this.petitToHiddenDelay * 1000);
   }
 

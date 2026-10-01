@@ -106,7 +106,7 @@ namespace BubuVoiceEngine
                         {
                             // Check if rejected result looks like a wake word
                             string lower = text.ToLower();
-                            if (conf > 0.1f && (lower.Contains("bubu") || lower.Contains("pupu")))
+                            if (conf >= 0.0f && (lower.Contains("bubu") || lower.Contains("pupu")))
                             {
                                 Console.WriteLine("WAKE");
                                 isListeningCommand = true;

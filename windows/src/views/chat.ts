@@ -72,15 +72,9 @@ export function buildPrompt(actions: ViewActions, onHeightChange: () => void): V
     onHeightChange();
 
     try {
-      const clean = (s: string) => s.replace(/[^\p{L}\p{N}\s]/gu, "").replace(/\s+/g, " ").trim();
-      const lowerQuery = clean(query).toLowerCase();
-      // Phonetic fallback for English SAPI mishearing Indonesian
-      if (lowerQuery.startsWith("buka ") || lowerQuery.startsWith("open ") || lowerQuery.startsWith("book a ") || lowerQuery.startsWith("book ")) {
-        let appName = query.toLowerCase().startsWith("buka") || query.toLowerCase().startsWith("open") ? 
-                      query.substring(5).trim() : 
-                      query.substring(query.toLowerCase().indexOf("book") + 4).replace(/^ a /, "").trim();
-        appName = clean(appName);
-        
+      const lowerQuery = query.toLowerCase();
+      if (lowerQuery.startsWith("buka ") || lowerQuery.startsWith("open ")) {
+        const appName = query.substring(5).trim();
         const success = await Bridge.launchApp(appName);
         const replyText = success
           ? `Membuka ${appName}... 🚀`
@@ -89,15 +83,8 @@ export function buildPrompt(actions: ViewActions, onHeightChange: () => void): V
         State.chatHistory.push({ id: nextId++, role: "assistant", content: replyText });
         State.stateOverride = null;
         Sound.play(success ? "finish" : "error");
-      } else if (lowerQuery.startsWith("cari ") || lowerQuery.startsWith("search ") || lowerQuery.startsWith("carry ") || lowerQuery.startsWith("cherry ")) {
-        let searchQuery = "";
-        if (lowerQuery.startsWith("cari ")) searchQuery = query.substring(5).trim();
-        else if (lowerQuery.startsWith("search ")) searchQuery = query.substring(7).trim();
-        else if (lowerQuery.startsWith("carry ")) searchQuery = query.substring(6).trim();
-        else if (lowerQuery.startsWith("cherry ")) searchQuery = query.substring(7).trim();
-        
-        searchQuery = clean(searchQuery);
-
+      } else if (lowerQuery.startsWith("cari ") || lowerQuery.startsWith("search ")) {
+        const searchQuery = lowerQuery.startsWith("cari ") ? query.substring(5).trim() : query.substring(7).trim();
         if (searchQuery) {
           const url = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
           await Bridge.openUrl(url);
@@ -141,92 +128,18 @@ export function buildPrompt(actions: ViewActions, onHeightChange: () => void): V
   });
 
   let isRecording = false;
-  let webSpeechBroken = false;
-  let speechRec: any = null;
-  if ('webkitSpeechRecognition' in window) {
-    const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
-    speechRec = new SpeechRecognition();
-    speechRec.continuous = false;
-    speechRec.interimResults = true;
-    speechRec.lang = 'id-ID';
-
-    speechRec.onresult = (event: any) => {
-      let interimTranscript = '';
-      let finalTranscript = '';
-
-      for (let i = event.resultIndex; i < event.results.length; ++i) {
-        if (event.results[i].isFinal) {
-          finalTranscript += event.results[i][0].transcript;
-        } else {
-          interimTranscript += event.results[i][0].transcript;
-        }
-      }
-
-      if (finalTranscript) {
-        input.value = finalTranscript;
-        Sound.play("send");
-        void submit();
-      } else if (interimTranscript) {
-        input.value = interimTranscript;
-      }
-    };
-
-    speechRec.onerror = (event: any) => {
-      console.error("[Bubu Voice] Web Speech API error:", event.error);
-      if (["network", "not-allowed", "service-not-allowed", "audio-capture"].includes(event.error)) {
-        webSpeechBroken = true;
-      }
-    };
-
-    speechRec.onend = () => {
-      isRecording = false;
-      mic.classList.remove("recording");
-      input.placeholder = State.chatHistory.length === 0 ? "Ask me anything…" : "Continue…";
-      // Auto-collapse if nothing was transcribed, BUT only if Web Speech is actually working
-      if (!input.value.trim() && !webSpeechBroken) {
-        actions.collapse();
-      }
-    };
-  }
-
-  function useWebSpeech() {
-    return speechRec && !webSpeechBroken;
-  }
-
-  function startWebSpeech() {
-    if (useWebSpeech()) {
-      if (isRecording) {
-        speechRec.stop();
-      } else {
-        isRecording = true;
-        mic.classList.add("recording");
-        input.placeholder = "🎤 Bubu mendengarkan...";
-        input.value = "";
-        try {
-          speechRec.start();
-        } catch (e) {
-          console.error(e);
-        }
-      }
-    } else {
-      // Fallback to visual feedback for SAPI
-      isRecording = true;
-      mic.classList.add("recording");
-      input.placeholder = "🎤 Mendengarkan (Windows STT)...";
-    }
-  }
 
   void onEvent("wakeword-detected", () => {
     console.log("[Bubu Voice] Wake word detected!");
+    isRecording = true;
+    mic.classList.add("recording");
+    input.placeholder = "🎤 Bubu mendengarkan...";
     Sound.play("blip");
+    // Focus the window so user sees the change
     void Bridge.focusWindow(true);
-    startWebSpeech();
   });
 
-  // We can ignore backend voice-text since we use Web Speech API now,
-  // but let's keep it just in case Web Speech is not supported.
   void onEvent<string>("voice-text", (text) => {
-    if (useWebSpeech()) return; // Ignore if we have web speech
     console.log("[Bubu Voice] Heard text:", text);
     isRecording = false;
     mic.classList.remove("recording");
@@ -240,18 +153,22 @@ export function buildPrompt(actions: ViewActions, onHeightChange: () => void): V
   });
 
   void onEvent("voice-timeout", () => {
-    if (useWebSpeech()) return; // Ignore backend timeout if using web speech
     console.log("[Bubu Voice] Timeout - no command heard");
     isRecording = false;
     mic.classList.remove("recording");
     input.placeholder = State.chatHistory.length === 0 ? "Ask me anything…" : "Continue…";
+    // Auto-collapse if user didn't type anything during voice session
     if (!input.value.trim()) {
       actions.collapse();
     }
   });
 
   mic.addEventListener("click", () => {
-    startWebSpeech();
+    // If the mic is clicked, we could toggle recording, but the engine is handling it automatically now.
+    // For now, let's just make it visually do something or inform the user
+    if (!isRecording) {
+      input.placeholder = "Mendengarkan via Wake Word (Halo Bubu)...";
+    }
   });
 
   return {
