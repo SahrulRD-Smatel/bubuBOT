@@ -5,6 +5,7 @@ export type FsmState = "hidden" | "petit" | "home" | "bubu";
 
 export class IslandStateMachine {
   state: FsmState = "hidden";
+  isHovering: boolean = false;
 
   onTransition: ((from: FsmState, to: FsmState) => void) | null = null;
 
@@ -31,6 +32,7 @@ export class IslandStateMachine {
   }
 
   mouseEntered() {
+    this.isHovering = true;
     switch (this.state) {
       case "hidden":
         this.cancelTimers();
@@ -49,6 +51,7 @@ export class IslandStateMachine {
   }
 
   mouseLeft() {
+    this.isHovering = false;
     switch (this.state) {
       case "hidden":
         break;
@@ -69,6 +72,7 @@ export class IslandStateMachine {
     if (this.state !== "petit") return;
     this.cancelTimers();
     this.transition("home");
+    if (!this.isHovering) this.scheduleHomeCollapse();
   }
 
   /** Greeting animation finished (T.end). Doesn't override a running hover timer. */
@@ -89,6 +93,7 @@ export class IslandStateMachine {
   forceHome() {
     this.cancelTimers();
     this.transition("home");
+    if (!this.isHovering) this.scheduleHomeCollapse();
   }
 
   /// Explicit close (OK button, Escape, an alert being answered).
