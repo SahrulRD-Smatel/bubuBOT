@@ -85,6 +85,7 @@ export const Bridge = {
   chatReset: () => call<void>("chat_reset"),
   /** Launch local Windows application */
   launchApp: (appName: string) => callOrThrow<boolean>("launch_app", { appName }),
+  startVoiceRecognition: () => callOrThrow<string>("start_voice_recognition"),
   /** Copies a dropped file into the inbox. */
   ingestFile: (path: string) => callOrThrow<DroppedFile>("ingest_file", { path }),
   /** Only ever tells you whether a key exists — never its value. */

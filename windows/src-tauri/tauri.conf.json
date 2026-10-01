@@ -51,7 +51,8 @@
       "icons/icon.ico"
     ],
     "resources": {
-      "../target/release/bubu-hook.exe": "bubu-hook.exe"
+      "../target/release/bubu-hook.exe": "bubu-hook.exe",
+      "bubu-voice.exe": "bubu-voice.exe"
     },
     "copyright": "© Sahrul Ramadhani",
     "category": "DeveloperTool",

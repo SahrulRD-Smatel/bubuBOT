@@ -7,6 +7,7 @@ import { Bridge, type ChatContext } from "../core/bridge";
 import { Sound } from "../core/sound";
 import { State, type ChatMessage } from "../core/state";
 import type { ViewHost } from "./views";
+import { listen } from "@tauri-apps/api/event";
 
 let nextId = 1;
 
@@ -115,57 +116,36 @@ export function buildPrompt(onHeightChange: () => void): ViewHost {
     e.stopPropagation(); // Escape closes the island, not the chat
   });
 
-  const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-  if (SpeechRecognition) {
-    const recognition = new SpeechRecognition();
-    recognition.lang = "id-ID"; // Set default to Indonesian for "buka" commands
-    recognition.interimResults = true;
+  let isRecording = false;
+  
+  listen("voice-ready", () => {
+    isRecording = true;
+    mic.classList.add("recording");
+    input.placeholder = "Mendengarkan...";
+  });
+
+  mic.addEventListener("click", async () => {
+    if (isRecording) return; // Prevent multiple clicks
     
-    let isRecording = false;
+    // Optimistically set to listening state
+    isRecording = true;
+    mic.classList.add("recording");
+    input.placeholder = "Memulai mesin suara...";
 
-    recognition.onstart = () => {
-      isRecording = true;
-      mic.classList.add("recording");
-      input.placeholder = "Mendengarkan...";
-    };
-
-    recognition.onresult = (event: any) => {
-      let finalTranscript = "";
-      for (let i = event.resultIndex; i < event.results.length; ++i) {
-        if (event.results[i].isFinal) {
-          finalTranscript += event.results[i][0].transcript;
-        } else {
-          input.value = event.results[i][0].transcript;
-        }
-      }
-      if (finalTranscript) {
-        input.value = finalTranscript;
+    try {
+      const text = await Bridge.startVoiceRecognition();
+      if (text) {
+        input.value = text;
         void submit();
       }
-    };
-
-    recognition.onerror = () => {
+    } catch (err) {
+      console.error("Voice error", err);
+    } finally {
       isRecording = false;
       mic.classList.remove("recording");
-      input.placeholder = "Ask me anything…";
-    };
-
-    recognition.onend = () => {
-      isRecording = false;
-      mic.classList.remove("recording");
-      input.placeholder = "Ask me anything…";
-    };
-
-    mic.addEventListener("click", () => {
-      if (isRecording) {
-        recognition.stop();
-      } else {
-        recognition.start();
-      }
-    });
-  } else {
-    mic.style.display = "none";
-  }
+      input.placeholder = State.chatHistory.length === 0 ? "Ask me anything…" : "Continue…";
+    }
+  });
 
   return {
     el,

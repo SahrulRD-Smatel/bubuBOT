@@ -192,6 +192,53 @@ fn launch_app(app_name: String) -> bool {
 }
 
 #[tauri::command]
+async fn start_voice_recognition(app: tauri::AppHandle) -> Result<String, String> {
+    use std::io::BufRead;
+    
+    let resource_path = app
+        .path()
+        .resource_dir()
+        .map(|r| r.join("bubu-voice.exe"))
+        .unwrap_or_else(|_| std::path::PathBuf::from("bubu-voice.exe"));
+
+    let exe_path = if resource_path.exists() {
+        resource_path
+    } else {
+        std::path::PathBuf::from("bubu-voice.exe")
+    };
+
+    let mut child = match Command::new(exe_path)
+        .creation_flags(CREATE_NO_WINDOW)
+        .stdout(std::process::Stdio::piped())
+        .spawn()
+    {
+        Ok(child) => child,
+        Err(_) => return Ok("".to_string()),
+    };
+
+    let stdout = child.stdout.take().unwrap();
+    let mut reader = std::io::BufReader::new(stdout);
+    let mut line = String::new();
+    let mut result_text = String::new();
+
+    while reader.read_line(&mut line).unwrap_or(0) > 0 {
+        let trimmed = line.trim();
+        if trimmed == "READY" {
+            let _ = app.emit("voice-ready", ());
+        } else if trimmed.starts_with("HEARD:") {
+            result_text = trimmed[6..].to_string();
+            break;
+        } else if trimmed == "TIMEOUT" || trimmed.starts_with("ERROR:") {
+            break;
+        }
+        line.clear();
+    }
+    
+    let _ = child.kill();
+    Ok(result_text)
+}
+
+#[tauri::command]
 fn open_url(url: String) {
     if !(url.starts_with("http://") || url.starts_with("https://")) {
         return;
@@ -458,6 +505,7 @@ pub fn run() {
             focus_window,
             reposition,
             launch_app,
+            start_voice_recognition,
             open_url,
             open_in_vscode,
             quit_app,
