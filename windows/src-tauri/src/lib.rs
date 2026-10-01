@@ -69,13 +69,13 @@ fn save_settings(app: AppHandle, shared: State<Shared>, settings: Settings) {
         (screen_changed, autostart_changed)
     };
     if let Err(err) = settings::save(&settings) {
-        eprintln!("[coucou] could not save settings: {err}");
+        eprintln!("[bubu] could not save settings: {err}");
     }
     if autostart_changed {
         let manager = app.autolaunch();
         let result = if settings.autostart { manager.enable() } else { manager.disable() };
         if let Err(err) = result {
-            eprintln!("[coucou] autostart: {err}");
+            eprintln!("[bubu] autostart: {err}");
         }
     }
     if screen_changed {
@@ -119,6 +119,76 @@ fn reposition(app: AppHandle, shared: State<Shared>) {
     let pref = shared.settings.lock().unwrap().screen.clone();
     let collapsed = shared.gate.collapsed.load(Ordering::Relaxed);
     island::apply_geometry(&app, &pref, collapsed);
+}
+
+fn find_app_shortcut(query: &str) -> Option<std::path::PathBuf> {
+    let query_lower = query.to_lowercase();
+    let mut paths_to_search = Vec::new();
+    
+    if let Ok(appdata) = std::env::var("APPDATA") {
+        paths_to_search.push(std::path::PathBuf::from(appdata).join("Microsoft\\Windows\\Start Menu\\Programs"));
+    }
+    if let Ok(programdata) = std::env::var("PROGRAMDATA") {
+        paths_to_search.push(std::path::PathBuf::from(programdata).join("Microsoft\\Windows\\Start Menu\\Programs"));
+    }
+
+    let mut best_match = None;
+    let mut best_score = usize::MAX;
+
+    for base in paths_to_search {
+        let mut dirs = vec![base];
+        while let Some(dir) = dirs.pop() {
+            if let Ok(entries) = std::fs::read_dir(dir) {
+                for entry in entries.flatten() {
+                    if let Ok(file_type) = entry.file_type() {
+                        if file_type.is_dir() {
+                            dirs.push(entry.path());
+                        } else if file_type.is_file() {
+                            let path = entry.path();
+                            if path.extension().map(|e| e == "lnk").unwrap_or(false) {
+                                if let Some(stem) = path.file_stem().and_then(|s| s.to_str()) {
+                                    let stem_lower = stem.to_lowercase();
+                                    if stem_lower.contains(&query_lower) {
+                                        let score = if stem_lower == query_lower { 0 } else { stem_lower.len() };
+                                        if score < best_score {
+                                            best_score = score;
+                                            best_match = Some(path);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    best_match
+}
+
+#[tauri::command]
+fn launch_app(app_name: String) -> bool {
+    // 1. Search Start Menu shortcuts
+    // 2. Search %PATH%
+    // 3. Fallback to basic name for App Paths registry keys (like 'chrome')
+    let target = if let Some(shortcut) = find_app_shortcut(&app_name) {
+        shortcut.to_string_lossy().to_string()
+    } else if let Some(exe) = find_on_path(&app_name) {
+        exe.to_string_lossy().to_string()
+    } else {
+        // If it's a single word without spaces, we might risk it, 
+        // but to avoid the Windows error box, we return false for multi-word queries
+        if app_name.contains(' ') {
+            return false;
+        }
+        app_name
+    };
+
+    let result = Command::new("cmd")
+        .args(["/C", "start", "", &target])
+        .creation_flags(CREATE_NO_WINDOW)
+        .spawn();
+    result.is_ok()
 }
 
 #[tauri::command]
@@ -387,6 +457,7 @@ pub fn run() {
             set_island_rect,
             focus_window,
             reposition,
+            launch_app,
             open_url,
             open_in_vscode,
             quit_app,

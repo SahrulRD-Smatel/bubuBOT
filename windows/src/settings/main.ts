@@ -84,7 +84,7 @@ function claudeSection(status: HookStatus): HTMLElement {
     if (!status.hookReady) {
       body.append(h("div", {
         class: "notice warn",
-        text: "coucou-hook.exe is not in place yet. Restart Bubu; if it still fails, build it with `cargo build -p coucou-hook`.",
+        text: "bubu-hook.exe is not in place yet. Restart Bubu; if it still fails, build it with `cargo build -p bubu-hook`.",
       }));
     }
 
@@ -265,23 +265,37 @@ interface IntegrationDef {
 }
 
 const INTEGRATIONS: IntegrationDef[] = [
-  { id: "integration_stripe", name: "Stripe", color: "#0570DE",
-    fields: [{ key: "stripe-api-key", label: "Secret key", placeholder: "sk_live_…", secret: true }] },
-  { id: "integration_github", name: "GitHub", color: "#F4505E",
-    fields: [{ key: "github-token", label: "Token", placeholder: "ghp_…", secret: true }] },
-  { id: "integration_vercel", name: "Vercel", color: "#7C5CFF",
-    fields: [{ key: "vercel-token", label: "Token", placeholder: "…", secret: true }] },
-  { id: "integration_n8n", name: "n8n", color: "#F29B38",
+  {
+    id: "integration_stripe", name: "Stripe", color: "#0570DE",
+    fields: [{ key: "stripe-api-key", label: "Secret key", placeholder: "sk_live_…", secret: true }]
+  },
+  {
+    id: "integration_github", name: "GitHub", color: "#F4505E",
+    fields: [{ key: "github-token", label: "Token", placeholder: "ghp_…", secret: true }]
+  },
+  {
+    id: "integration_vercel", name: "Vercel", color: "#7C5CFF",
+    fields: [{ key: "vercel-token", label: "Token", placeholder: "…", secret: true }]
+  },
+  {
+    id: "integration_n8n", name: "n8n", color: "#F29B38",
     fields: [
       { key: "n8n-url", label: "Instance URL", placeholder: "https://n8n.example.com", secret: false },
       { key: "n8n-api-key", label: "API key", placeholder: "…", secret: true },
-    ] },
-  { id: "integration_resend", name: "Resend", color: "#22C55E",
-    fields: [{ key: "resend-api-key", label: "API key", placeholder: "re_…", secret: true }] },
-  { id: "integration_notion", name: "Notion", color: "#8C8C8C",
-    fields: [{ key: "notion-api-key", label: "Integration token", placeholder: "ntn_…", secret: true }] },
-  { id: "integration_calcom", name: "Cal.com", color: "#C9956A",
-    fields: [{ key: "calcom-api-key", label: "API key", placeholder: "cal_…", secret: true }] },
+    ]
+  },
+  {
+    id: "integration_resend", name: "Resend", color: "#22C55E",
+    fields: [{ key: "resend-api-key", label: "API key", placeholder: "re_…", secret: true }]
+  },
+  {
+    id: "integration_notion", name: "Notion", color: "#8C8C8C",
+    fields: [{ key: "notion-api-key", label: "Integration token", placeholder: "ntn_…", secret: true }]
+  },
+  {
+    id: "integration_calcom", name: "Cal.com", color: "#C9956A",
+    fields: [{ key: "calcom-api-key", label: "API key", placeholder: "cal_…", secret: true }]
+  },
 ];
 
 const MAX_ACTIVE = 4;

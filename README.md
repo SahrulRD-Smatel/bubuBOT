@@ -142,7 +142,7 @@ Issues and PRs are very welcome — new integrations, new emotes, new sounds, bu
 ## Credits
 
 Built by [Sahrul Ramadhani](https://github.com/SahrulRD-Smatel) with Claude Code.
-Originally inspired by the [Coucou](https://github.com/Louis-CFM/coucou) project by Louis Raillé.
+Originally inspired by the [bubu](https://github.com/SahrulRD-Smatel/bubu) project by Louis Raillé.
 
 ## License
 

@@ -55,7 +55,7 @@ pub fn config_dir() -> PathBuf {
     base.join("Bubu")
 }
 
-/// %LOCALAPPDATA%\Bubu — where coucou-hook.exe and the log live.
+/// %LOCALAPPDATA%\Bubu — where bubu-hook.exe and the log live.
 pub fn local_dir() -> PathBuf {
     let base = std::env::var_os("LOCALAPPDATA")
         .map(PathBuf::from)
@@ -64,7 +64,7 @@ pub fn local_dir() -> PathBuf {
 }
 
 pub fn hook_exe_path() -> PathBuf {
-    local_dir().join("bin").join("coucou-hook.exe")
+    local_dir().join("bin").join("bubu-hook.exe")
 }
 
 fn settings_path() -> PathBuf {

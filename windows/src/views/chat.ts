@@ -46,7 +46,8 @@ export function buildPrompt(onHeightChange: () => void): ViewHost {
     spellcheck: "false",
   }) as HTMLInputElement;
   const send = h("button", { class: "send-btn", title: "Send" }, svg(ICONS.arrowUp, 11));
-  const bar = h("div", { class: "chat-bar" }, input, send);
+  const mic = h("button", { class: "send-btn", title: "Dictate", style: "margin-right: 4px;" }, svg(ICONS.mic, 11));
+  const bar = h("div", { class: "chat-bar" }, input, mic, send);
 
   const el = h(
     "div",
@@ -70,15 +71,28 @@ export function buildPrompt(onHeightChange: () => void): ViewHost {
     State.notify();
     onHeightChange();
 
-    const file = State.droppedFile;
-    const context: ChatContext | null =
-      State.chatHistory.length === 1 && file ? { kind: "file", name: file.name, path: file.path } : null;
-
     try {
-      const reply = await Bridge.chatSend(query, context);
-      State.chatHistory.push({ id: nextId++, role: "assistant", content: reply.text });
-      State.stateOverride = null;
-      Sound.play("finish");
+      const lowerQuery = query.toLowerCase();
+      if (lowerQuery.startsWith("buka ") || lowerQuery.startsWith("open ")) {
+        const appName = query.substring(5).trim();
+        const success = await Bridge.launchApp(appName);
+        const replyText = success 
+            ? `Membuka ${appName}... 🚀` 
+            : `Maaf, saya tidak bisa menemukan aplikasi "${appName}".`;
+            
+        State.chatHistory.push({ id: nextId++, role: "assistant", content: replyText });
+        State.stateOverride = null;
+        Sound.play(success ? "finish" : "error");
+      } else {
+        const file = State.droppedFile;
+        const context: ChatContext | null =
+          State.chatHistory.length === 1 && file ? { kind: "file", name: file.name, path: file.path } : null;
+
+        const reply = await Bridge.chatSend(query, context);
+        State.chatHistory.push({ id: nextId++, role: "assistant", content: reply.text });
+        State.stateOverride = null;
+        Sound.play("finish");
+      }
     } catch (err) {
       State.stateOverride = null;
       State.noteMessage = String(err).replace(/^Error:\s*/, "");
@@ -100,6 +114,58 @@ export function buildPrompt(onHeightChange: () => void): ViewHost {
     }
     e.stopPropagation(); // Escape closes the island, not the chat
   });
+
+  const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+  if (SpeechRecognition) {
+    const recognition = new SpeechRecognition();
+    recognition.lang = "id-ID"; // Set default to Indonesian for "buka" commands
+    recognition.interimResults = true;
+    
+    let isRecording = false;
+
+    recognition.onstart = () => {
+      isRecording = true;
+      mic.classList.add("recording");
+      input.placeholder = "Mendengarkan...";
+    };
+
+    recognition.onresult = (event: any) => {
+      let finalTranscript = "";
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          finalTranscript += event.results[i][0].transcript;
+        } else {
+          input.value = event.results[i][0].transcript;
+        }
+      }
+      if (finalTranscript) {
+        input.value = finalTranscript;
+        void submit();
+      }
+    };
+
+    recognition.onerror = () => {
+      isRecording = false;
+      mic.classList.remove("recording");
+      input.placeholder = "Ask me anything…";
+    };
+
+    recognition.onend = () => {
+      isRecording = false;
+      mic.classList.remove("recording");
+      input.placeholder = "Ask me anything…";
+    };
+
+    mic.addEventListener("click", () => {
+      if (isRecording) {
+        recognition.stop();
+      } else {
+        recognition.start();
+      }
+    });
+  } else {
+    mic.style.display = "none";
+  }
 
   return {
     el,

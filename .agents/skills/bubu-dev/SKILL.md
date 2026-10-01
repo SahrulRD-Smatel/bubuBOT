@@ -1,17 +1,17 @@
 ---
-name: coucou-dev
+name: bubu-dev
 description: >
-  Complete development guide for building, upgrading, and extending the Coucou
+  Complete development guide for building, upgrading, and extending the bubu
   (Mochi notch companion) project. Covers both macOS (Swift 6/SwiftUI) and
   Windows (Tauri 2/Rust/TypeScript) platforms, including architecture,
   conventions, build instructions, and templates for new features.
 ---
 
-# Coucou Development Skill
+# bubu Development Skill
 
 ## Project Identity
 
-- **Name**: Coucou (character: Mochi)
+- **Name**: bubu (character: Mochi)
 - **Purpose**: Animated notch companion for Claude Code sessions + integrations
 - **macOS**: Native Swift 6 / SwiftUI / AppKit — ZERO third-party dependencies
 - **Windows**: Tauri 2 (Rust backend + TypeScript frontend, no UI framework)
@@ -28,7 +28,7 @@ NotchBuddy/
     NotchBuddyApp.swift   <- @main entry
     AppDelegate.swift     <- Menu bar, window setup
     AppState.swift        <- @MainActor global state (ObservableObject)
-    IslandStateMachine.swift <- FSM: hidden -> petit -> home -> coucou
+    IslandStateMachine.swift <- FSM: hidden -> petit -> home -> bubu
     IslandWindowController.swift <- NSPanel management, mouse tracking
     IslandRootView.swift  <- Root SwiftUI view
     IslandViewContent.swift <- ALL island views (overview, approval, chat, etc.)
@@ -47,7 +47,7 @@ NotchBuddy/
   Resources/
     sounds/               <- 28 WAV files
     Info.plist
-    Coucou.entitlements
+    bubu.entitlements
   Assets.xcassets/        <- App icon
   project.yml             <- XcodeGen project definition
 ```
@@ -101,7 +101,7 @@ windows/
     Cargo.toml            <- Dependencies
     tauri.conf.json       <- Tauri config
     capabilities/         <- Tauri permissions
-  hook/                   <- coucou-hook.exe (Rust relay)
+  hook/                   <- bubu-hook.exe (Rust relay)
     src/
       main.rs             <- Hook relay logic
       win.rs              <- Pipe security (SID check)
@@ -147,7 +147,7 @@ npm run pack
 npm run icons
 ```
 
-> **Important**: `predev` and `prebuild` scripts automatically build `coucou-hook.exe` first.
+> **Important**: `predev` and `prebuild` scripts automatically build `bubu-hook.exe` first.
 
 ---
 
@@ -175,10 +175,10 @@ Both platforms use the same 4-state FSM:
 
 | State | Description | Transitions |
 |---|---|---|
-| `hidden` | Invisible behind notch | -> `petit` (mouseEntered/reveal), -> `coucou` (launch) |
+| `hidden` | Invisible behind notch | -> `petit` (mouseEntered/reveal), -> `bubu` (launch) |
 | `petit` | Compact, Mochi visible | -> `hidden` (timeout 60s), -> `home` (click) |
 | `home` | Expanded, full UI | -> `petit` (timeout 15s / mouseLeft) |
-| `coucou` | Greeting animation | -> `petit` (greetComplete / mouseLeft) |
+| `bubu` | Greeting animation | -> `petit` (greetComplete / mouseLeft) |
 
 Key behaviors:
 - `pinned = true` (during permission request) prevents auto-close
@@ -202,8 +202,8 @@ SubagentStart, SubagentStop
 - Filter: only VS Code sessions (TERM_PROGRAM / __CFBundleIdentifier)
 
 ### Windows: Named Pipe
-- Path: `\\.\pipe\coucou-{SID}` (Windows Security ID)
-- Relay: `coucou-hook.exe` (compiled Rust binary)
+- Path: `\\.\pipe\bubu-{SID}` (Windows Security ID)
+- Relay: `bubu-hook.exe` (compiled Rust binary)
 - Security: verify server process SID matches client SID
 - Accepts ALL terminals (not just VS Code)
 
@@ -358,4 +358,4 @@ When releasing a new version:
 | Settings lost after install | Different bundle ID | Keep `fr.louisraille.NotchBuddy` |
 | Hook blocks Claude Code | Bug — should never happen | Check timeout constants, fix and test |
 | WebView2 second window blank | Browser args mismatch | Both windows must have same `additionalBrowserArgs` |
-| coucou-hook.exe not found | NSIS resource path wrong | Check `ensure_hook_exe()` candidates in hooks.rs |
+| bubu-hook.exe not found | NSIS resource path wrong | Check `ensure_hook_exe()` candidates in hooks.rs |

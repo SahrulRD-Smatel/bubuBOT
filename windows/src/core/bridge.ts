@@ -15,7 +15,7 @@ async function call<T>(cmd: string, args?: Record<string, unknown>): Promise<T |
   try {
     return await invoke<T>(cmd, args);
   } catch (err) {
-    console.error(`[coucou] ${cmd} failed`, err);
+    console.error(`[bubu] ${cmd} failed`, err);
     return null;
   }
 }
@@ -83,6 +83,8 @@ export const Bridge = {
   chatSend: (query: string, context: ChatContext | null) =>
     callOrThrow<{ text: string }>("chat_send", { query, context }),
   chatReset: () => call<void>("chat_reset"),
+  /** Launch local Windows application */
+  launchApp: (appName: string) => callOrThrow<boolean>("launch_app", { appName }),
   /** Copies a dropped file into the inbox. */
   ingestFile: (path: string) => callOrThrow<DroppedFile>("ingest_file", { path }),
   /** Only ever tells you whether a key exists — never its value. */
@@ -133,7 +135,7 @@ export interface HookPreview {
 
 /** Same as `call`, but surfaces the error so the UI can show what went wrong. */
 async function callOrThrow<T>(cmd: string, args?: Record<string, unknown>): Promise<T> {
-  if (!IS_TAURI) throw new Error("not running inside Coucou");
+  if (!IS_TAURI) throw new Error("not running inside bubu");
   return invoke<T>(cmd, args);
 }
 
@@ -150,13 +152,13 @@ export interface DragDropPayload {
 
 /** Files dragged onto the island. Only reaches us when the window takes the mouse. */
 export async function onDragDrop(handler: (e: DragDropPayload) => void) {
-  if (!IS_TAURI) return () => {};
+  if (!IS_TAURI) return () => { };
   return getCurrentWebview().onDragDropEvent((event) => {
     handler(event.payload as DragDropPayload);
   });
 }
 
 export async function onEvent<T>(name: string, handler: (payload: T) => void) {
-  if (!IS_TAURI) return () => {};
+  if (!IS_TAURI) return () => { };
   return listen<T>(name, (e) => handler(e.payload));
 }
