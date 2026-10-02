@@ -6,6 +6,7 @@ import "./settings.css";
 import { Bridge, onEvent, type HookStatus } from "../core/bridge";
 import { DEFAULT_SETTINGS, type Settings } from "../core/state";
 import { h, clear } from "../views/dom";
+import { Sound } from "../core/sound";
 
 let settings: Settings = { ...DEFAULT_SETTINGS };
 let version = "";
@@ -381,6 +382,8 @@ function generalSection(): HTMLElement {
   }) as HTMLInputElement;
   volume.addEventListener("input", () => {
     settings.soundVolume = Number(volume.value);
+    Sound.setVolume(settings.soundVolume);
+    Sound.play("blip");
     void save();
   });
 
@@ -412,7 +415,12 @@ function generalSection(): HTMLElement {
     h("h2", {}, h("span", { text: "General" })),
     h("div", { class: "row" },
       h("label", { text: "Sound" }),
-      toggle(settings.soundEnabled, (v) => { settings.soundEnabled = v; void save(); }),
+      toggle(settings.soundEnabled, (v) => { 
+        settings.soundEnabled = v; 
+        Sound.setEnabled(v);
+        if (v) Sound.play("peek");
+        void save(); 
+      }),
       volume,
     ),
     h("div", { class: "row" },
@@ -442,6 +450,10 @@ async function main() {
   const status = (await Bridge.hooksStatus()) ?? {
     installed: false, settingsPath: "", hookPath: "", hookReady: false,
   };
+
+  Sound.setEnabled(settings.soundEnabled);
+  Sound.setVolume(settings.soundVolume);
+  void Sound.preload();
 
   const hasKey = (await Bridge.secretPresent("anthropic-api-key")) ?? false;
 
