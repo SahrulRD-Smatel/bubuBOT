@@ -490,6 +490,51 @@ final class IslandWindowController: NSWindowController {
                 self.state.lastExternalApp = app
             }
         }
+
+        // Activity Monitor: poll NSWorkspace every 3 seconds for known apps
+        startActivityMonitor()
+    }
+
+    // MARK: - Activity Monitor
+
+    private var activityMonitorTimer: AnyCancellable?
+
+    private func startActivityMonitor() {
+        let knownApps: [(bundleIds: [String], id: String, label: String, color: String)] = [
+            (["com.microsoft.VSCode", "com.visualstudio.code.oss"], "vscode", "VS Code", "#007ACC"),
+            (["com.sahrulrd.antigravity", "com.antigravity.ide", "com.sahrulrd.bubu"], "antigravity", "Antigravity", "#8B5CF6"), // Adjust bundle ID if needed
+            (["com.docker.docker"], "docker", "Docker", "#2496ED"),
+            (["com.google.Chrome"], "chrome", "Chrome", "#4285F4"),
+            (["org.mozilla.firefox"], "firefox", "Firefox", "#FF7139"),
+            (["com.postmanlabs.mac"], "postman", "Postman", "#FF6C37"),
+            (["com.figma.Desktop"], "figma", "Figma", "#F24E1E"),
+            (["com.github.GitHubClient"], "github", "GitHub", "#24292F"),
+            (["com.apple.Terminal", "com.googlecode.iterm2"], "terminal", "Terminal", "#4D4D4D"),
+            (["com.tinyspeck.slackmacgap"], "slack", "Slack", "#4A154B"),
+            (["com.hnc.Discord"], "discord", "Discord", "#5865F2"),
+            // Node/MongoDB don't usually have Mac bundle IDs unless packaged
+        ]
+
+        activityMonitorTimer = Timer.publish(every: 3.0, on: .main, in: .common).autoconnect().sink { [weak self] _ in
+            guard let self else { return }
+            let running = NSWorkspace.shared.runningApplications
+            
+            var newPills: [AppPill] = []
+            for appInfo in knownApps {
+                if let matchedApp = running.first(where: { appInfo.bundleIds.contains($0.bundleIdentifier ?? "") }) {
+                    newPills.append(AppPill(
+                        id: "app_\(appInfo.id)",
+                        label: appInfo.label,
+                        color: appInfo.color,
+                        bundleId: matchedApp.bundleIdentifier
+                    ))
+                }
+            }
+            // Update state only if changed
+            if self.state.appPills != newPills {
+                self.state.appPills = newPills
+            }
+        }
     }
 
     // MARK: - Drag ghost window (Mochi follows cursor during drag)

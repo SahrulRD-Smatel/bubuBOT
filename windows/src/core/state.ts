@@ -274,31 +274,43 @@ class AppState {
     this.loadIntegrationTasks();
   }
 
-  /** Adds an app pill when a known process is detected. */
-  addAppPill(id: string, label: string, color: string) {
-    if (this.appPills.has(id)) {
-      // Re-activate if it was in closing state.
-      const pill = this.appPills.get(id)!;
-      pill.status = "active";
-      this.notify();
-      return;
-    }
-    this.appPills.set(id, { id, label, color, status: "active" });
-    this.notify();
+  getIdeName(): string {
+    return this.appPills.has("app_antigravity") ? "Antigravity" : "VS Code";
   }
 
-  /** Marks an app pill as closing, then removes it after a short fade-out. */
-  removeAppPill(id: string) {
-    const pill = this.appPills.get(id);
-    if (!pill) return;
-    pill.status = "closing";
-    this.notify();
-    window.setTimeout(() => {
-      if (this.appPills.get(id)?.status === "closing") {
-        this.appPills.delete(id);
-        this.notify();
+  /** Syncs the app pills with the latest full list from the backend. */
+  syncAppPills(pills: { id: string, label: string, color: string }[]) {
+    const currentIds = new Set(pills.map((p) => p.id));
+    
+    // Add or update active pills
+    for (const p of pills) {
+      if (this.appPills.has(p.id)) {
+        this.appPills.get(p.id)!.status = "active";
+      } else {
+        this.appPills.set(p.id, { ...p, status: "active" });
       }
-    }, 300);
+    }
+
+    // Mark missing pills as closing
+    for (const [id, pill] of this.appPills.entries()) {
+      if (!currentIds.has(id) && pill.status === "active") {
+        pill.status = "closing";
+        window.setTimeout(() => {
+          if (this.appPills.get(id)?.status === "closing") {
+            this.appPills.delete(id);
+            this.notify();
+          }
+        }, 300);
+      }
+    }
+
+    // Update the integration_claude task name dynamically
+    const claudeTask = this.tasks.find((t) => t.id === "integration_claude");
+    if (claudeTask) {
+      claudeTask.name = this.getIdeName();
+    }
+    
+    this.notify();
   }
 
   defaultView(): IslandViewName {

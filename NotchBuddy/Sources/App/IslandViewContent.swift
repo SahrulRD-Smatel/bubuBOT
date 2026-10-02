@@ -1114,7 +1114,7 @@ struct IntegrationCardView: View {
                     Circle()
                         .fill(Color(hex: task.color))
                         .frame(width: 7, height: 7)
-                    Text(task.id == "integration_claude" ? "VS Code" : task.name)
+                    Text(task.id == "integration_claude" ? state.getIdeName() : task.name)
                         .font(.system(size: 12, weight: .semibold))
                         .foregroundColor(Color(hex: "#F5F6F8"))
                     Text("Integration")
@@ -1144,7 +1144,7 @@ struct IntegrationCardView: View {
 
                 HStack(spacing: 8) {
                     if task.id == "integration_claude" {
-                        Button("Open Visual Studio Code") { openVSCode() }
+                        Button("Open \(state.getIdeName())") { openVSCode() }
                             .font(.system(size: 11, weight: .medium))
                             .foregroundColor(Color(hex: task.color).opacity(0.7))
                             .buttonStyle(.plain)
@@ -2245,6 +2245,11 @@ struct AgentPillsView: View {
         Array(others.prefix(4))
     }
 
+    // No longer limited to 8 pills because the grid is now scrollable!
+    private var displayAppPills: [AppPill] {
+        state.appPills
+    }
+
     private let columns = [
         GridItem(.flexible(), spacing: 4),
         GridItem(.flexible(), spacing: 4)
@@ -2252,21 +2257,76 @@ struct AgentPillsView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Spacer(minLength: 0)
-            LazyVGrid(columns: columns, spacing: 4) {
-                ForEach(displayTasks) { task in
-                    AgentPill(task: task, state: state, swapping: $swapping) {
-                        swapping = true
-                        state.setFocus(task.id)
-                        SoundEngine.shared.play("blip")
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { swapping = false }
+            ScrollView(.vertical, showsIndicators: false) {
+                LazyVGrid(columns: columns, spacing: 4) {
+                    ForEach(displayTasks) { task in
+                        AgentPill(task: task, state: state, swapping: $swapping) {
+                            swapping = true
+                            state.setFocus(task.id)
+                            SoundEngine.shared.play("blip")
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { swapping = false }
+                        }
+                    }
+                    ForEach(displayAppPills) { pill in
+                        AppPillView(pill: pill)
                     }
                 }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 12)
             }
-            .padding(.horizontal, 8)
-            Spacer(minLength: 0)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+struct AppPillView: View {
+    let pill: AppPill
+    @State private var isHovered = false
+
+    var body: some View {
+        Button(action: {
+            if let bundleId = pill.bundleId {
+                if let app = NSWorkspace.shared.runningApplications.first(where: { $0.bundleIdentifier == bundleId }) {
+                    app.activate(options: .activateIgnoringOtherApps)
+                }
+            }
+        }) {
+            ZStack {
+                Capsule()
+                    .fill(isHovered ? Color(hex: pill.color).opacity(0.12) : Color(hex: "#0E0F11"))
+                Capsule()
+                    .stroke(Color(hex: pill.color).opacity(isHovered ? 0.4 : 0.08), lineWidth: 1)
+                
+                HStack(spacing: 0) {
+                    MiniBotCanvasView(task: AgentTask(
+                        id: pill.id,
+                        name: pill.label,
+                        color: pill.color,
+                        state: .idle,
+                        steps: [],
+                        source: .agent
+                    ))
+                    .frame(width: 22 / 0.6, height: 22 / 0.6)
+                    .frame(width: 22, height: 22, alignment: .center)
+                    .padding(.leading, 8)
+                    Spacer()
+                }
+                HStack(spacing: 0) {
+                    Spacer()
+                        .frame(width: 32)
+                    Text(pill.label)
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundColor(isHovered ? Color(hex: "#F5F6F8") : Color(hex: "#6B7079"))
+                        .lineLimit(1)
+                    Spacer()
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 22)
+            .shadow(color: Color(hex: pill.color).opacity(isHovered ? 0.2 : 0), radius: 8, x: 0, y: 2)
+        }
+        .buttonStyle(.plain)
+        .onHover { h in withAnimation(.easeOut(duration: 0.15)) { isHovered = h } }
     }
 }
 
@@ -2277,9 +2337,9 @@ struct AgentPill: View {
     let onTap: () -> Void
     @State private var isHovered = false
 
-    // VS Code pill always shows "VS Code" label regardless of active project name
+    // VS Code pill always shows IDE label regardless of active project name
     private var displayName: String {
-        task.id == "integration_claude" ? "VS Code" : task.name
+        task.id == "integration_claude" ? state.getIdeName() : task.name
     }
 
     var body: some View {

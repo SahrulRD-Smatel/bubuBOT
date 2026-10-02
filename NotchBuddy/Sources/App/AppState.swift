@@ -36,6 +36,9 @@ final class AppState: ObservableObject {
     @Published var tasks: [AgentTask] = []
     @Published var focusId: String? = nil
 
+    // Activity Monitor App Pills
+    @Published var appPills: [AppPill] = []
+
     // Bot state override
     @Published var stateOverride: BotState? = nil
 
@@ -141,6 +144,10 @@ final class AppState: ObservableObject {
                 UserDefaults.standard.set(data, forKey: "activeIntegrations")
             }
         }
+    }
+
+    func getIdeName() -> String {
+        return appPills.contains(where: { $0.id == "app_antigravity" }) ? "Antigravity" : "VS Code"
     }
 
     // Pending API result

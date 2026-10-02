@@ -128,8 +128,7 @@ function buildOverview(actions: ViewActions): ViewHost {
   );
   const left = card(null, leftBody, jump);
   const pills = h("div", { class: "pills" });
-  const appPillsEl = h("div", { class: "app-pills" });
-  const right = card(null, pills, appPillsEl);
+  const right = card(null, pills);
 
   const el = h("div", { class: "view overview" },
     h("div", { class: "left" }, left),
@@ -137,7 +136,6 @@ function buildOverview(actions: ViewActions): ViewHost {
   );
 
   let pillIds = "";
-  let appPillIds = "";
   let detailOpen = false;
   let lastFocus: string | null = null;
   let mode: "ticker" | "card" | null = null;
@@ -216,29 +214,27 @@ function buildOverview(actions: ViewActions): ViewHost {
 
       jump.style.display = detailOpen ? "none" : "";
 
+      // Combine integration pills + app pills into the same grid.
       const others = State.otherTasks.slice(0, 4);
-      const pillKey = others.map((t) => `${t.id}:${t.pillBadge ?? ""}`).join("|");
-      if (pillKey !== pillIds) {
-        pillIds = pillKey;
+      const appArr = [...State.appPills.values()];
+      const combinedKey = [
+        ...others.map((t) => `${t.id}:${t.pillBadge ?? ""}`),
+        "|",
+        ...appArr.map((p) => `${p.id}:${p.status}`),
+      ].join("|");
+      if (combinedKey !== pillIds) {
+        pillIds = combinedKey;
         clear(pills);
         for (const t of others) pills.append(buildPill(t, actions));
+        for (const p of appArr) pills.append(buildAppPill(p));
         pruneMiniBots();
-      }
-
-      // App pills — detected running applications.
-      const appArr = [...State.appPills.values()];
-      const appKey = appArr.map((p) => `${p.id}:${p.status}`).join("|");
-      if (appKey !== appPillIds) {
-        appPillIds = appKey;
-        clear(appPillsEl);
-        for (const p of appArr) appPillsEl.append(buildAppPill(p));
       }
     },
   };
 }
 
 function buildPill(task: AgentTask, actions: ViewActions): HTMLElement {
-  const label = task.id === "integration_claude" ? "VS Code" : task.name;
+  const label = task.id === "integration_claude" ? State.getIdeName() : task.name;
   const canvas = createMiniBot(task, 24);
   const pill = h(
     "div",
@@ -279,24 +275,38 @@ function lighten(hex: string, amount: number): string {
   return `rgb(${c[0]},${c[1]},${c[2]})`;
 }
 
-/** Builds a compact app pill with a coloured dot + label. */
+/** Builds an app pill with a mini Mochi + label, matching integration pill style. */
 function buildAppPill(pill: AppPill): HTMLElement {
+  // Create a temporary AgentTask so createMiniBot can render a Mochi.
+  const fakeTask: AgentTask = {
+    id: pill.id,
+    name: pill.label,
+    color: pill.color,
+    state: "idle",
+    stepIndex: 0,
+    steps: [],
+    source: "agent",
+    isIntegration: false,
+  };
+  const canvas = createMiniBot(fakeTask, 24);
   const el = h(
     "div",
-    { class: `app-pill ${pill.status === "closing" ? "closing" : ""}` },
-    h("span", { class: "app-pill-dot" }),
-    h("span", { class: "app-pill-label", text: pill.label }),
+    { class: `pill ${pill.status === "closing" ? "closing" : ""}` },
+    canvas,
+    h("span", { class: "lbl", text: pill.label }),
   );
-  el.style.setProperty("--pill-color", pill.color);
+  el.style.borderColor = `${pill.color}24`;
   el.addEventListener("mouseenter", () => {
     el.style.background = `${pill.color}2e`;
     el.style.borderColor = `${pill.color}8c`;
-    el.style.boxShadow = `0 2px 8px ${pill.color}40`;
+    el.style.boxShadow = `0 2px 10px ${pill.color}59`;
+    (el.querySelector(".lbl") as HTMLElement).style.color = lighten(pill.color, 0.3);
   });
   el.addEventListener("mouseleave", () => {
     el.style.background = "";
     el.style.borderColor = `${pill.color}24`;
     el.style.boxShadow = "";
+    (el.querySelector(".lbl") as HTMLElement).style.color = "";
   });
   return el;
 }

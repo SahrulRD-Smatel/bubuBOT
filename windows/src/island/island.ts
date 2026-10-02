@@ -10,7 +10,7 @@ import {
   type IslandMode, type IslandViewName,
 } from "../core/layout";
 import { Sound } from "../core/sound";
-import { State } from "../core/state";
+import { State, type AgentTask } from "../core/state";
 import { BotEngine, hexToRGB } from "../mochi/engine";
 import { Greeting } from "../mochi/greeting";
 import { createMiniBot, pruneMiniBots, syncMiniBotStates, tickMiniBots } from "../mochi/minibots";
@@ -112,11 +112,9 @@ export class Island {
     });
 
     // Process scanner: auto-detect running applications.
-    void onEvent<{ id: string; label: string; color: string }>("app-detected", (p) => {
-      State.addAppPill(p.id, p.label, p.color);
-    });
-    void onEvent<{ id: string }>("app-closed", (p) => {
-      State.removeAppPill(p.id);
+    void onEvent<{ id: string; label: string; color: string }[]>("apps-sync", (pills) => {
+      console.log(`[bubu] apps-sync received ${pills.length} pills`);
+      State.syncAppPills(pills);
     });
   }
 
@@ -882,11 +880,26 @@ export class Island {
     this.miniGrid.style.opacity = showGrid ? "1" : "0";
     if (showGrid) {
       const others = State.otherTasks.slice(0, 4);
-      const key = others.map((t) => t.id).join("|");
+      const apps = [...State.appPills.values()];
+      const combined: AgentTask[] = [
+        ...others,
+        ...apps.map((p) => ({
+          id: p.id,
+          name: p.label,
+          color: p.color,
+          state: "idle" as const,
+          stepIndex: 0,
+          steps: [],
+          source: "agent" as const,
+          isIntegration: false,
+        })),
+      ].slice(0, 4);
+
+      const key = combined.map((t) => t.id).join("|");
       if (this.miniGrid.dataset.key !== key) {
         this.miniGrid.dataset.key = key;
         this.miniGrid.replaceChildren();
-        for (const t of others) {
+        for (const t of combined) {
           this.miniGrid.append(createMiniBot(t, 13));
         }
         pruneMiniBots();

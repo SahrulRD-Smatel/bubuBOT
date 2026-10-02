@@ -509,8 +509,14 @@ body {
   grid-template-columns: 1fr 1fr;
   grid-auto-rows: 28px;
   gap: 4px;
-  align-content: center;
-  padding: 0 8px;
+  align-content: start;
+  padding: 12px 8px;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.pills::-webkit-scrollbar {
+  display: none;
 }
 
 .pill {
@@ -1378,18 +1384,20 @@ input[type="range"]::-webkit-slider-thumb {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  margin-top: 4px;
+  padding: 0 8px 6px;
+  flex-shrink: 0;
 }
 
 .app-pill {
   --pill-color: #888;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 5px;
-  padding: 3px 8px 3px 6px;
-  border-radius: 20px;
+  height: 28px;
+  padding: 0 10px 0 8px;
+  border-radius: 999px;
   border: 1px solid color-mix(in srgb, var(--pill-color) 14%, transparent);
-  background: transparent;
+  background: var(--card-flat);
   cursor: default;
   transition: opacity 0.3s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
   animation: app-pill-in 0.3s ease-out both;
@@ -1397,6 +1405,9 @@ input[type="range"]::-webkit-slider-thumb {
 
 .app-pill:hover {
   transform: translateY(-1px);
+  background: color-mix(in srgb, var(--pill-color) 12%, transparent);
+  border-color: color-mix(in srgb, var(--pill-color) 35%, transparent);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--pill-color) 25%, transparent);
 }
 
 .app-pill.closing {
@@ -1414,14 +1425,14 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .app-pill-label {
-  font: 500 10px/1 var(--sans);
+  font: 500 10px/1 var(--font);
   color: var(--dim);
   white-space: nowrap;
   transition: color 0.2s ease;
 }
 
 .app-pill:hover .app-pill-label {
-  color: var(--fg);
+  color: var(--ink);
 }
 
 @keyframes app-pill-in {

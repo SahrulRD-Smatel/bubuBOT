@@ -57,6 +57,15 @@ struct AgentTask: Identifiable, Equatable {
     var sessionCwd: String?  = nil  // last known working directory (Claude Code sessions)
 }
 
+// MARK: - App Pill (Activity Monitor)
+
+struct AppPill: Identifiable, Equatable {
+    var id: String
+    var label: String
+    var color: String // hex
+    var bundleId: String? // for Mac app launching
+}
+
 enum AgentSource: Equatable {
     case claudeCode
     case n8n
