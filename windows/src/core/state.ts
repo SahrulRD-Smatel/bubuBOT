@@ -50,6 +50,14 @@ export interface SearchResult {
   note?: string;
 }
 
+export interface AppPill {
+  id: string;
+  label: string;
+  color: string;
+  /** 'active' while the process is running. */
+  status: "active" | "closing";
+}
+
 const task = (
   id: string, name: string, color: string, source: AgentSource,
 ): AgentTask => ({
@@ -139,6 +147,9 @@ class AppState {
   pendingApproval: ApprovalInfo | null = null;
 
   integrations: Record<string, IntegrationInfo> = {};
+
+  /** Detected running applications (separate from agent/integration pills). */
+  appPills: Map<string, AppPill> = new Map();
 
   lastActivity = performance.now();
 
@@ -261,6 +272,33 @@ class AppState {
       this.settings.activeIntegrations = [...active, id];
     }
     this.loadIntegrationTasks();
+  }
+
+  /** Adds an app pill when a known process is detected. */
+  addAppPill(id: string, label: string, color: string) {
+    if (this.appPills.has(id)) {
+      // Re-activate if it was in closing state.
+      const pill = this.appPills.get(id)!;
+      pill.status = "active";
+      this.notify();
+      return;
+    }
+    this.appPills.set(id, { id, label, color, status: "active" });
+    this.notify();
+  }
+
+  /** Marks an app pill as closing, then removes it after a short fade-out. */
+  removeAppPill(id: string) {
+    const pill = this.appPills.get(id);
+    if (!pill) return;
+    pill.status = "closing";
+    this.notify();
+    window.setTimeout(() => {
+      if (this.appPills.get(id)?.status === "closing") {
+        this.appPills.delete(id);
+        this.notify();
+      }
+    }, 300);
   }
 
   defaultView(): IslandViewName {

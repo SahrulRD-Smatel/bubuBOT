@@ -110,6 +110,14 @@ export class Island {
         this.setView("prompt");
       }
     });
+
+    // Process scanner: auto-detect running applications.
+    void onEvent<{ id: string; label: string; color: string }>("app-detected", (p) => {
+      State.addAppPill(p.id, p.label, p.color);
+    });
+    void onEvent<{ id: string }>("app-closed", (p) => {
+      State.removeAppPill(p.id);
+    });
   }
 
   // ── DOM ─────────────────────────────────────────────────────────────────────

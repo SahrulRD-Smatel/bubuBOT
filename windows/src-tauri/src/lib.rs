@@ -8,6 +8,7 @@ mod island;
 mod log;
 mod pipe;
 mod platform;
+mod process_scanner;
 mod secrets;
 mod settings;
 mod tray;
@@ -582,6 +583,7 @@ pub fn run() {
             hooks::ensure_hook_exe(&handle);
             pipe::start(handle.clone());
             integrations::start(handle.clone());
+            process_scanner::start(handle.clone());
             Ok(())
         })
         .run(tauri::generate_context!())

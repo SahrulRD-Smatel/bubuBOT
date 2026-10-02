@@ -5,7 +5,7 @@
 import { h, svg, clear, dot } from "./dom";
 import { ICONS } from "./icons";
 import { Ticker } from "./ticker";
-import { State, type AgentTask } from "../core/state";
+import { State, type AgentTask, type AppPill } from "../core/state";
 import { washRGBA, type IslandViewName, type Wash } from "../core/layout";
 import { createMiniBot, pruneMiniBots } from "../mochi/minibots";
 import { buildPrompt } from "./chat";
@@ -128,7 +128,8 @@ function buildOverview(actions: ViewActions): ViewHost {
   );
   const left = card(null, leftBody, jump);
   const pills = h("div", { class: "pills" });
-  const right = card(null, pills);
+  const appPillsEl = h("div", { class: "app-pills" });
+  const right = card(null, pills, appPillsEl);
 
   const el = h("div", { class: "view overview" },
     h("div", { class: "left" }, left),
@@ -136,6 +137,7 @@ function buildOverview(actions: ViewActions): ViewHost {
   );
 
   let pillIds = "";
+  let appPillIds = "";
   let detailOpen = false;
   let lastFocus: string | null = null;
   let mode: "ticker" | "card" | null = null;
@@ -222,6 +224,15 @@ function buildOverview(actions: ViewActions): ViewHost {
         for (const t of others) pills.append(buildPill(t, actions));
         pruneMiniBots();
       }
+
+      // App pills — detected running applications.
+      const appArr = [...State.appPills.values()];
+      const appKey = appArr.map((p) => `${p.id}:${p.status}`).join("|");
+      if (appKey !== appPillIds) {
+        appPillIds = appKey;
+        clear(appPillsEl);
+        for (const p of appArr) appPillsEl.append(buildAppPill(p));
+      }
     },
   };
 }
@@ -266,6 +277,28 @@ function lighten(hex: string, amount: number): string {
     Math.min(255, Math.round(x + amount * 255)),
   );
   return `rgb(${c[0]},${c[1]},${c[2]})`;
+}
+
+/** Builds a compact app pill with a coloured dot + label. */
+function buildAppPill(pill: AppPill): HTMLElement {
+  const el = h(
+    "div",
+    { class: `app-pill ${pill.status === "closing" ? "closing" : ""}` },
+    h("span", { class: "app-pill-dot" }),
+    h("span", { class: "app-pill-label", text: pill.label }),
+  );
+  el.style.setProperty("--pill-color", pill.color);
+  el.addEventListener("mouseenter", () => {
+    el.style.background = `${pill.color}2e`;
+    el.style.borderColor = `${pill.color}8c`;
+    el.style.boxShadow = `0 2px 8px ${pill.color}40`;
+  });
+  el.addEventListener("mouseleave", () => {
+    el.style.background = "";
+    el.style.borderColor = `${pill.color}24`;
+    el.style.boxShadow = "";
+  });
+  return el;
 }
 
 // ── Empty ─────────────────────────────────────────────────────────────────────
