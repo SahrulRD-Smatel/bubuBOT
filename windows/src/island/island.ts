@@ -102,12 +102,12 @@ export class Island {
 
     // Wake word: auto-expand to chat view when "Halo Bubu" is detected
     void onEvent("wakeword-detected", () => {
-      this.expand("prompt");
+      this.setView("prompt");
     });
     void onEvent("voice-text", () => {
       // Make sure we're in prompt view when voice text arrives
       if (State.mode !== "expanded" || State.view !== "prompt") {
-        this.expand("prompt");
+        this.setView("prompt");
       }
     });
   }
