@@ -49,18 +49,12 @@ impl Default for Settings {
 
 /// %APPDATA%\Bubu
 pub fn config_dir() -> PathBuf {
-    let base = std::env::var_os("APPDATA")
-        .map(PathBuf::from)
-        .unwrap_or_else(|| PathBuf::from("."));
-    base.join("Bubu")
+    crate::platform::config_dir()
 }
 
 /// %LOCALAPPDATA%\Bubu — where bubu-hook.exe and the log live.
 pub fn local_dir() -> PathBuf {
-    let base = std::env::var_os("LOCALAPPDATA")
-        .map(PathBuf::from)
-        .unwrap_or_else(|| PathBuf::from("."));
-    base.join("Bubu")
+    crate::platform::local_dir()
 }
 
 pub fn hook_exe_path() -> PathBuf {

@@ -76,7 +76,7 @@ class SoundEngine {
   }
 
   setVolume(v: number) {
-    this.volume = Math.max(0, Math.min(0.2, v));
+    this.volume = Math.max(0, Math.min(1.0, v));
     if (this.master) this.master.gain.value = this.volume;
   }
 

@@ -27,31 +27,29 @@ namespace BubuVoiceEngine
                     recognizer.SetInputToDefaultAudioDevice();
                     Console.WriteLine("DEBUG:CULTURE:" + recognizer.RecognizerInfo.Culture.Name);
                     
-                    // Make SAPI extremely snappy and prevent buffering lags
                     recognizer.InitialSilenceTimeout = TimeSpan.FromSeconds(3);
-                    recognizer.EndSilenceTimeout = TimeSpan.FromMilliseconds(500);
-                    recognizer.EndSilenceTimeoutAmbiguous = TimeSpan.FromMilliseconds(500);
+                    recognizer.EndSilenceTimeout = TimeSpan.FromMilliseconds(800);
+                    recognizer.EndSilenceTimeoutAmbiguous = TimeSpan.FromMilliseconds(800);
                     recognizer.BabbleTimeout = TimeSpan.FromSeconds(2);
                     
-                    // 1. Wake word grammar — keep it simple and light
-                    Choices wakeWords = new Choices();
-                    wakeWords.Add(new string[] { 
-                        "Hey Bubu", "Hey Pupu", "Halo Bubu", "Halo Pupu", 
-                        "Nihao Bubu", "Nihao Pupu" 
+                    // ── Wake word ─────────────────────────────────────
+                    Choices wakeWords = new Choices(new string[] { 
+                        "Hey Bubu", "Hey Pupu", "Halo Bubu", "Halo Pupu" 
                     });
                     GrammarBuilder wakeGb = new GrammarBuilder();
                     wakeGb.Append(wakeWords);
                     Grammar wakeGrammar = new Grammar(wakeGb);
                     wakeGrammar.Name = "WakeWord";
                     
-                    DictationGrammar commandsGrammar = new DictationGrammar();
-                    commandsGrammar.Name = "Commands";
+                    // ── Dictation (Sangat akurat jika id-ID terinstall) ────────────────
+                    DictationGrammar dictGrammar = new DictationGrammar();
+                    dictGrammar.Name = "Dictation";
                     
                     recognizer.LoadGrammar(wakeGrammar);
-                    recognizer.LoadGrammar(commandsGrammar);
+                    recognizer.LoadGrammar(dictGrammar);
                     
                     wakeGrammar.Enabled = true;
-                    commandsGrammar.Enabled = false;
+                    dictGrammar.Enabled = false;
                     
                     Timer revertTimer = new Timer((state) => 
                     {
@@ -59,7 +57,7 @@ namespace BubuVoiceEngine
                         {
                             Console.WriteLine("TIMEOUT");
                             isListeningCommand = false;
-                            commandsGrammar.Enabled = false;
+                            dictGrammar.Enabled = false;
                             wakeGrammar.Enabled = true;
                         }
                     }, null, Timeout.Infinite, Timeout.Infinite);
@@ -68,72 +66,63 @@ namespace BubuVoiceEngine
                     {
                         string text = (e.Result.Text ?? "").Trim();
                         float conf = e.Result.Confidence;
+                        string grammar = e.Result.Grammar.Name;
                         
-                        Console.WriteLine("DEBUG_RECOG:" + e.Result.Grammar.Name + ":" + text + "|" + conf);
+                        Console.WriteLine("DEBUG_RECOG:" + grammar + ":" + text + "|" + conf);
                         
-                        if (!isListeningCommand && e.Result.Grammar.Name == "WakeWord")
+                        if (!isListeningCommand && grammar == "WakeWord")
                         {
-                            // Accept ANY confidence for wake word from SpeechRecognized
                             Console.WriteLine("WAKE");
                             isListeningCommand = true;
                             wakeGrammar.Enabled = false;
-                            commandsGrammar.Enabled = true;
-                            revertTimer.Change(10000, Timeout.Infinite);
+                            dictGrammar.Enabled = true;
+                            revertTimer.Change(8000, Timeout.Infinite);
                         }
-                        else if (isListeningCommand && e.Result.Grammar.Name == "Commands")
+                        else if (isListeningCommand && grammar == "Dictation")
                         {
-                            // Accept ANY confidence for commands from SpeechRecognized
-                            revertTimer.Change(Timeout.Infinite, Timeout.Infinite);
-                            Console.WriteLine("HEARD:" + text);
-                            isListeningCommand = false;
-                            commandsGrammar.Enabled = false;
-                            wakeGrammar.Enabled = true;
+                            if (conf >= 0.25f)
+                            {
+                                revertTimer.Change(Timeout.Infinite, Timeout.Infinite);
+                                Console.WriteLine("HEARD:" + text.ToLower());
+                                isListeningCommand = false;
+                                dictGrammar.Enabled = false;
+                                wakeGrammar.Enabled = true;
+                            }
                         }
                     };
                     
-                    // Also rescue rejected results
                     recognizer.SpeechRecognitionRejected += (s, e) =>
                     {
-                        string text = (e.Result.Text ?? "").Trim();
+                        string text = (e.Result.Text ?? "").Trim().ToLower();
                         float conf = e.Result.Confidence;
-                        
-                        if (!string.IsNullOrEmpty(text))
-                        {
-                            Console.WriteLine("DEBUG_REJECT:" + text + "|" + conf);
-                        }
                         
                         if (!isListeningCommand)
                         {
-                            // Check if rejected result looks like a wake word
-                            string lower = text.ToLower();
-                            if (conf >= 0.0f && (lower.Contains("bubu") || lower.Contains("pupu")))
+                            if (conf >= 0.25f && (text.Contains("bubu") || text.Contains("pupu")))
                             {
                                 Console.WriteLine("WAKE");
                                 isListeningCommand = true;
                                 wakeGrammar.Enabled = false;
-                                commandsGrammar.Enabled = true;
-                                revertTimer.Change(10000, Timeout.Infinite);
+                                dictGrammar.Enabled = true;
+                                revertTimer.Change(8000, Timeout.Infinite);
                             }
                         }
                         else
                         {
-                            // In command mode, accept rejected results that look like commands
-                            string lower = text.ToLower();
-                            if (conf > 0.001f && (lower.StartsWith("buka") || lower.StartsWith("cari") || lower.StartsWith("open") || lower.StartsWith("search")))
+                            // If rejected but confident enough, accept it anyway
+                            if (conf > 0.15f)
                             {
                                 revertTimer.Change(Timeout.Infinite, Timeout.Infinite);
                                 Console.WriteLine("HEARD:" + text);
                                 isListeningCommand = false;
-                                commandsGrammar.Enabled = false;
+                                dictGrammar.Enabled = false;
                                 wakeGrammar.Enabled = true;
                             }
                         }
                     };
                     
                     Console.WriteLine("ENGINE_READY");
-                    
                     recognizer.RecognizeAsync(RecognizeMode.Multiple);
-                    
                     Thread.Sleep(Timeout.Infinite);
                 }
             }

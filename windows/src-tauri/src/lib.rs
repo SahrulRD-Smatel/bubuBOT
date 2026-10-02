@@ -7,12 +7,12 @@ mod integrations;
 mod island;
 mod log;
 mod pipe;
+mod platform;
 mod secrets;
 mod settings;
 mod tray;
-mod win_user;
 
-use std::os::windows::process::CommandExt;
+
 use std::process::Command;
 use std::sync::atomic::Ordering;
 use std::sync::{Arc, Mutex};
@@ -28,8 +28,6 @@ use island::{PollGate, ScreenInfo};
 use pipe::Pending;
 use settings::Settings;
 
-/// Keeps spawned helpers from flashing a console window.
-const CREATE_NO_WINDOW: u32 = 0x0800_0000;
 
 pub struct Shared {
     pub settings: Mutex<Settings>,
@@ -43,6 +41,8 @@ pub struct BootInfo {
     screen: ScreenInfo,
     version: String,
     hook_path: String,
+    /// False where the OS has no global cursor (Wayland): see Island.followPageCursor.
+    cursor_poll: bool,
 }
 
 #[tauri::command]
@@ -56,6 +56,7 @@ fn boot(app: AppHandle, shared: State<Shared>) -> BootInfo {
         screen,
         version: env!("CARGO_PKG_VERSION").to_string(),
         hook_path: settings::hook_exe_path().to_string_lossy().to_string(),
+        cursor_poll: platform::CURSOR_POLL,
     }
 }
 
@@ -94,8 +95,7 @@ fn set_collapsed(app: AppHandle, shared: State<Shared>, collapsed: bool) {
     shared.gate.collapsed.store(collapsed, Ordering::Relaxed);
     island::apply_geometry(&app, &pref, collapsed);
     // The wake strip must always take the mouse, and a resize invalidates the flag.
-    island::set_ignore_cursor(&app, false);
-    shared.gate.forget_ignore_state();
+    island::refresh_click_through(&app, &shared.gate);
     shared.gate.set_active(!collapsed);
 }
 
@@ -108,7 +108,7 @@ fn set_island_rect(shared: State<Shared>, x: f64, y: f64, width: f64, height: f6
 #[tauri::command]
 fn focus_window(app: AppHandle, focused: bool) {
     let Some(win) = island::window(&app) else { return };
-    island::set_activating(&win, focused);
+    platform::set_activating(&win, focused);
     if focused {
         let _ = win.set_focus();
     }
@@ -173,7 +173,7 @@ fn launch_app(app_name: String) -> bool {
     // 3. Fallback to basic name for App Paths registry keys (like 'chrome')
     let target = if let Some(shortcut) = find_app_shortcut(&app_name) {
         shortcut.to_string_lossy().to_string()
-    } else if let Some(exe) = find_on_path(&app_name) {
+    } else if let Some(exe) = platform::find_on_path(&app_name) {
         exe.to_string_lossy().to_string()
     } else {
         // If it's a single word without spaces, we might risk it, 
@@ -184,10 +184,9 @@ fn launch_app(app_name: String) -> bool {
         app_name
     };
 
-    let result = Command::new("cmd")
-        .args(["/C", "start", "", &target])
-        .creation_flags(CREATE_NO_WINDOW)
-        .spawn();
+    let result = platform::no_console(
+        Command::new("cmd").args(["/C", "start", "", &target])
+    ).spawn();
     result.is_ok()
 }
 
@@ -216,12 +215,12 @@ fn spawn_voice_engine(app: tauri::AppHandle) {
         };
 
         loop {
-            crate::log::line(format!("Voice Engine: spawning from {:?}", &exe_path));
-            match Command::new(&exe_path)
-                .creation_flags(CREATE_NO_WINDOW)
-                .stdout(std::process::Stdio::piped())
-                .stderr(std::process::Stdio::piped())
-                .spawn()
+            crate::log::line(format!("Voice Engine: spawning from {:?}", exe_path));
+            match platform::no_console(
+                Command::new(&exe_path)
+                    .stdout(std::process::Stdio::piped())
+                    .stderr(std::process::Stdio::piped())
+            ).spawn()
             {
                 Ok(mut child) => {
                     if let Some(stdout) = child.stdout.take() {
@@ -231,7 +230,7 @@ fn spawn_voice_engine(app: tauri::AppHandle) {
                         while reader.read_line(&mut line).unwrap_or(0) > 0 {
                             let trimmed = line.trim();
                             if trimmed == "WAKE" {
-                                crate::log::line("Voice Engine: WAKE detected!".to_string());
+                                crate::log::line("Voice Engine: WAKE detected!");
                                 // Uncollapse the island
                                 let shared = app.state::<crate::Shared>();
                                 shared.gate.collapsed.store(false, std::sync::atomic::Ordering::Relaxed);
@@ -239,12 +238,12 @@ fn spawn_voice_engine(app: tauri::AppHandle) {
                                 crate::island::apply_geometry(&app, &screen, false);
                                 
                                 let _ = app.emit("wakeword-detected", ());
-                            } else if trimmed.starts_with("HEARD:") {
-                                let text = trimmed[6..].to_string();
+                            } else if let Some(text) = trimmed.strip_prefix("HEARD:") {
+                                let text = text.to_string();
                                 crate::log::line(format!("Voice Engine: HEARD '{}'", text));
                                 let _ = app.emit("voice-text", text);
                             } else if trimmed == "TIMEOUT" {
-                                crate::log::line("Voice Engine: TIMEOUT".to_string());
+                                crate::log::line("Voice Engine: TIMEOUT");
                                 let _ = app.emit("voice-timeout", ());
                             } else if trimmed.starts_with("ERROR:") {
                                 crate::log::line(format!("Voice Engine Error: {}", trimmed));
@@ -252,7 +251,7 @@ fn spawn_voice_engine(app: tauri::AppHandle) {
                             } else if trimmed.starts_with("DEBUG") {
                                 crate::log::line(format!("Voice Engine: {}", trimmed));
                             } else if trimmed == "ENGINE_READY" {
-                                crate::log::line("Voice Engine: ENGINE_READY".to_string());
+                                crate::log::line("Voice Engine: ENGINE_READY");
                             }
                             line.clear();
                         }
@@ -283,10 +282,7 @@ fn open_url(url: String) {
     if !(url.starts_with("http://") || url.starts_with("https://")) {
         return;
     }
-    let _ = Command::new("rundll32.exe")
-        .args(["url.dll,FileProtocolHandler", &url])
-        .creation_flags(CREATE_NO_WINDOW)
-        .spawn();
+    platform::open_url(&url);
 }
 
 /// "Open terminal" opens the working folder in VS Code when `code` is on PATH,
@@ -297,37 +293,31 @@ fn open_in_vscode(path: Option<String>) -> bool {
     // whoever is using Claude Code, and cmd would happily read `&`, `^` and `%`
     // in a folder name as syntax. Finding the launcher ourselves and handing the
     // path over as a separate argument keeps it a path.
-    if let Some(code) = find_on_path("code") {
+    let path = path.filter(|p| !p.is_empty());
+    // It arrives in a hook payload: only an existing folder, given by its full
+    // path, goes any further. `code` would read `--something` as an option, and
+    // xdg-open would launch a file with whatever handles its type.
+    if let Some(p) = path.as_deref() {
+        let p = std::path::Path::new(p);
+        if !(p.is_absolute() && p.is_dir()) {
+            return false;
+        }
+    }
+    if let Some(code) = platform::find_on_path("code") {
         let mut cmd = Command::new(code);
-        if let Some(p) = path.as_deref().filter(|p| !p.is_empty()) {
+        if let Some(p) = path.as_deref() {
             cmd.arg(p);
         }
-        if cmd.creation_flags(CREATE_NO_WINDOW).spawn().is_ok() {
+        if platform::no_console(&mut cmd).spawn().is_ok() {
             return true;
         }
     }
-    if let Some(p) = path.as_deref().filter(|p| !p.is_empty()) {
-        let _ = Command::new("explorer").arg(p).spawn();
+    if let Some(p) = path.as_deref() {
+        platform::reveal_folder(p);
     }
     false
 }
 
-/// Our own `where`: walks %PATH% against %PATHEXT%, no shell involved.
-/// Rust quotes arguments correctly for `.cmd`/`.bat` targets since 1.77, so
-/// spawning `code.cmd` directly is safe.
-fn find_on_path(stem: &str) -> Option<std::path::PathBuf> {
-    let exts = std::env::var("PATHEXT").unwrap_or_else(|_| ".COM;.EXE;.BAT;.CMD".into());
-    let dirs = std::env::var_os("PATH")?;
-    for dir in std::env::split_paths(&dirs) {
-        for ext in exts.split(';').filter(|e| !e.is_empty()) {
-            let candidate = dir.join(format!("{stem}{}", ext.to_lowercase()));
-            if candidate.is_file() {
-                return Some(candidate);
-            }
-        }
-    }
-    None
-}
 
 #[tauri::command]
 fn quit_app(app: AppHandle) {
@@ -574,11 +564,16 @@ pub fn run() {
             create_settings_window(&handle);
 
             if let Some(win) = island::window(&handle) {
-                island::make_non_activating(&win);
+                platform::make_non_activating(&win);
                 island::apply_geometry(&handle, &loaded.screen, false);
                 let _ = win.show();
             }
             gate.collapsed.store(false, Ordering::Relaxed);
+            // Nothing drawn yet, so nothing takes the mouse until the page
+            // reports the island's shape.
+            if !platform::CURSOR_POLL {
+                island::refresh_click_through(&handle, &gate);
+            }
             gate.set_active(true);
             island::spawn_cursor_poll(handle.clone(), gate.clone());
             spawn_voice_engine(handle.clone());

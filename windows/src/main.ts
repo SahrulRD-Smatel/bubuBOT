@@ -23,7 +23,14 @@ async function main() {
   island.applySettings();
   State.loadIntegrationTasks();
 
-  await onEvent<{ x: number; y: number }>("cursor", ({ x, y }) => island.onCursor(x, y));
+  // On platforms with a cursor poll (Windows), Rust drives the cursor at 60 Hz.
+  // Where there is no global cursor (Wayland/Linux), the island tracks the
+  // cursor from page events instead (see Island.followPageCursor).
+  if (!boot || boot.cursorPoll) {
+    await onEvent<{ x: number; y: number }>("cursor", ({ x, y }) => island.onCursor(x, y));
+  } else {
+    island.followPageCursor();
+  }
 
   /** Pause has to reach Rust too, or the pollers keep calling out. */
   const setPaused = (on: boolean) => {

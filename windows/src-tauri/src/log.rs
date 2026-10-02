@@ -3,17 +3,15 @@
 
 use std::io::Write;
 
-use windows::Win32::System::SystemInformation::GetLocalTime;
-
-use crate::settings;
+use crate::platform;
 
 pub fn line(message: impl AsRef<str>) {
-    let t = unsafe { GetLocalTime() };
+    let t = platform::local_time();
     let stamp = format!(
         "{:04}-{:02}-{:02} {:02}:{:02}:{:02}",
-        t.wYear, t.wMonth, t.wDay, t.wHour, t.wMinute, t.wSecond
+        t.year, t.month, t.day, t.hour, t.minute, t.second
     );
-    let dir = settings::local_dir();
+    let dir = platform::local_dir();
     if std::fs::create_dir_all(&dir).is_err() {
         return;
     }

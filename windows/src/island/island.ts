@@ -302,14 +302,10 @@ export class Island {
   expand(view: IslandViewName) {
     this.stopSequenceIfLeaving(view);
     State.view = view;
-    if (State.mode !== "expanded") {
-      this.setMode("expanded");
-      // Start the visual countdown immediately when expanding.
-      this.homeCollapseAt = performance.now() + State.settings.autoCloseInterval * 1000;
-    } else {
-      this.animateGeometry(false);
-    }
+    if (State.mode !== "expanded") this.setMode("expanded");
+    else this.animateGeometry(false);
     State.lastActivity = performance.now();
+    this.homeCollapseAt = null;
     State.notify();
   }
 
@@ -566,16 +562,24 @@ export class Island {
 
     void onDragDrop((e) => this.onDragDrop(e));
 
-    // Outside Tauri (plain browser) drive the cursor from DOM events so the
-    // island can be inspected with `npm run dev`.
-    if (!IS_TAURI) {
-      window.addEventListener("mousemove", (e) => this.onCursor(e.clientX, e.clientY));
-    }
+    if (!IS_TAURI) this.followPageCursor();
+  }
+
+  /**
+   * Takes the cursor from the page's own mouse events instead of Rust's poll.
+   * Used where the OS has no global cursor position (Wayland): the events only
+   * fire while the pointer is over the island, so leaving the window is
+   * reported as a cursor far away, which is what the poll would have said.
+   */
+  followPageCursor() {
+    window.addEventListener("mousemove", (e) => this.onCursor(e.clientX, e.clientY));
+    window.addEventListener("mouseout", (e) => {
+      if (e.relatedTarget == null) this.onCursor(-10_000, -10_000);
+    });
   }
 
   /** Cursor in window-logical coordinates. */
   onCursor(x: number, y: number) {
-    const moved = Math.abs(State.mouse.x - x) > 0.5 || Math.abs(State.mouse.y - y) > 0.5;
     State.mouse = { x, y };
     const rect = this.islandRect();
     State.mouseInIsland = { x: x - rect.x, y: y - rect.y };
@@ -591,19 +595,17 @@ export class Island {
       y >= rect.y - HIT_MARGIN && y <= rect.y + rect.h + HIT_MARGIN;
 
     if (inIsland && !this.wasInIsland) {
-      if (moved || !IS_TAURI) {
-        if (this.fsm.state === "bubu") this.greeting.hover();
-        this.fsm.mouseEntered();
-        // Don't cancel homeCollapseAt — hovering should not reset auto-close.
-        this.wasInIsland = true;
-      }
-    } else if (!inIsland && this.wasInIsland) {
+      if (this.fsm.state === "bubu") this.greeting.hover();
+      this.fsm.mouseEntered();
+      this.homeCollapseAt = null;
+    }
+    if (!inIsland && this.wasInIsland) {
       this.fsm.mouseLeft();
-      if (this.fsm.state === "home" && !State.isPinned && this.homeCollapseAt == null) {
+      if (this.fsm.state === "home" && !State.isPinned) {
         this.homeCollapseAt = performance.now() + State.settings.autoCloseInterval * 1000;
       }
-      this.wasInIsland = false;
     }
+    this.wasInIsland = inIsland;
 
     // Bot hover → love
     const overBot = State.mode === "expanded" && State.stateOverride == null && this.isBotHit(x, y);
