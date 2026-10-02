@@ -302,10 +302,14 @@ export class Island {
   expand(view: IslandViewName) {
     this.stopSequenceIfLeaving(view);
     State.view = view;
-    if (State.mode !== "expanded") this.setMode("expanded");
-    else this.animateGeometry(false);
+    if (State.mode !== "expanded") {
+      this.setMode("expanded");
+      // Start the visual countdown immediately when expanding.
+      this.homeCollapseAt = performance.now() + State.settings.autoCloseInterval * 1000;
+    } else {
+      this.animateGeometry(false);
+    }
     State.lastActivity = performance.now();
-    this.homeCollapseAt = null;
     State.notify();
   }
 
@@ -571,6 +575,7 @@ export class Island {
 
   /** Cursor in window-logical coordinates. */
   onCursor(x: number, y: number) {
+    const moved = Math.abs(State.mouse.x - x) > 0.5 || Math.abs(State.mouse.y - y) > 0.5;
     State.mouse = { x, y };
     const rect = this.islandRect();
     State.mouseInIsland = { x: x - rect.x, y: y - rect.y };
@@ -586,17 +591,19 @@ export class Island {
       y >= rect.y - HIT_MARGIN && y <= rect.y + rect.h + HIT_MARGIN;
 
     if (inIsland && !this.wasInIsland) {
-      if (this.fsm.state === "bubu") this.greeting.hover();
-      this.fsm.mouseEntered();
-      this.homeCollapseAt = null;
-    }
-    if (!inIsland && this.wasInIsland) {
+      if (moved || !IS_TAURI) {
+        if (this.fsm.state === "bubu") this.greeting.hover();
+        this.fsm.mouseEntered();
+        // Don't cancel homeCollapseAt — hovering should not reset auto-close.
+        this.wasInIsland = true;
+      }
+    } else if (!inIsland && this.wasInIsland) {
       this.fsm.mouseLeft();
-      if (this.fsm.state === "home" && !State.isPinned) {
+      if (this.fsm.state === "home" && !State.isPinned && this.homeCollapseAt == null) {
         this.homeCollapseAt = performance.now() + State.settings.autoCloseInterval * 1000;
       }
+      this.wasInIsland = false;
     }
-    this.wasInIsland = inIsland;
 
     // Bot hover → love
     const overBot = State.mode === "expanded" && State.stateOverride == null && this.isBotHit(x, y);

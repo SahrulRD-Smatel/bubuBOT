@@ -42,7 +42,7 @@ export class IslandStateMachine {
         this.clear("petitHide");
         break;
       case "home":
-        this.clear("homeCollapse");
+        // Don't cancel homeCollapse — mouse hover should not reset the auto-close timer.
         break;
       case "bubu":
         this.scheduleGreetCollapse(this.greetHoverCollapseDelay);
@@ -59,7 +59,8 @@ export class IslandStateMachine {
         this.schedulePetitHide();
         break;
       case "home":
-        this.scheduleHomeCollapse();
+        // Only schedule if there isn't already a timer running.
+        if (this.homeCollapse == null) this.scheduleHomeCollapse();
         break;
       case "bubu":
         this.clear("greetCollapse");
