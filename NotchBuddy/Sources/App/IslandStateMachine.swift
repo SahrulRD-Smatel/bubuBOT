@@ -1,7 +1,7 @@
 import Foundation
 
 /// Pure 4-state FSM for island open/close logic.
-/// No AppKit / AppState dependencies — communicates via `onTransition`.
+/// No AppKit / AppState dependencies â€” communicates via `onTransition`.
 @MainActor
 final class IslandStateMachine {
 
@@ -17,20 +17,23 @@ final class IslandStateMachine {
     /// Fired on every transition: (from, to)
     var onTransition: ((State, State) -> Void)?
 
-    /// home → petit delay (seconds). Override for debug.
+    /// When non-nil and returns true, timers and mouse-leave never auto-collapse or hide the island.
+    var isHeldOpen: (() -> Bool)?
+
+    /// home â†’ petit delay (seconds). Override for debug.
     var homeToPetitDelay: TimeInterval = 15
-    /// petit → hidden delay (seconds). Override for debug.
+    /// petit â†’ hidden delay (seconds). Override for debug.
     var petitToHiddenDelay: TimeInterval = 60
-    /// bubu → petit delay after greeting animation ends (no hover). ~0.6s syncs with canvas collapse.
+    /// bubu â†’ petit delay after greeting animation ends (no hover). ~0.6s syncs with canvas collapse.
     var greetAutoCollapseDelay: TimeInterval = 0.6
-    /// bubu → petit delay when mouse is hovering over the greeting.
+    /// bubu â†’ petit delay when mouse is hovering over the greeting.
     var greetHoverCollapseDelay: TimeInterval = 10
 
     private var petitHideWork: DispatchWorkItem?
     private var homeCollapseWork: DispatchWorkItem?
     private var greetCollapseWork: DispatchWorkItem?
 
-    // MARK: – Inputs
+    // MARK: â€“ Inputs
 
     /// App launched or debug "launch greeting"
     func launch() {
@@ -42,8 +45,13 @@ final class IslandStateMachine {
     func mouseEntered() {
         switch state {
         case .hidden:
-            cancelTimers()
-            transition(to: .petit)
+            if isHeldOpen?() == true {
+                // Island already expanded by an external call â€” sync FSM state without transition
+                state = .home
+            } else {
+                cancelTimers()
+                transition(to: .petit)
+            }
         case .petit:
             petitHideWork?.cancel()
             petitHideWork = nil
@@ -51,7 +59,7 @@ final class IslandStateMachine {
             homeCollapseWork?.cancel()
             homeCollapseWork = nil
         case .bubu:
-            // Mouse hovering during greeting — cancel short auto-collapse, extend to hover delay
+            // Mouse hovering during greeting â€” cancel short auto-collapse, extend to hover delay
             scheduleGreetCollapse(delay: greetHoverCollapseDelay)
         }
     }
@@ -64,11 +72,13 @@ final class IslandStateMachine {
         case .petit:
             schedulePetitHide()
         case .home:
-            scheduleHomeCollapse()
+            if isHeldOpen?() != true { scheduleHomeCollapse() }
         case .bubu:
-            // Interrupt greeting immediately → compact (overrides 10s auto-collapse)
-            greetCollapseWork?.cancel(); greetCollapseWork = nil
-            transition(to: .petit)
+            if isHeldOpen?() != true {
+                // Interrupt greeting immediately â†’ compact (overrides 10s auto-collapse)
+                greetCollapseWork?.cancel(); greetCollapseWork = nil
+                transition(to: .petit)
+            }
         }
     }
 
@@ -90,6 +100,15 @@ final class IslandStateMachine {
         state = .hidden
     }
 
+    /// The app expanded the island externally (hookExpand for an alert).
+    /// Cancel timers and sync state to `.home` without firing `onTransition`, so the
+    /// next hover/mouseLeft behave correctly instead of collapsing the island.
+    func openedExternally() {
+        cancelTimers()
+        guard state != .home && state != .bubu else { return }
+        state = .home
+    }
+
     /// The app folded the island itself (Escape, Settings, OK button, auto-close).
     /// Move to `.petit` right away so hover and click keep working; waiting for the
     /// 15 s home timer left the island compact on screen while the FSM still said `.home`.
@@ -99,7 +118,7 @@ final class IslandStateMachine {
         transition(to: .petit)
     }
 
-    /// Greeting animation finished (called at T.end ≈ 4.60 s).
+    /// Greeting animation finished (called at T.end â‰ˆ 4.60 s).
     /// Schedules auto-collapse. Does not override a longer hover timer already running.
     func greetComplete() {
         guard state == .bubu else { return }
@@ -127,12 +146,12 @@ final class IslandStateMachine {
         schedulePetitHide()
     }
 
-    // MARK: – Timers
+    // MARK: â€“ Timers
 
     private func schedulePetitHide() {
         petitHideWork?.cancel()
         let item = DispatchWorkItem { [weak self] in
-            guard let self, self.state == .petit else { return }
+            guard let self, self.state == .petit, !(self.isHeldOpen?() ?? false) else { return }
             self.transition(to: .hidden)
         }
         petitHideWork = item
@@ -142,7 +161,7 @@ final class IslandStateMachine {
     private func scheduleHomeCollapse() {
         homeCollapseWork?.cancel()
         let item = DispatchWorkItem { [weak self] in
-            guard let self, self.state == .home else { return }
+            guard let self, self.state == .home, !(self.isHeldOpen?() ?? false) else { return }
             self.transition(to: .petit)
         }
         homeCollapseWork = item

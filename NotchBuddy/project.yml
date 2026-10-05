@@ -6,6 +6,19 @@ options:
   xcodeVersion: "27.0"
   createIntermediateGroups: true
 
+# DebugCloud = Debug, but signed with iCloud (CloudKit) and push entitlements
+# and compiled with PHONE_LINK, for the iPhone link spike. ReleaseCloud = the
+# same for a Developer ID build with its provisioning profile
+# (scripts/cloud-test-build.sh); a Developer ID profile only allows the
+# Production CloudKit environment, so the iPhone joins it with the
+# bubuPhoneProduction scheme. Release also compiles PHONE_LINK (the sync
+# stays off until turned on in Settings); Debug stays unsigned without it.
+configs:
+  Debug: debug
+  DebugCloud: debug
+  Release: release
+  ReleaseCloud: release
+
 settings:
   base:
     SWIFT_VERSION: "6.0"
@@ -16,13 +29,27 @@ settings:
     Debug:
       CODE_SIGNING_REQUIRED: NO
       CODE_SIGNING_ALLOWED: NO
+    DebugCloud:
+      CODE_SIGNING_REQUIRED: YES
+      CODE_SIGNING_ALLOWED: YES
+      CODE_SIGN_STYLE: Automatic
+      CODE_SIGN_IDENTITY: "Apple Development"
+      DEVELOPMENT_TEAM: 256AUJ9555
     Release:
       CODE_SIGNING_REQUIRED: YES
       CODE_SIGNING_ALLOWED: YES
       CODE_SIGN_IDENTITY: "Developer ID Application"
       DEVELOPMENT_TEAM: 256AUJ9555
       OTHER_CODE_SIGN_FLAGS: "--timestamp"
+      CODE_SIGN_INJECT_BASE_ENTITLEMENTS: NO
       CODE_SIGN_ENTITLEMENTS: Resources/bubu.entitlements
+    ReleaseCloud:
+      CODE_SIGNING_REQUIRED: YES
+      CODE_SIGNING_ALLOWED: YES
+      CODE_SIGN_IDENTITY: "Developer ID Application"
+      DEVELOPMENT_TEAM: 256AUJ9555
+      OTHER_CODE_SIGN_FLAGS: "--timestamp"
+      CODE_SIGN_INJECT_BASE_ENTITLEMENTS: NO
 
 schemes:
   NotchBuddy:
@@ -41,6 +68,40 @@ schemes:
       config: Debug
     archive:
       config: Release
+  NotchBuddyCloud:
+    build:
+      targets:
+        NotchBuddy: all
+    run:
+      config: DebugCloud
+    archive:
+      config: Release
+  bubuAppStoreCloud:
+    build:
+      targets:
+        bubuAppStore: all
+    run:
+      config: DebugCloud
+    archive:
+      config: Release
+  bubuPhone:
+    build:
+      targets:
+        bubuPhone: all
+    run:
+      config: Debug
+    archive:
+      config: Release
+  # Same iPhone app on the Production CloudKit environment, to talk to the
+  # Developer ID build (scripts/cloud-test-build.sh), which can only use Production.
+  bubuPhoneProduction:
+    build:
+      targets:
+        bubuPhone: all
+    run:
+      config: DebugCloud
+    archive:
+      config: Release
 
 targets:
   NotchBuddy:
@@ -49,6 +110,9 @@ targets:
     sources:
       - path: Sources
         type: group
+        excludes:
+          - "Phone/**"
+          - "Widgets/**"
       - path: Assets.xcassets
         buildPhase: resources
       - path: Resources/sounds
@@ -60,14 +124,16 @@ targets:
         CFBundleName: bubu
         CFBundleDisplayName: bubu
         CFBundleIdentifier: fr.louisraille.NotchBuddy
-        CFBundleVersion: "2"
-        CFBundleShortVersionString: "0.1.1"
+        CFBundleVersion: "9"
+        CFBundleShortVersionString: "0.1.8"
         CFBundlePackageType: APPL
         LSUIElement: YES
         NSHighResolutionCapable: YES
         NSSupportsAutomaticGraphicsSwitching: YES
-        NSAppleEventsUsageDescription: "Pour sauter au terminal et envoyer des mails."
+        NSAppleEventsUsageDescription: "Pour sauter au terminal, envoyer des mails et piloter Musique."
         NSAccessibilityUsageDescription: "Pour lire le titre de la fenêtre active et l'attacher comme contexte."
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: fr.louisraille.NotchBuddy
@@ -76,6 +142,20 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         MACOSX_DEPLOYMENT_TARGET: "15.0"
         ENABLE_SANDBOX: NO
+      configs:
+        DebugCloud:
+          CODE_SIGN_ENTITLEMENTS: Resources/bubuCloud.entitlements
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: "DEBUG PHONE_LINK"
+        # The distributed build carries the iPhone sync (off until the user
+        # turns it on in Settings), so it needs iCloud and its Developer ID profile.
+        Release:
+          CODE_SIGN_ENTITLEMENTS: Resources/bubuReleaseCloud.entitlements
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: PHONE_LINK
+          PROVISIONING_PROFILE_SPECIFIER: "bubu Developer ID"
+        ReleaseCloud:
+          CODE_SIGN_ENTITLEMENTS: Resources/bubuReleaseCloud.entitlements
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: PHONE_LINK
+          PROVISIONING_PROFILE_SPECIFIER: "bubu Developer ID"
 
   bubuAppStore:
     type: application
@@ -83,6 +163,9 @@ targets:
     sources:
       - path: Sources
         type: group
+        excludes:
+          - "Phone/**"
+          - "Widgets/**"
       - path: Assets.xcassets
         buildPhase: resources
       - path: Resources/sounds
@@ -94,14 +177,16 @@ targets:
         CFBundleName: bubu
         CFBundleDisplayName: bubu
         CFBundleIdentifier: fr.louisraille.bubu
-        CFBundleVersion: "4"
-        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "5"
+        CFBundleShortVersionString: "1.1"
         CFBundlePackageType: APPL
         LSUIElement: YES
         NSHighResolutionCapable: YES
         NSSupportsAutomaticGraphicsSwitching: YES
         LSApplicationCategoryType: public.app-category.developer-tools
         ITSAppUsesNonExemptEncryption: NO
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: fr.louisraille.bubu
@@ -115,3 +200,117 @@ targets:
         DEVELOPMENT_TEAM: 256AUJ9555
         SWIFT_ACTIVE_COMPILATION_CONDITIONS: APPSTORE
         CODE_SIGNING_ALLOWED: YES
+      configs:
+        DebugCloud:
+          CODE_SIGN_ENTITLEMENTS: Resources/bubuAppStoreCloud.entitlements
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: "APPSTORE PHONE_LINK"
+        # App Store archive: same iCloud entitlements; Xcode switches push to
+        # production when exporting for the App Store.
+        Release:
+          CODE_SIGN_ENTITLEMENTS: Resources/bubuAppStoreCloud.entitlements
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: "APPSTORE PHONE_LINK"
+
+  # iPhone app. Same bundle ID as the Mac App Store build, for universal purchase.
+  bubuPhone:
+    type: application
+    platform: iOS
+    deploymentTarget: "18.0"
+    dependencies:
+      - target: bubuWidgets
+    sources:
+      - path: Sources/Phone
+        type: group
+      # Shared with the Mac targets (they get it through Sources/).
+      - path: Sources/BubuKit
+        type: group
+      - path: PhoneAssets.xcassets
+        buildPhase: resources
+    info:
+      path: Resources/InfoPhone.plist
+      properties:
+        CFBundleName: bubu
+        CFBundleDisplayName: bubu
+        CFBundleIdentifier: fr.louisraille.bubu
+        CFBundleVersion: "2"
+        CFBundleShortVersionString: "1.0"
+        CFBundlePackageType: APPL
+        LSRequiresIPhoneOS: YES
+        UILaunchScreen: {}
+        UIApplicationSupportsIndirectInputEvents: YES
+        UIBackgroundModes:
+          - remote-notification
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        ITSAppUsesNonExemptEncryption: NO
+        NSFaceIDUsageDescription: "bubu asks for Face ID before allowing a command from your iPhone."
+        NSSupportsLiveActivities: YES
+        # Which APNs environment the Live Activity tokens belong to (read by the Mac).
+        BubuAPNsEnvironment: $(BUBU_APNS_ENV)
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: fr.louisraille.bubu
+        PRODUCT_NAME: bubu
+        INFOPLIST_FILE: Resources/InfoPhone.plist
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        BUBU_APNS_ENV: production
+        IPHONEOS_DEPLOYMENT_TARGET: "18.0"
+        TARGETED_DEVICE_FAMILY: "1"
+        SUPPORTS_MACCATALYST: NO
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_IDENTITY: "Apple Development"
+        CODE_SIGN_ENTITLEMENTS: Resources/bubuPhone.entitlements
+        DEVELOPMENT_TEAM: 256AUJ9555
+        CODE_SIGNING_REQUIRED: YES
+        CODE_SIGNING_ALLOWED: YES
+        ENABLE_HARDENED_RUNTIME: NO
+        OTHER_CODE_SIGN_FLAGS: ""
+      configs:
+        Debug:
+          BUBU_APNS_ENV: development
+        DebugCloud:
+          CODE_SIGN_ENTITLEMENTS: Resources/bubuPhoneProduction.entitlements
+          BUBU_APNS_ENV: development
+
+  # Home Screen and Lock Screen widgets (Solo, Team, List, accessories). They
+  # read the sessions the iPhone app saves to the shared App Group.
+  bubuWidgets:
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "18.0"
+    sources:
+      - path: Sources/Widgets
+        type: group
+      - path: Sources/BubuKit
+        type: group
+      - path: Sources/Phone/SharedSessions.swift
+      - path: Sources/Phone/MacStubs.swift
+      - path: Sources/Phone/MochiActivityAttributes.swift
+    info:
+      path: Resources/InfoWidgets.plist
+      properties:
+        CFBundleName: bubuWidgets
+        CFBundleDisplayName: bubu
+        CFBundleIdentifier: fr.louisraille.bubu.Widgets
+        CFBundleVersion: "2"
+        CFBundleShortVersionString: "1.0"
+        CFBundlePackageType: XPC!
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: fr.louisraille.bubu.Widgets
+        PRODUCT_NAME: bubuWidgets
+        INFOPLIST_FILE: Resources/InfoWidgets.plist
+        IPHONEOS_DEPLOYMENT_TARGET: "18.0"
+        TARGETED_DEVICE_FAMILY: "1"
+        SUPPORTS_MACCATALYST: NO
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_IDENTITY: "Apple Development"
+        CODE_SIGN_ENTITLEMENTS: Resources/bubuWidgets.entitlements
+        DEVELOPMENT_TEAM: 256AUJ9555
+        CODE_SIGNING_REQUIRED: YES
+        CODE_SIGNING_ALLOWED: YES
+        ENABLE_HARDENED_RUNTIME: NO
+        OTHER_CODE_SIGN_FLAGS: ""
+        SKIP_INSTALL: YES
+        APPLICATION_EXTENSION_API_ONLY: YES

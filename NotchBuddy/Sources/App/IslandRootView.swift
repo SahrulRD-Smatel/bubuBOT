@@ -95,6 +95,12 @@ struct IslandContainer: View {
             // fire from the current position (e.g. choose at 60,101) when canvas deactivates.
             // Hidden during upload canvas or greeting (both draw their own Mochi).
             BotPlacement(state: state, islandW: islandWidth, islandH: islandHeight)
+                // Keep idle animations inside the resting strip. Expanded views
+                // retain the panel's full height for particles and hands.
+                .mask(alignment: .topLeading) {
+                    Rectangle().frame(width: islandWidth,
+                                      height: state.mode == .expanded ? 320 : islandHeight)
+                }
                 .opacity(uploadActive || greetingActive ? 0 : 1)
                 .animation(.easeInOut(duration: 0.25), value: uploadActive || greetingActive)
 
@@ -103,6 +109,7 @@ struct IslandContainer: View {
             Group {
                 if state.mode == .compact {
                     CompactMiniGrid(state: state)
+                        .scaleEffect(IslandRestingLayout(width: islandWidth, height: islandHeight).miniGridScale)
                         .position(x: islandWidth - 40, y: islandHeight / 2)
                         .transition(.opacity)
                 }
@@ -251,7 +258,7 @@ struct BotPlacement: View {
     let islandH: CGFloat
 
     var body: some View {
-        let (cx, cy, diameter, opacity) = botPosition(mode: state.mode, view: state.view, islandW: islandW, islandH: islandH, uploadProgress: state.uploadProgress)
+        let (cx, cy, diameter, opacity) = botPosition(mode: state.mode, view: state.view, islandW: islandW, islandH: islandH, uploadProgress: state.uploadProgress, hasNotch: state.hasNotch)
         let canvasSize = diameter / 0.6
         let overhang: CGFloat = 40
         let isUploading = state.view == .uploading
@@ -293,14 +300,14 @@ struct BotPlacement: View {
                     let uploadCx = 36 + CGFloat(t * (2 - t)) * 526
                     BotCanvasView(state: state, particleOverhang: 0)
                         .frame(width: canvasSize, height: canvasSize)
-                        .opacity(state.isDraggingBot ? 0 : opacity)
+                        .opacity(state.isDraggingBot || state.mochiOnDesktop ? 0 : opacity)
                         .position(x: uploadCx, y: cy)
                 }
                 .transition(.scale(scale: 0.01, anchor: .center).combined(with: .opacity))
             } else {
                 BotCanvasView(state: state, particleOverhang: overhang)
                     .frame(width: canvasSize, height: canvasSize + overhang)
-                    .opacity(state.isDraggingBot ? 0 : opacity)
+                    .opacity(state.isDraggingBot || state.mochiOnDesktop ? 0 : opacity)
                     .position(x: cx, y: cy - overhang / 2)
                     .animation(.spring(response: 0.5, dampingFraction: 0.72), value: cx)
                     .animation(.spring(response: 0.5, dampingFraction: 0.72), value: cy)
@@ -338,10 +345,13 @@ struct BotPlacement: View {
     }
 }
 
-func botPosition(mode: IslandMode, view: IslandView, islandW: CGFloat, islandH: CGFloat, uploadProgress: Double) -> (CGFloat, CGFloat, CGFloat, Double) {
+func botPosition(mode: IslandMode, view: IslandView, islandW: CGFloat, islandH: CGFloat, uploadProgress: Double, hasNotch: Bool = true) -> (CGFloat, CGFloat, CGFloat, Double) {
+    let resting = IslandRestingLayout(width: islandW, height: islandH)
     switch mode {
-    case .hidden:   return (46, 16, 6, 0)
-    case .compact:  return (40, 16, 20, 1)
+    case .hidden:
+        return hasNotch ? (46, 16, 6, 0)
+            : (islandW / 2, resting.botCenterY, resting.botDiameter, 1)
+    case .compact: return (40, resting.botCenterY, resting.botDiameter, 1)
     case .expanded:
         let layout = IslandConst.viewLayouts[view]!
         let diameter = layout.botDiameter
@@ -434,7 +444,7 @@ struct IslandContentView: View {
                     IslandViewContent(view: v, state: state)
                         .frame(maxWidth: .infinity)
                         .frame(height: isTall ? nil : 98)
-                        .frame(maxHeight: isTall ? .infinity : nil)
+                        .frame(minHeight: (isTall && !active) ? 0 : nil, maxHeight: isTall ? .infinity : nil)
                         .opacity(active ? 1 : 0)
                         .scaleEffect(active ? 1 : 0.97)
                         .allowsHitTesting(active)
@@ -473,25 +483,32 @@ struct IslandHeader: View {
 
             Spacer()
 
-            // Right: action icons
-            HStack(spacing: 14) {
-                Button(action: {
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                        state.view = .settings
+            // Right: plan pill (GitHub build, home view only) + action icons
+            HStack(spacing: 8) {
+                #if !APPSTORE
+                if state.view == .overview && state.showPlanInNotch && state.planRelayInstalled {
+                    ClaudePlanHeaderPill(state: state)
+                }
+                #endif
+                HStack(spacing: 14) {
+                    Button(action: {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                            state.view = .settings
+                        }
+                    }) {
+                        Image(systemName: state.view == .settings ? "gearshape.fill" : "gearshape")
+                            .font(.system(size: 14))
+                            .foregroundColor(state.view == .settings ? Color(hex: "#F5F6F8") : Color(hex: "#8E939C"))
                     }
-                }) {
-                    Image(systemName: state.view == .settings ? "gearshape.fill" : "gearshape")
-                        .font(.system(size: 14))
-                        .foregroundColor(state.view == .settings ? Color(hex: "#F5F6F8") : Color(hex: "#8E939C"))
-                }
-                .buttonStyle(.plain)
+                    .buttonStyle(.plain)
 
-                Button(action: { state.soundEnabled.toggle() }) {
-                    Image(systemName: state.soundEnabled ? "speaker.wave.2" : "speaker.slash")
-                        .font(.system(size: 14))
-                        .foregroundColor(Color(hex: "#8E939C"))
+                    Button(action: { state.soundEnabled.toggle() }) {
+                        Image(systemName: state.soundEnabled ? "speaker.wave.2" : "speaker.slash")
+                            .font(.system(size: 14))
+                            .foregroundColor(Color(hex: "#8E939C"))
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
             }
             .padding(.trailing, 16)
         }
@@ -533,6 +550,64 @@ struct TabButton: View {
     }
 }
 
+// MARK: - Claude Plan header pill (GitHub build only)
+
+#if !APPSTORE
+struct ClaudePlanHeaderPill: View {
+    @ObservedObject var state: AppState
+    @State private var isHovered = false
+
+    private var effectiveColor: String {
+        ClaudePlanGauge.color(for: state.claudePlanUsage.flatMap { ClaudePlanGauge.dominantPct($0) })
+    }
+
+    private var label: String {
+        guard let usage = state.claudePlanUsage,
+              let pct = ClaudePlanGauge.dominantPct(usage) else { return "Claude —" }
+        return "Claude \(Int(pct.rounded()))%"
+    }
+
+    private var isActive: Bool { state.showingPlanDetail || isHovered }
+
+    var body: some View {
+        Button(action: {
+            withAnimation(.spring(response: 0.28, dampingFraction: 0.82)) {
+                state.showingPlanDetail.toggle()
+            }
+        }) {
+            HStack(spacing: 4) {
+                Circle()
+                    .fill(Color(hex: effectiveColor))
+                    .frame(width: 6, height: 6)
+                Text(label)
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundColor(isActive
+                                     ? Color(hex: effectiveColor).lighter(by: 0.3)
+                                     : Color(hex: "#6B7079"))
+                    .lineLimit(1)
+                    .fixedSize()
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(
+                Capsule()
+                    .fill(isActive
+                          ? Color(hex: effectiveColor).opacity(0.18)
+                          : Color(hex: "#0E0F11"))
+            )
+            .overlay(
+                Capsule()
+                    .stroke(Color(hex: effectiveColor).opacity(isActive ? 0.55 : 0.14), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+        .onHover { h in
+            withAnimation(.spring(response: 0.2, dampingFraction: 0.7)) { isHovered = h }
+        }
+    }
+}
+#endif
+
 // MARK: - Compact mini mochi grid (2×2 to the right of the notch)
 
 struct CompactMiniGrid: View {
@@ -552,18 +627,5 @@ struct CompactMiniGrid: View {
             }
         }
         .frame(width: 28, height: 28)
-    }
-}
-
-// MARK: - Color helper
-
-extension Color {
-    init(hex: String) {
-        let h = hex.trimmingCharacters(in: CharacterSet(charactersIn: "#"))
-        let val = UInt64(h, radix: 16) ?? 0
-        let r = Double((val >> 16) & 0xFF) / 255
-        let g = Double((val >> 8)  & 0xFF) / 255
-        let b = Double( val        & 0xFF) / 255
-        self.init(red: r, green: g, blue: b)
     }
 }

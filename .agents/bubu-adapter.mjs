@@ -65,8 +65,14 @@ try {
         }
     }
 
-    // Ensure bubu-hook.exe exists in the target release folder
-    const hookExe = path.resolve(__dirname, "../windows/target/release/bubu-hook.exe");
+    // Prioritize the installed hook in %LOCALAPPDATA% over the local compile
+    const localAppData = process.env.LOCALAPPDATA || process.env.USERPROFILE + "\\AppData\\Local";
+    let hookExe = path.join(localAppData, "bubu/bin/bubu-hook.exe");
+    
+    if (!fs.existsSync(hookExe)) {
+        // Fallback to local target build if not installed
+        hookExe = path.resolve(__dirname, "../windows/target/release/bubu-hook.exe");
+    }
 
     if (fs.existsSync(hookExe)) {
         // Use detached spawn (Fire and Forget) so we don't wait for Bubu to respond.

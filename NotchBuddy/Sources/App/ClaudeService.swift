@@ -62,6 +62,8 @@ final class KeychainStore: @unchecked Sendable {
 
     private static let allKeys = [
         "anthropic-api-key",
+        "google-api-key",
+        "openai-api-key",
         "resend-api-key", "resend-from",
         "n8n-url", "n8n-api-key",
         "vercel-token",
@@ -108,7 +110,76 @@ final class ClaudeService {
 
     private let endpoint = URL(string: "https://api.anthropic.com/v1/messages")!
     private let anthropicVersion = "2023-06-01"
-    private let model = "claude-sonnet-4-6"
+
+    // MARK: - Model list
+
+    /// Fetches available models from the Anthropic API in the order the API returns them
+    /// (newest first). Returns an empty array on any error — callers fall back to a static list.
+    static func fetchModels(apiKey: String) async -> [(id: String, label: String)] {
+        guard let url = URL(string: "https://api.anthropic.com/v1/models?limit=100") else { return [] }
+        var req = URLRequest(url: url, timeoutInterval: 10)
+        req.setValue(apiKey, forHTTPHeaderField: "x-api-key")
+        req.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
+        guard let (data, response) = try? await URLSession.shared.data(for: req),
+              (response as? HTTPURLResponse)?.statusCode == 200,
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let items = json["data"] as? [[String: Any]] else { return [] }
+        return items.compactMap { item in
+            guard let id = item["id"] as? String,
+                  let name = item["display_name"] as? String else { return nil }
+            return (id: id, label: name)
+        }
+    }
+
+    /// Fetches Gemini models via the OpenAI-compatible endpoint.
+    /// Strips the "models/" prefix that the API sometimes returns and filters non-chat models.
+    static func fetchGoogleModels(apiKey: String) async -> [(id: String, label: String)] {
+        guard let url = URL(string: "https://generativelanguage.googleapis.com/v1beta/openai/models") else { return [] }
+        var req = URLRequest(url: url, timeoutInterval: 10)
+        req.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        guard let (data, response) = try? await URLSession.shared.data(for: req),
+              (response as? HTTPURLResponse)?.statusCode == 200,
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let items = json["data"] as? [[String: Any]] else { return [] }
+        let excluded = ["embed", "imagen", "veo", "aqa", "tts", "audio", "live"]
+        return items.compactMap { item in
+            guard let raw = item["id"] as? String else { return nil }
+            let id = raw.hasPrefix("models/") ? String(raw.dropFirst(7)) : raw
+            let lower = id.lowercased()
+            guard !excluded.contains(where: { lower.contains($0) }) else { return nil }
+            return (id: id, label: id)
+        }
+    }
+
+    /// Fetches chat models from the OpenAI API, sorted newest-first by creation date.
+    /// Excludes non-chat model families.
+    static func fetchOpenAIModels(apiKey: String) async -> [(id: String, label: String)] {
+        guard let url = URL(string: "https://api.openai.com/v1/models") else { return [] }
+        var req = URLRequest(url: url, timeoutInterval: 10)
+        req.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        guard let (data, response) = try? await URLSession.shared.data(for: req),
+              (response as? HTTPURLResponse)?.statusCode == 200,
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let items = json["data"] as? [[String: Any]] else { return [] }
+        let excluded = ["embed", "tts", "whisper", "dall-e", "audio", "realtime", "moderat",
+                        "codex", "computer-use", "transcribe", "image", "sora",
+                        "babbage", "davinci", "instruct"]
+        return items
+            .compactMap { item -> (id: String, created: Int)? in
+                guard let id = item["id"] as? String else { return nil }
+                let lower = id.lowercased()
+                guard !excluded.contains(where: { lower.contains($0) }) else { return nil }
+                return (id: id, created: item["created"] as? Int ?? 0)
+            }
+            .sorted { $0.created > $1.created }
+            .map { (id: $0.id, label: $0.id) }
+    }
+
+    /// Chosen in Settings; falls back to the default when the field is left empty.
+    private var model: String {
+        let m = AppState.shared.claudeModel.trimmingCharacters(in: .whitespacesAndNewlines)
+        return m.isEmpty ? AppState.defaultClaudeModel : m
+    }
 
     var apiKey: String? { KeychainStore.shared.get("anthropic-api-key") }
 
@@ -119,12 +190,25 @@ final class ClaudeService {
         conversationMessages = []
     }
 
-    private let systemPrompt = """
-    You are Mochi, Louis's personal AI assistant embedded in the notch of his Mac. \
-    You have web search access and can help with absolutely anything — research, coding, finding places, recommendations, tasks, questions. \
-    Respond in the user's language. Be thorough and complete — use as much detail as the task requires. \
-    No markdown formatting (no **, no ##, no bullet dashes). Use plain text with line breaks.
-    """
+    /// Resolved once: NSFullUserName() is a system call, and the name cannot change under us
+    /// while the app runs.
+    private let systemPrompt = ClaudeService.makeSystemPrompt()
+
+    /// Greets the user by their macOS first name when there is one worth using, and stays
+    /// neutral otherwise — same wording as the Windows build.
+    private nonisolated static func makeSystemPrompt() -> String {
+        let opening = if let firstName = resolveUserFirstName() {
+            "You are Mochi, \(firstName)'s personal AI assistant embedded in the notch of their Mac."
+        } else {
+            "You are Mochi, a personal AI assistant embedded in the notch of the user's Mac."
+        }
+        return """
+        \(opening) \
+        You have web search access and can help with absolutely anything — research, coding, finding places, recommendations, tasks, questions. \
+        Respond in the user's language. Be thorough and complete — use as much detail as the task requires. \
+        Use light Markdown when it helps: short paragraphs, bullet lists, **bold**, `inline code` and fenced code blocks. Avoid tables and big headings: the chat window is small.
+        """
+    }
 
     private let webSearchTools: [[String: Any]] = [
         ["type": "web_search_20250305", "name": "web_search", "max_uses": 5]
@@ -133,6 +217,10 @@ final class ClaudeService {
     // MARK: - Chat (multi-turn, natural text + web search)
 
     func chat(query: String, context: PromptContext?, state: AppState) async {
+        guard state.chatProvider == .anthropic else {
+            await chatOpenAICompatible(query: query, context: context, state: state)
+            return
+        }
         guard let key = apiKey, !key.isEmpty else {
             await showError("API key missing. Open settings.", state: state)
             return
@@ -172,7 +260,186 @@ final class ClaudeService {
             await handleChatResult(data, state: state)
         } catch {
             conversationMessages.removeLast()
-            await showError("Network error: \(error.localizedDescription)", state: state)
+            await showError(error.localizedDescription, state: state)
+        }
+    }
+
+    // MARK: - OpenAI-compatible chat (Google Gemini / OpenAI / Ollama / LM Studio)
+
+    func chatOpenAICompatible(query: String, context: PromptContext?, state: AppState) async {
+        let provider = state.chatProvider
+        guard provider != .anthropic else { return }
+
+        let baseURL: String
+        if provider == .ollama {
+            baseURL = LocalChat.normaliseURL(state.ollamaServerURL)
+        } else if provider == .lmstudio {
+            baseURL = LocalChat.normaliseURL(state.lmstudioServerURL)
+        } else {
+            switch provider {
+            case .google:  baseURL = "https://generativelanguage.googleapis.com/v1beta/openai"
+            case .openai:  baseURL = "https://api.openai.com/v1"
+            case .anthropic, .ollama, .lmstudio: baseURL = ""
+            }
+        }
+
+        guard !baseURL.isEmpty else {
+            if provider.isLocal {
+                let name = provider == .ollama ? "Ollama" : "LM Studio"
+                await showError("Connect \(name) in Settings → Chat first.", state: state)
+            }
+            return
+        }
+        guard let url = URL(string: "\(baseURL)/chat/completions") else { return }
+
+        // Auth header
+        let authHeader: String
+        if provider.isLocal {
+            authHeader = "Bearer ollama"
+        } else {
+            guard let key = KeychainStore.shared.get(provider.keychainKey), !key.isEmpty else {
+                await showError("\(provider.displayName) API key missing. Configure it in Settings.", state: state)
+                return
+            }
+            authHeader = "Bearer \(key)"
+        }
+
+        // Build messages
+        var msgs: [[String: Any]] = [["role": "system", "content": systemPrompt]]
+        for m in conversationMessages {
+            var simplified = m
+            if let content = m["content"] as? [[String: Any]],
+               let textBlock = content.first(where: { ($0["type"] as? String) == "text" }),
+               let text = textBlock["text"] as? String {
+                simplified["content"] = text
+            }
+            msgs.append(simplified)
+        }
+        var userText = query
+        if conversationMessages.isEmpty, let ctx = context {
+            switch ctx {
+            case .window(let app, let title, let url):
+                var prefix = "Context — App: \(app), Window: \(title)"
+                if let u = url { prefix += ", URL: \(u)" }
+                userText = prefix + "\n\n" + query
+            case .file(let name, let fileURL):
+                if provider.isLocal, let fileURL = fileURL {
+                    let ext = fileURL.pathExtension.lowercased()
+                    let binaryExts = ["pdf", "jpg", "jpeg", "png", "gif", "webp"]
+                    if !binaryExts.contains(ext),
+                       let text = try? String(contentsOf: fileURL, encoding: .utf8), !text.isEmpty {
+                        let truncated = text.count > 24_000
+                            ? String(text.prefix(24_000)) + "\n[truncated]"
+                            : text
+                        userText = "File: \(name)\n\n\(truncated)\n\n" + query
+                    } else {
+                        userText = "File: \(name)\n\n" + query
+                    }
+                } else {
+                    userText = "File: \(name)\n\n" + query
+                }
+            }
+        }
+        msgs.append(["role": "user", "content": userText])
+        conversationMessages.append(["role": "user", "content": userText])
+
+        let useStream = provider.isLocal
+        var body: [String: Any] = [
+            "model": state.activeChatModel,
+            "max_tokens": 4096,
+            "messages": msgs,
+        ]
+        if useStream { body["stream"] = true }
+
+        var req = URLRequest(url: url, timeoutInterval: useStream ? 120 : 30)
+        req.httpMethod = "POST"
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.setValue(authHeader, forHTTPHeaderField: "Authorization")
+        req.httpBody = try? JSONSerialization.data(withJSONObject: body)
+
+        if useStream {
+            // Add placeholder (hidden until first token via ChatBubble empty-content guard)
+            let placeholder = ChatMessage(role: .assistant, content: "")
+            let msgId = placeholder.id
+            state.chatHistory.append(placeholder)
+            state.stateOverride = .thinking
+            let modelCopy = state.activeChatModel
+            let streamBody: [String: Any] = [
+                "model": modelCopy,
+                "messages": msgs,
+                "stream": true,
+                "max_tokens": 4096,
+            ]
+            let encodedBody = (try? JSONSerialization.data(withJSONObject: streamBody)) ?? Data()
+            do {
+                let final = try await LocalChat.streamChat(
+                    baseURL: baseURL,
+                    encodedBody: encodedBody,
+                    model: modelCopy
+                ) { [state, msgId] visible in
+                    if !visible.isEmpty, state.stateOverride == .thinking {
+                        state.stateOverride = nil   // hide typing dots on first visible text
+                    }
+                    if let idx = state.chatHistory.firstIndex(where: { $0.id == msgId }) {
+                        state.chatHistory[idx].content = visible
+                    }
+                }
+                conversationMessages.append(["role": "assistant", "content": final])
+                if let idx = state.chatHistory.firstIndex(where: { $0.id == msgId }) {
+                    state.chatHistory[idx].content = final
+                }
+                state.stateOverride = nil
+                state.view = .prompt
+                NotificationCenter.default.post(name: .triggerEmote, object: BotEmote.happy)
+            } catch let e as LocalChatError {
+                conversationMessages.removeLast()
+                state.chatHistory.removeAll { $0.id == msgId }
+                state.stateOverride = nil
+                let msg: String
+                switch e {
+                case .serverUnreachable:
+                    msg = provider == .ollama
+                        ? "Ollama isn't running. Open it, then ask again."
+                        : "Start the local server in LM Studio, then ask again."
+                case .modelNotFound(let m):
+                    msg = "\(m) isn't installed. Pick another model above the chat box."
+                case .serverError(let s):
+                    msg = s
+                }
+                await showError(msg, state: state)
+            } catch {
+                conversationMessages.removeLast()
+                state.chatHistory.removeAll { $0.id == msgId }
+                state.stateOverride = nil
+                await showError(error.localizedDescription, state: state)
+            }
+        } else {
+            // Non-streaming (Google, OpenAI)
+            do {
+                let (data, response) = try await URLSession.shared.data(for: req)
+                guard (response as? HTTPURLResponse)?.statusCode == 200 else {
+                    if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                       let err = (json["error"] as? [String: Any])?["message"] as? String {
+                        throw NSError(domain: "ChatAPI", code: 0, userInfo: [NSLocalizedDescriptionKey: err])
+                    }
+                    throw NSError(domain: "ChatAPI", code: 0, userInfo: [NSLocalizedDescriptionKey: "HTTP \((response as? HTTPURLResponse)?.statusCode ?? 0)"])
+                }
+                guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                      let choices = json["choices"] as? [[String: Any]],
+                      let message = choices.first?["message"] as? [String: Any],
+                      let content = message["content"] as? String else {
+                    throw NSError(domain: "ChatAPI", code: 0, userInfo: [NSLocalizedDescriptionKey: "Unexpected response format"])
+                }
+                let trimmed = content.trimmingCharacters(in: .whitespacesAndNewlines)
+                conversationMessages.append(["role": "assistant", "content": trimmed])
+                state.chatHistory.append(ChatMessage(role: .assistant, content: trimmed))
+                state.stateOverride = nil
+                state.view = .prompt
+                NotificationCenter.default.post(name: .triggerEmote, object: BotEmote.happy)
+            } catch {
+                conversationMessages.removeLast()
+                await showError(error.localizedDescription, state: state)
+            }
         }
     }
 
@@ -223,7 +490,7 @@ final class ClaudeService {
             let result = try await callAPI(body: body, key: key, beta: "web-search-2025-03-05")
             await handleResult(result, state: state)
         } catch {
-            await showError("Network error: \(error.localizedDescription)", state: state)
+            await showError(error.localizedDescription, state: state)
         }
     }
 
@@ -242,6 +509,20 @@ final class ClaudeService {
         let (data, response) = try await URLSession.shared.data(for: request)
 
         guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+            // Parse Anthropic error format: {"type":"error","error":{"type":"…","message":"…"}}
+            if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let err = json["error"] as? [String: Any],
+               let errType = err["type"] as? String,
+               let errMsg = err["message"] as? String {
+                if errType == "not_found_error" {
+                    let id = AppState.shared.claudeModel
+                    throw NSError(domain: "Claude", code: 0,
+                        userInfo: [NSLocalizedDescriptionKey:
+                            "Model not found: \(id). Pick another one in Settings."])
+                }
+                throw NSError(domain: "Claude", code: 0,
+                    userInfo: [NSLocalizedDescriptionKey: errMsg])
+            }
             let msg = String(data: data, encoding: .utf8) ?? "unknown error"
             throw NSError(domain: "Claude", code: 0, userInfo: [NSLocalizedDescriptionKey: msg])
         }
