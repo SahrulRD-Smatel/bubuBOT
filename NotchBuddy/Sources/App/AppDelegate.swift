@@ -45,6 +45,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     // MARK: - Actions
 
+    @objc private func openWeeklyRecap() {
+        let win = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 800, height: 640),
+                           styleMask: [.titled, .closable, .miniaturizable, .resizable],
+                           backing: .buffered, defer: false)
+        win.title = String(localized: "recap.title")
+        win.titlebarAppearsTransparent = true
+        win.isMovableByWindowBackground = true
+        let host = NSHostingView(rootView: RecapSharePanelView(summary: RecapStore.shared.latestSummary(), hideProjects: AppState.shared.recapHideProjects))
+        win.contentView = host
+        win.center()
+        win.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+    }
+
     @objc private func openIsland() {
         islandController?.expand(to: .overview)
     }

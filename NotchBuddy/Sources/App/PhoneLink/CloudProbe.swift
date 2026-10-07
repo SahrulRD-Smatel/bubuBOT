@@ -244,7 +244,7 @@ final class CloudProbe {
 extension AppDelegate {
     @objc func application(_ application: NSApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         let token = deviceToken.prefix(4).map { String(format: "%02x", $0) }.joined()
-        CloudProbe.shared.log("registered for remote notifications (token \(token)Ã¢â‚¬Â¦)")
+        CloudProbe.shared.log("registered for remote notifications (token \(token)…)")
     }
 
     @objc func application(_ application: NSApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {

@@ -6,9 +6,9 @@ import Combine
 // MARK: - iPhone plan, step 4: publish agent sessions to iCloud
 //
 // One `Session` record per agent pill (VS Code / Claude Code, Cursor, Codex,
-// Antigravity, Gemini CLIÃ¢â‚¬Â¦) in the private zone `bubu`, so the iPhone can show
+// Antigravity, Gemini CLI…) in the private zone `bubu`, so the iPhone can show
 // them. Driven only by AppState changes (debounced), never by a timer: nothing
-// runs while no agent changes. Integrations (Stripe, VercelÃ¢â‚¬Â¦) are not sessions.
+// runs while no agent changes. Integrations (Stripe, Vercel…) are not sessions.
 //
 // In clear (needed for sorting and widgets): pillId, state, step counts, flags,
 // dates. Encrypted with the user's iCloud keys: project name, steps, cwd,
@@ -70,6 +70,7 @@ final class SessionPublisher {
     // MARK: Publishing
 
     private func publish(_ snapshots: [String: SessionSnapshot]) {
+        guard !DemoEngine.shared.isActive else { return }
         guard !publishing else { pending = snapshots; return }
         publishing = true
         Task {

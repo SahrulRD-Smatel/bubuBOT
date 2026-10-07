@@ -386,6 +386,8 @@ final class AppState: ObservableObject {
         didSet { UserDefaults.standard.set(showPlanInNotch, forKey: "showPlanInNotch") }
     }
     // Cached relay-installed state — updated at launch, after install/uninstall, on Settings open
+    // In-memory plan usage override for demo mode. Never persisted. Set by DemoEngine.
+    @Published var demoPlanUsageOverride: PlanUsage? = nil
     @Published var planRelayInstalled: Bool = false
     // Transient — reset when island closes or view changes
     @Published var showingPlanDetail: Bool = false

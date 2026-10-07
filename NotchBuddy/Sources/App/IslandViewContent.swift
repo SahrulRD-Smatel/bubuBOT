@@ -217,7 +217,8 @@ struct OverviewView: View {
                 NSWorkspace.shared.openApplication(at: url, configuration: .init(), completionHandler: nil)
             }
             #endif
-        case "agent_gemini", "agent_antigravity":
+        case "agent_gemini", "agent_antigravity",
+             "agent_copilot", "agent_muse", "agent_opencode", "agent_amp":
             #if !APPSTORE
             let terminalBundleIds = ["com.apple.Terminal", "com.googlecode.iterm2",
                                      "net.kovidgoyal.kitty", "com.mitchellh.ghostty"]
@@ -309,8 +310,11 @@ struct ApprovalView: View {
                     PrimaryButton("Allow") {
                         HookServer.shared.sendApprovalDecision("allow")
                     }
-                    // Codex rejects updatedPermissions, so "Always" is not offered
-                    if approval?.pillId != "agent_codex" {
+                    // Codex, Copilot CLI and Muse Code do not support updatedPermissions
+                    let hideAlways = approval?.pillId == "agent_codex"
+                        || approval?.pillId == "agent_copilot"
+                        || approval?.pillId == "agent_muse"
+                    if !hideAlways {
                         SecondaryButton("Always") {
                             HookServer.shared.sendApprovalDecision("always")
                         }
@@ -552,7 +556,7 @@ struct FinishedView: View {
                 Text({
                     if let fl = state.focusTask?.finalLine { return fl }
                     if let s = state.focusTask?.steps.last(where: { !$0.isDiffStep }) { return s }
-                    return "Session finished"
+                    return String(localized: "island.session-finished", defaultValue: "Session finished")
                 }())
                     .font(.system(size: 15, weight: .semibold))
                     .lineLimit(1)
@@ -884,7 +888,7 @@ struct UploadingView: View {
                             .foregroundColor(Color(hex: "#34D399"))
                             .lineLimit(1).truncationMode(.middle)
                     } else {
-                        Text("Uploading \(state.droppedFile?.name ?? "file")")
+                        Text(String(format: String(localized: "island.uploading", defaultValue: "Uploading %@"), state.droppedFile?.name ?? "file"))
                             .font(.system(size: 12.5))
                             .foregroundColor(Color(hex: "#A9ADB5"))
                             .lineLimit(1).truncationMode(.middle)
@@ -986,7 +990,7 @@ struct MailView: View {
     }
 
     private func sendMail() {
-        guard !to.isEmpty else { statusMsg = "Missing recipient."; return }
+        guard !to.isEmpty else { statusMsg = String(localized: "island.missing-recipient", defaultValue: "Missing recipient."); return }
         let subj = subject.isEmpty ? (state.droppedFile?.name ?? "File") : subject
 
         // Prefer Resend if API key + sender address are configured
@@ -1051,7 +1055,7 @@ struct MailView: View {
         #if APPSTORE
         // App Store: no AppleScript â€” use NSSharingService to compose (user sends manually)
         guard let service = NSSharingService(named: .composeEmail) else {
-            statusMsg = "Mail not available."
+            statusMsg = String(localized: "island.mail-not-available", defaultValue: "Mail not available.")
             return
         }
         var items: [Any] = [bodyText.isEmpty ? " " : bodyText]
@@ -1607,7 +1611,37 @@ struct IntegrationCardView: View {
             #else
             return false
             #endif
-        case "agent_cursor", "agent_codex":
+        case "agent_codex":
+            #if !APPSTORE
+            return HookServer.codexHooksInstalled()
+            #else
+            return false
+            #endif
+        case "agent_copilot":
+            #if !APPSTORE
+            return HookServer.copilotHooksInstalled()
+            #else
+            return false
+            #endif
+        case "agent_muse":
+            #if !APPSTORE
+            return HookServer.museHooksInstalled()
+            #else
+            return false
+            #endif
+        case "agent_opencode":
+            #if !APPSTORE
+            return HookServer.openCodePluginInstalled()
+            #else
+            return false
+            #endif
+        case "agent_amp":
+            #if !APPSTORE
+            return HookServer.ampPluginInstalled()
+            #else
+            return false
+            #endif
+        case "agent_cursor":
             return false  // coming soon
         case "integration_music":
             #if !APPSTORE
@@ -1724,20 +1758,22 @@ struct IntegrationCardView: View {
     private var statusLabel: String {
         #if !APPSTORE
         if task.id == "integration_music" {
-            if appState.musicAutomationDenied { return "Automation not allowed" }
+            if appState.musicAutomationDenied { return String(localized: "island.automation-denied", defaultValue: "Automation not allowed") }
             if appState.musicPlaying { return "Playing Â· \(MusicController.shared.trackTitle ?? "Unknown")" }
-            return "Not playing"
+            return String(localized: "island.not-playing", defaultValue: "Not playing")
         }
         #endif
-        if PillCatalog.definition(for: task.id)?.comingSoon == true { return "Coming soon" }
+        if PillCatalog.definition(for: task.id)?.comingSoon == true { return String(localized: "island.coming-soon", defaultValue: "Coming soon") }
         let svcErr = task.id == "integration_stripe" ? appState.stripeError
                    : task.id == "integration_calcom"  ? appState.calcomError
                    : nil
         if let err = svcErr { return err }
-        let isHooks = task.id == "agent_gemini" || task.id == "agent_antigravity"
+        let isHooks = task.id == "agent_gemini" || task.id == "agent_antigravity" || task.id == "agent_codex"
+                   || task.id == "agent_copilot" || task.id == "agent_muse"
+                   || task.id == "agent_opencode" || task.id == "agent_amp"
         let isAI    = ChatProvider(pillID: task.id) != nil
         if isConfigured {
-            if isHooks { return "Hooks installed" }
+            if isHooks { return String(localized: "island.hooks-installed", defaultValue: "Hooks installed") }
             if isAI {
                 let provider = ChatProvider(pillID: task.id)!
                 if provider.isLocal {
@@ -1755,12 +1791,12 @@ struct IntegrationCardView: View {
             }
             return "Connected Â· loadingâ€¦"
         } else {
-            if isHooks { return "Hooks not installed" }
+            if isHooks { return String(localized: "island.hooks-not-installed", defaultValue: "Hooks not installed") }
             if isAI {
                 let provider = ChatProvider(pillID: task.id)!
-                return provider.isLocal ? "Not connected" : "Key not configured"
+                return provider.isLocal ? String(localized: "island.not-connected", defaultValue: "Not connected") : String(localized: "island.key-not-configured", defaultValue: "Key not configured")
             }
-            return "Key not configured"
+            return String(localized: "island.key-not-configured", defaultValue: "Key not configured")
         }
     }
 
@@ -1920,7 +1956,7 @@ struct IntegrationCardView: View {
                         #endif
                     } else if let provider = ChatProvider(pillID: task.id) {
                         if isConfigured {
-                            Button("Chat with \(task.name)") {
+                            Button(String(format: String(localized: "island.chat-with", defaultValue: "Chat with %@"), task.name)) {
                                 switchChatProvider(provider)
                             }
                             .font(.system(size: 11, weight: .medium))
@@ -2389,7 +2425,7 @@ struct GitHubPulseCardView: View {
                 }()
                 GitHubStatRow(
                     icon: "arrow.triangle.pull", iconColor: ciColor(prWorst),
-                    label: "My PRs", value: prValue
+                    label: String(localized: "island.my-prs", defaultValue: "My PRs"), value: prValue
                 ) { onTapSection(.myPRs) }
 
                 // To review
@@ -2397,7 +2433,7 @@ struct GitHubPulseCardView: View {
                 GitHubStatRow(
                     icon: "eye",
                     iconColor: reviewCount > 0 ? "#8AB4F8" : "#6B7079",
-                    label: "To review",
+                    label: String(localized: "island.to-review", defaultValue: "To review"),
                     value: "\(reviewCount)"
                 ) { onTapSection(.toReview) }
 
@@ -2477,10 +2513,10 @@ struct GitHubDetailView: View {
 
     private var title: String {
         switch section {
-        case .myPRs:    return "My PRs"
-        case .toReview: return "To review"
+        case .myPRs:    return String(localized: "island.my-prs", defaultValue: "My PRs")
+        case .toReview: return String(localized: "island.to-review", defaultValue: "To review")
         case .mainCI:   return "Default branch CI"
-        case .activity: return "Activity"
+        case .activity: return String(localized: "island.activity", defaultValue: "Activity")
         }
     }
 
@@ -2617,7 +2653,7 @@ private struct GitHubActivityDetailContent: View {
         if let day = hoveredDay {
             let label: String
             switch day.count {
-            case 0:  label = "No contributions"
+            case 0:  label = String(localized: "island.no-contributions", defaultValue: "No contributions")
             case 1:  label = "1 contribution"
             default: label = "\(day.count) contributions"
             }
@@ -3346,7 +3382,7 @@ struct N8nDetailView: View {
 
     private var success: Bool  { task.state == .finished }
     private var accent: Color  { success ? Color(hex: "#22C55E") : Color(hex: "#F4505E") }
-    private var statusLabel: String { success ? "Success" : "Failed" }
+    private var statusLabel: String { success ? String(localized: "island.success", defaultValue: "Success") : String(localized: "island.failed", defaultValue: "Failed") }
     private var detail: String? { task.steps.dropFirst().first }
 
     var body: some View {
@@ -3393,7 +3429,7 @@ struct N8nDetailView: View {
                 }
                 .frame(maxHeight: 88)
             } else {
-                Text(success ? "Completed successfully." : "No error details available.")
+                Text(success ? String(localized: "island.completed-success", defaultValue: "Completed successfully.") : String(localized: "island.no-error-details", defaultValue: "No error details available."))
                     .font(.system(size: 11))
                     .foregroundColor(Color(hex: "#6B7079"))
             }

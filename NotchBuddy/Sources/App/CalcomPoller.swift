@@ -17,6 +17,7 @@ final class CalcomPoller: @unchecked Sendable {
     func pollNow() { poll() }
 
     private func poll() {
+        guard !DemoEngine.isPollerPaused else { return }
         guard let key = KeychainStore.shared.get("calcom-api-key") else { return }
         let cal = Calendar.current
         let today = cal.startOfDay(for: Date())

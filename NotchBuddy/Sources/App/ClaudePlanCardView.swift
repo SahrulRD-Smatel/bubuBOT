@@ -50,9 +50,9 @@ struct ClaudePlanCardView: View {
     private var subtitleText: String {
         guard let usage else { return "Waiting for a Claude Code reply" }
         let diff = now.timeIntervalSince(usage.updatedAt)
-        if diff < 60 { return "just now" }
+        if diff < 60 { return String(localized: "plan.just-now", defaultValue: "just now") }
         let mins = Int(diff / 60)
-        if mins < 60 { return "\(mins) min ago" }
+        if mins < 60 { return String(format: String(localized: "plan.mins-ago %lld", defaultValue: "%lld min ago"), Int64(mins)) }
         return "\(mins / 60) h ago"
     }
 }

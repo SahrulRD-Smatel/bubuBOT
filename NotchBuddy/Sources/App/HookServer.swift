@@ -19,7 +19,7 @@ final class HookServer: @unchecked Sendable {
     static var socketPath: String {
         #if APPSTORE
         // Container home root keeps path Ã¢â€°Â¤ 103 bytes (sun_path limit on macOS is 104 incl. NUL)
-        // /Users/louis/Library/Containers/fr.louisraille.bubu/Data/nb.sock = 66 bytes Ã¢Å“â€œ
+        // /Users/louis/Library/Containers/fr.louisraille.bubu/Data/nb.sock = 66 bytes ✓
         return NSHomeDirectory() + "/nb.sock"
         #else
         return supportDir.appendingPathComponent("nb.sock").path
@@ -185,6 +185,7 @@ final class HookServer: @unchecked Sendable {
     // MARK: - Start
 
     func start() {
+        guard !DemoEngine.isActive else { return }
         // Ensure support directory exists (mode 0700 Ã¢â‚¬â€ not world-readable)
         let dir = Self.supportDir
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
@@ -932,33 +933,33 @@ final class HookServer: @unchecked Sendable {
             "Bash":        "ExÃƒÂ©cute",
             "Read":        "Lit",
             "Write":       "Ãƒâ€°crit",
-            "Edit":        "Modifie",
+            "Edit":        String(localized: "step.edits", defaultValue: "Edits"),
             "Glob":        "Cherche",
             "Grep":        "Recherche",
             "WebSearch":   "Recherche web",
             "WebFetch":    "RÃƒÂ©cupÃƒÂ¨re",
             "TodoWrite":   "TÃƒÂ¢ches",
-            "Task":        "Agent",
+            "Task":        String(localized: "step.agent", defaultValue: "Agent"),
             "LS":          "Liste",
-            "MultiEdit":   "Modifie",
-            "NotebookEdit": "Notebook",
+            "MultiEdit":   String(localized: "step.edits", defaultValue: "Edits"),
+            "NotebookEdit": String(localized: "step.notebook", defaultValue: "Notebook"),
             // Codex tools
-            "apply_patch": "Modifie",
+            "apply_patch": String(localized: "step.edits", defaultValue: "Edits"),
             "update_plan": "TÃƒÂ¢ches",
-            "spawn_agent": "Agent",
+            "spawn_agent": String(localized: "step.agent", defaultValue: "Agent"),
         ]
         var label = labels[tool] ?? tool
 
-        // Codex MCP tools arrive as mcp__server__tool Ã¢â‚¬â€ show "server Ã‚Â· tool"
+        // Codex MCP tools arrive as mcp__server__tool Ã¢â‚¬â€ show "server • tool"
         if tool.hasPrefix("mcp__") {
             let rest = String(tool.dropFirst(5))
             let parts = rest.components(separatedBy: "__")
-            label = parts.count >= 2 ? "\(parts[0]) Ã‚Â· \(parts.dropFirst().joined(separator: "__"))" : rest
+            label = parts.count >= 2 ? "\(parts[0]) • \(parts.dropFirst().joined(separator: "__"))" : rest
         }
 
         // Bash: infer a more precise verb from the command
         if tool == "Bash", let cmd = input["command"] as? String {
-            return "\(bashVerb(cmd)) Ã‚Â· \(oneLine(cmd))"
+            return "\(bashVerb(cmd)) • \(oneLine(cmd))"
         }
 
         // apply_patch: extract the first file name from the patch
@@ -967,7 +968,7 @@ final class HookServer: @unchecked Sendable {
                 for prefix in ["*** Update File: ", "*** Add File: ", "*** Delete File: "] {
                     if line.hasPrefix(prefix) {
                         let path = String(line.dropFirst(prefix.count))
-                        return "\(label) Ã‚Â· \(URL(fileURLWithPath: path).lastPathComponent)"
+                        return "\(label) • \(URL(fileURLWithPath: path).lastPathComponent)"
                     }
                 }
             }
@@ -975,13 +976,13 @@ final class HookServer: @unchecked Sendable {
         }
 
         if let cmd = input["command"] as? String {
-            return "\(label) Ã‚Â· \(oneLine(cmd))"
+            return "\(label) • \(oneLine(cmd))"
         } else if let path = input["path"] as? String {
-            return "\(label) Ã‚Â· \(URL(fileURLWithPath: path).lastPathComponent)"
+            return "\(label) • \(URL(fileURLWithPath: path).lastPathComponent)"
         } else if let file = input["file_path"] as? String {
-            return "\(label) Ã‚Â· \(URL(fileURLWithPath: file).lastPathComponent)"
+            return "\(label) • \(URL(fileURLWithPath: file).lastPathComponent)"
         } else if let query = input["query"] as? String {
-            return "\(label) Ã‚Â· \(oneLine(query))"
+            return "\(label) • \(oneLine(query))"
         }
         return label
     }
@@ -1044,7 +1045,7 @@ final class HookServer: @unchecked Sendable {
     private func oneLine(_ text: String, limit: Int = 60) -> String {
         let collapsed = text.split(whereSeparator: { $0.isNewline || $0 == "\t" })
                             .joined(separator: " ")
-        return collapsed.count > limit ? String(collapsed.prefix(limit)) + "Ã¢â‚¬Â¦" : collapsed
+        return collapsed.count > limit ? String(collapsed.prefix(limit)) + "…" : collapsed
     }
 
     // MARK: - Logging

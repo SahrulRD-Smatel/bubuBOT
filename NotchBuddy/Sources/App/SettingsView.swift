@@ -4,6 +4,7 @@ import AppKit
 
 struct SettingsView: View {
     @ObservedObject private var state = AppState.shared
+    @ObservedObject private var demoEngine = DemoEngine.shared
     @State private var apiKey: String = KeychainStore.shared.get("anthropic-api-key") ?? ""
 
     // Claude model Ã¢â‚¬â€ dynamic list fetched from the API, static fallback if unavailable
@@ -225,7 +226,30 @@ struct SettingsView: View {
     // MARK: - General section
 
     @ViewBuilder private var generalSection: some View {
-        GroupBox("Sound") {
+        GroupBox(String(localized: "demo.groupbox.title", defaultValue: "Demo mode")) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text(String(localized: "demo.description", defaultValue: "Simulate activity for App Store review"))
+                    .font(.system(size: 11))
+                    .foregroundColor(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Button(demoEngine.isActive ? String(localized: "demo.stop", defaultValue: "Stop demo") : String(localized: "demo.start", defaultValue: "Start demo")) {
+                    if demoEngine.isActive { DemoEngine.shared.stop() }
+                    else { DemoEngine.shared.start() }
+                }
+                .buttonStyle(.borderedProminent)
+            }
+            .padding(6)
+        }
+
+        GroupBox(String(localized: "settings.recap.title", defaultValue: "Weekly recap")) {
+            VStack(alignment: .leading, spacing: 10) {
+                Toggle(String(localized: "settings.recap.show", defaultValue: "Show recap on Mondays"), isOn: $state.recapEnabled)
+                Toggle(String(localized: "settings.recap.hide-projects", defaultValue: "Hide top projects (show \"Total projects\")"), isOn: $state.recapHideProjects)
+            }
+            .padding(6)
+        }
+
+        GroupBox(String(localized: "settings.sound.title", defaultValue: "Sound")) {
             VStack(alignment: .leading, spacing: 10) {
                 Toggle("Enable sounds", isOn: $state.soundEnabled)
                 HStack(spacing: 8) {
@@ -382,7 +406,7 @@ struct SettingsView: View {
                     .font(.system(size: 11, design: .monospaced))
                     .foregroundColor(.secondary)
                 HStack(spacing: 10) {
-                    Button("Install hooks") { installHooksAppStore() }
+                    Button(String(localized: "hooks.install", defaultValue: "Install hooks")) { installHooksAppStore() }
                         .buttonStyle(.borderedProminent)
                     Button("Uninstall") { uninstallHooksAppStore() }
                         .buttonStyle(.bordered)
@@ -392,7 +416,7 @@ struct SettingsView: View {
                     .font(.system(size: 11, design: .monospaced))
                     .foregroundColor(.secondary)
                 HStack(spacing: 10) {
-                    Button("Install hooks") { installHooks() }
+                    Button(String(localized: "hooks.install", defaultValue: "Install hooks")) { installHooks() }
                         .buttonStyle(.borderedProminent)
                     Button("Uninstall") { uninstallHooks() }
                         .buttonStyle(.bordered)
@@ -413,7 +437,7 @@ struct SettingsView: View {
                     HStack {
                         Button("Confirm & write") { confirmInstall() }
                             .buttonStyle(.borderedProminent)
-                        Button("Cancel") { showDiff = false; pendingHookJSON = "" }
+                        Button(String(localized: "Cancel", defaultValue: "Cancel")) { showDiff = false; pendingHookJSON = "" }
                             .buttonStyle(.bordered)
                     }
                 }
@@ -431,7 +455,7 @@ struct SettingsView: View {
                     .font(.system(size: 11, design: .monospaced))
                     .foregroundColor(.secondary)
                 HStack(spacing: 10) {
-                    Button("Install hooks") { triggerGeminiPreview(install: true) }
+                    Button(String(localized: "hooks.install", defaultValue: "Install hooks")) { triggerGeminiPreview(install: true) }
                         .buttonStyle(.borderedProminent)
                     Button("Uninstall") { triggerGeminiPreview(install: false) }
                         .buttonStyle(.bordered)
@@ -448,7 +472,7 @@ struct SettingsView: View {
                     HStack {
                         Button("Confirm & write") { confirmGeminiOp() }
                             .buttonStyle(.borderedProminent)
-                        Button("Cancel") { showGeminiDiff = false; pendingGeminiJSON = "" }
+                        Button(String(localized: "Cancel", defaultValue: "Cancel")) { showGeminiDiff = false; pendingGeminiJSON = "" }
                             .buttonStyle(.bordered)
                     }
                 }
@@ -464,7 +488,7 @@ struct SettingsView: View {
                     .font(.system(size: 11, design: .monospaced))
                     .foregroundColor(.secondary)
                 HStack(spacing: 10) {
-                    Button("Install hooks") { triggerAgyPreview(install: true) }
+                    Button(String(localized: "hooks.install", defaultValue: "Install hooks")) { triggerAgyPreview(install: true) }
                         .buttonStyle(.borderedProminent)
                     Button("Uninstall") { triggerAgyPreview(install: false) }
                         .buttonStyle(.bordered)
@@ -481,7 +505,7 @@ struct SettingsView: View {
                     HStack {
                         Button("Confirm & write") { confirmAgyOp() }
                             .buttonStyle(.borderedProminent)
-                        Button("Cancel") { showAgyDiff = false; pendingAgyJSON = "" }
+                        Button(String(localized: "Cancel", defaultValue: "Cancel")) { showAgyDiff = false; pendingAgyJSON = "" }
                             .buttonStyle(.bordered)
                     }
                 }
@@ -497,7 +521,7 @@ struct SettingsView: View {
                     .font(.system(size: 11, design: .monospaced))
                     .foregroundColor(.secondary)
                 HStack(spacing: 10) {
-                    Button("Install hooks") { triggerCodexPreview(install: true) }
+                    Button(String(localized: "hooks.install", defaultValue: "Install hooks")) { triggerCodexPreview(install: true) }
                         .buttonStyle(.borderedProminent)
                     Button("Uninstall") { triggerCodexPreview(install: false) }
                         .buttonStyle(.bordered)
@@ -514,7 +538,7 @@ struct SettingsView: View {
                     HStack {
                         Button("Confirm & write") { confirmCodexOp() }
                             .buttonStyle(.borderedProminent)
-                        Button("Cancel") { showCodexDiff = false; pendingCodexJSON = "" }
+                        Button(String(localized: "Cancel", defaultValue: "Cancel")) { showCodexDiff = false; pendingCodexJSON = "" }
                             .buttonStyle(.bordered)
                     }
                 }
@@ -549,13 +573,13 @@ struct SettingsView: View {
                         Text("Relay: installed")
                             .font(.system(size: 11))
                             .foregroundColor(.secondary)
-                        Button("Uninstall relay") { uninstallStatusLine() }
+                        Button(String(localized: "plan.relay.uninstall", defaultValue: "Uninstall relay")) { uninstallStatusLine() }
                             .buttonStyle(.bordered)
                     } else {
                         Text("Relay: not installed")
                             .font(.system(size: 11))
                             .foregroundColor(.secondary)
-                        Button("Install relay") { installStatusLine() }
+                        Button(String(localized: "plan.relay.install", defaultValue: "Install relay")) { installStatusLine() }
                             .buttonStyle(.borderedProminent)
                     }
                 }
@@ -571,7 +595,7 @@ struct SettingsView: View {
                     HStack {
                         Button("Confirm & write") { confirmStatusLine() }
                             .buttonStyle(.borderedProminent)
-                        Button("Cancel") {
+                        Button(String(localized: "Cancel", defaultValue: "Cancel")) {
                             showStatusLineDiff = false
                             pendingStatusLineJSON = ""
                             planTogglePending = false
@@ -588,13 +612,13 @@ struct SettingsView: View {
     // MARK: - Chat section
 
     @ViewBuilder private var chatSection: some View {
-        GroupBox("Anthropic API") {
+        GroupBox(String(localized: "chat.anthropic-api.title", defaultValue: "Anthropic API")) {
             VStack(alignment: .leading, spacing: 8) {
-                SecureField("API key (sk-ant-Ã¢â‚¬Â¦)", text: $apiKey)
+                SecureField("API key (sk-ant-…)", text: $apiKey)
                     .textFieldStyle(.roundedBorder)
-                Button("Save") {
+                Button(String(localized: "Save", defaultValue: "Save")) {
                     KeychainStore.shared.set("anthropic-api-key", value: apiKey)
-                    statusMessage = "Ã¢Å“â€œ Key saved."
+                    statusMessage = "✓ Key saved."
                 }
                 .buttonStyle(.borderedProminent)
 
@@ -604,7 +628,7 @@ struct SettingsView: View {
                     ForEach(displayModels, id: \.id) { preset in
                         Text(preset.label).tag(preset.id)
                     }
-                    Text("CustomÃ¢â‚¬Â¦").tag(Self.customModelTag)
+                    Text("Custom…").tag(Self.customModelTag)
                 }
                 .onChange(of: modelChoice) { _, choice in
                     if choice != Self.customModelTag {
@@ -639,9 +663,9 @@ struct SettingsView: View {
                 }
                 SecureField("API key (AI Studio)", text: $googleKey)
                     .textFieldStyle(.roundedBorder)
-                Button("Save") {
+                Button(String(localized: "Save", defaultValue: "Save")) {
                     KeychainStore.shared.set("google-api-key", value: googleKey)
-                    statusMessage = "Ã¢Å“â€œ Google key saved."
+                    statusMessage = "✓ Google key saved."
                 }
                 .buttonStyle(.borderedProminent)
 
@@ -651,11 +675,11 @@ struct SettingsView: View {
                     Circle().fill(Color(hex: "#10A37F")).frame(width: 8, height: 8)
                     Text("OpenAI").font(.system(size: 12, weight: .semibold))
                 }
-                SecureField("API key (sk-Ã¢â‚¬Â¦)", text: $openAIKey)
+                SecureField("API key (sk-…)", text: $openAIKey)
                     .textFieldStyle(.roundedBorder)
-                Button("Save") {
+                Button(String(localized: "Save", defaultValue: "Save")) {
                     KeychainStore.shared.set("openai-api-key", value: openAIKey)
-                    statusMessage = "Ã¢Å“â€œ OpenAI key saved."
+                    statusMessage = "✓ OpenAI key saved."
                 }
                 .buttonStyle(.borderedProminent)
             }
@@ -681,7 +705,7 @@ struct SettingsView: View {
                 if state.ollamaServerURL.isEmpty {
                     TextField("http://127.0.0.1:11434", text: $ollamaURL)
                         .textFieldStyle(.roundedBorder)
-                    Button(connectingOllama ? "ConnectingÃ¢â‚¬Â¦" : "Connect") {
+                    Button(connectingOllama ? "Connecting…" : "Connect") {
                         Task { await connectLocal(provider: .ollama) }
                     }
                     .buttonStyle(.borderedProminent)
@@ -716,7 +740,7 @@ struct SettingsView: View {
                 if state.lmstudioServerURL.isEmpty {
                     TextField("http://127.0.0.1:1234", text: $lmstudioURL)
                         .textFieldStyle(.roundedBorder)
-                    Button(connectingLMStudio ? "ConnectingÃ¢â‚¬Â¦" : "Connect") {
+                    Button(connectingLMStudio ? "Connecting…" : "Connect") {
                         Task { await connectLocal(provider: .lmstudio) }
                     }
                     .buttonStyle(.borderedProminent)
@@ -752,7 +776,7 @@ struct SettingsView: View {
                         Circle().fill(Color(hex: "#22C55E")).frame(width: 8, height: 8)
                         Text("Resend").font(.system(size: 12, weight: .semibold))
                     }
-                    SecureField("API key  (re_Ã¢â‚¬Â¦)", text: $resendKey)
+                    SecureField("API key  (re_…)", text: $resendKey)
                         .textFieldStyle(.roundedBorder)
                     TextField("From address  (you@yourdomain.com)", text: $resendFrom)
                         .textFieldStyle(.roundedBorder)
@@ -764,7 +788,7 @@ struct SettingsView: View {
                         Circle().fill(Color(hex: "#F29B38")).frame(width: 8, height: 8)
                         Text("n8n").font(.system(size: 12, weight: .semibold))
                     }
-                    TextField("Instance URL  (https://Ã¢â‚¬Â¦)", text: $n8nUrl)
+                    TextField("Instance URL  (https://…)", text: $n8nUrl)
                         .textFieldStyle(.roundedBorder)
                     SecureField("API key", text: $n8nKey)
                         .textFieldStyle(.roundedBorder)
@@ -813,7 +837,7 @@ struct SettingsView: View {
                         Circle().fill(Color(hex: "#0570DE")).frame(width: 8, height: 8)
                         Text("Stripe").font(.system(size: 12, weight: .semibold))
                     }
-                    SecureField("Secret key  (sk_live_Ã¢â‚¬Â¦ or sk_test_Ã¢â‚¬Â¦)", text: $stripeKey)
+                    SecureField("Secret key  (sk_live_… or sk_test_…)", text: $stripeKey)
                         .textFieldStyle(.roundedBorder)
                 }
 
@@ -823,7 +847,7 @@ struct SettingsView: View {
                         Circle().fill(Color(hex: "#C9956A")).frame(width: 8, height: 8)
                         Text("Cal.com").font(.system(size: 12, weight: .semibold))
                     }
-                    SecureField("API key  (cal_live_Ã¢â‚¬Â¦)", text: $calcomKey)
+                    SecureField("API key  (cal_live_…)", text: $calcomKey)
                         .textFieldStyle(.roundedBorder)
                 }
 
@@ -833,7 +857,7 @@ struct SettingsView: View {
                         Circle().fill(Color(hex: "#E8E8E8")).frame(width: 8, height: 8)
                         Text("Notion").font(.system(size: 12, weight: .semibold))
                     }
-                    SecureField("Integration token  (secret_Ã¢â‚¬Â¦)", text: $notionKey)
+                    SecureField("Integration token  (secret_…)", text: $notionKey)
                         .textFieldStyle(.roundedBorder)
                 }
 
@@ -888,14 +912,14 @@ struct SettingsView: View {
         let alert = NSAlert()
         alert.messageText = "Install bubu hooks in ~/.claude?"
         alert.informativeText = "Will write:\nÃ¢â‚¬Â¢ ~/.claude/bubu/nb-hook\nÃ¢â‚¬Â¢ ~/.claude/settings.json (backup created first)"
-        alert.addButton(withTitle: "Install")
-        alert.addButton(withTitle: "Cancel")
+        alert.addButton(withTitle: String(localized: "alert.hooks.button-install", defaultValue: "Install"))
+        alert.addButton(withTitle: String(localized: "Cancel", defaultValue: "Cancel"))
         alert.alertStyle = .informational
         guard alert.runModal() == .alertFirstButtonReturn else { return }
         do {
             try HookServer.shared.installAndWriteClaudeHooksAppStore(claudeURL: claudeURL)
             hookNeedsUpdate = false
-            statusMessage = "Ã¢Å“â€œ Hooks installed Ã¢â‚¬â€ restart VS Code to activate."
+            statusMessage = "✓ Hooks installed Ã¢â‚¬â€ restart VS Code to activate."
         } catch {
             statusMessage = "Ã¢ÂÅ’ \(error.localizedDescription)"
         }
@@ -905,7 +929,7 @@ struct SettingsView: View {
         guard let claudeURL = pickClaudeFolder(prompt: "Select") else { return }
         do {
             try HookServer.shared.uninstallClaudeHooksAppStore(claudeURL: claudeURL)
-            statusMessage = "Ã¢Å“â€œ Hooks removed."
+            statusMessage = "✓ Hooks removed."
         } catch {
             statusMessage = "Ã¢ÂÅ’ \(error.localizedDescription)"
         }
@@ -942,7 +966,7 @@ struct SettingsView: View {
                 state.fetchedProviderModels[.lmstudio] = nil
                 state.providerModelFetchError[.lmstudio] = nil
             }
-            statusMessage = "Ã¢Å“â€œ Connected Ã‚Â· \(models.count) model\(models.count == 1 ? "" : "s")"
+            statusMessage = "✓ Connected • \(models.count) model\(models.count == 1 ? "" : "s")"
         case .failure:
             statusMessage = "Couldn't reach \(name) at \(normalised). Is it running?"
         }
@@ -962,7 +986,7 @@ struct SettingsView: View {
         do {
             try HookServer.shared.writeClaudeHooks()
             showDiff = false
-            statusMessage = "Ã¢Å“â€œ Hooks installed in ~/.claude/settings.json"
+            statusMessage = String(localized: "status.hooks-installed-claude", defaultValue: "✓ Hooks installed in ~/.claude/settings.json")
             pendingHookJSON = ""
             hookNeedsUpdate = false
         } catch {
@@ -973,7 +997,7 @@ struct SettingsView: View {
     private func uninstallHooks() {
         do {
             try HookServer.shared.uninstallClaudeHooks()
-            statusMessage = "Ã¢Å“â€œ Hooks removed."
+            statusMessage = "✓ Hooks removed."
         } catch {
             statusMessage = "Ã¢ÂÅ’ \(error.localizedDescription)"
         }
@@ -1000,8 +1024,8 @@ struct SettingsView: View {
             pendingGeminiJSON = ""
             geminiHooksInstalled = geminiPendingInstall
             statusMessage = geminiPendingInstall
-                ? "Ã¢Å“â€œ Gemini CLI hooks installed in ~/.gemini/settings.json"
-                : "Ã¢Å“â€œ Gemini CLI hooks removed."
+                ? "✓ Gemini CLI hooks installed in ~/.gemini/settings.json"
+                : "✓ Gemini CLI hooks removed."
         } catch {
             statusMessage = "Ã¢ÂÅ’ \(error.localizedDescription)"
         }
@@ -1027,8 +1051,8 @@ struct SettingsView: View {
             pendingAgyJSON = ""
             agyHooksInstalled = agyPendingInstall
             statusMessage = agyPendingInstall
-                ? "Ã¢Å“â€œ Antigravity hooks installed in ~/.gemini/config/hooks.json"
-                : "Ã¢Å“â€œ Antigravity hooks removed."
+                ? "✓ Antigravity hooks installed in ~/.gemini/config/hooks.json"
+                : "✓ Antigravity hooks removed."
         } catch {
             statusMessage = "Ã¢ÂÅ’ \(error.localizedDescription)"
         }
@@ -1054,8 +1078,8 @@ struct SettingsView: View {
             pendingCodexJSON = ""
             codexHooksInstalled = codexPendingInstall
             statusMessage = codexPendingInstall
-                ? "Ã¢Å“â€œ Codex hooks installed Ã¢â‚¬â€ run /hooks in Codex or open Hooks in the app's settings to trust them."
-                : "Ã¢Å“â€œ Codex hooks removed."
+                ? "✓ Codex hooks installed Ã¢â‚¬â€ run /hooks in Codex or open Hooks in the app's settings to trust them."
+                : "✓ Codex hooks removed."
         } catch {
             statusMessage = "Ã¢ÂÅ’ \(error.localizedDescription)"
         }
@@ -1097,8 +1121,8 @@ struct SettingsView: View {
                 state.showPlanInNotch = false
             }
             statusMessage = statusLinePendingInstall
-                ? "Ã¢Å“â€œ Status line installed."
-                : "Ã¢Å“â€œ Status line removed."
+                ? "✓ Status line installed."
+                : "✓ Status line removed."
         } catch {
             planTogglePending = false
             statusMessage = "Ã¢ÂÅ’ \(error.localizedDescription)"
@@ -1130,7 +1154,7 @@ struct SettingsView: View {
         saveKey("stripe-api-key",  value: stripeKey)
         saveKey("calcom-api-key",  value: calcomKey)
         saveKey("notion-api-key",  value: notionKey)
-        statusMessage = "Ã¢Å“â€œ Integration keys saved."
+        statusMessage = "✓ Integration keys saved."
     }
 
     private func saveKey(_ key: String, value: String) {
@@ -1380,7 +1404,7 @@ struct ShortcutRecorderButton: View {
                 return nil
             }
         } label: {
-            Text(isRecording ? "Press keysÃ¢â‚¬Â¦" : shortcutLabel)
+            Text(isRecording ? "Press keys…" : shortcutLabel)
                 .font(.system(size: 11, design: .monospaced))
                 .padding(.horizontal, 8).padding(.vertical, 3)
                 .background(isRecording ? Color.accentColor.opacity(0.12) : Color(NSColor.controlBackgroundColor))
@@ -1407,6 +1431,6 @@ struct ShortcutRecorderButton: View {
             11:"B", 12:"Q", 13:"W", 14:"E", 15:"R", 16:"Y", 17:"T", 31:"O", 32:"U",
             34:"I", 37:"L", 38:"J", 40:"K", 45:"N", 46:"M", 49:"Space", 50:"`", 27:"-"
         ]
-        return map[c] ?? "Ã‚Â·"
+        return map[c] ?? "•"
     }
 }
