@@ -20,10 +20,22 @@ pub struct Settings {
     /// Defaulted explicitly so a settings.json written by an older build still loads.
     #[serde(default = "default_model")]
     pub model: String,
+    #[serde(default = "default_gemini_model")]
+    pub gemini_model: String,
+    #[serde(default = "default_chat_provider")]
+    pub chat_provider: String,
 }
 
 fn default_model() -> String {
     crate::claude::DEFAULT_MODEL.to_string()
+}
+
+fn default_gemini_model() -> String {
+    "models/gemini-3.8-live".to_string()
+}
+
+fn default_chat_provider() -> String {
+    "gemini".to_string()
 }
 
 impl Default for Settings {
@@ -43,6 +55,8 @@ impl Default for Settings {
             autostart: false,
             hooks_installed: false,
             model: default_model(),
+            gemini_model: default_gemini_model(),
+            chat_provider: default_chat_provider(),
         }
     }
 }

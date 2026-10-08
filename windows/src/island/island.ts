@@ -102,11 +102,13 @@ export class Island {
 
     // Wake word: auto-expand to chat view when "Halo Bubu" is detected
     void onEvent("wakeword-detected", () => {
-      this.setView("prompt");
+      if (State.view !== "voicecall") {
+        this.setView("prompt");
+      }
     });
     void onEvent("voice-text", () => {
-      // Make sure we're in prompt view when voice text arrives
-      if (State.mode !== "expanded" || State.view !== "prompt") {
+      // Make sure we're in prompt view when voice text arrives (unless already in voicecall)
+      if (State.view !== "voicecall" && (State.mode !== "expanded" || State.view !== "prompt")) {
         this.setView("prompt");
       }
     });
@@ -308,6 +310,7 @@ export class Island {
   expand(view: IslandViewName) {
     this.stopSequenceIfLeaving(view);
     State.view = view;
+    this.fsm.preventCollapse = (view === "voicecall");
     if (State.mode !== "expanded") this.setMode("expanded");
     else this.animateGeometry(false);
     State.lastActivity = performance.now();
@@ -317,6 +320,7 @@ export class Island {
 
   setView(view: IslandViewName) {
     this.stopSequenceIfLeaving(view);
+    this.fsm.preventCollapse = (view === "voicecall");
     if (State.mode !== "expanded") {
       this.fsm.forceHome();
       State.view = view;
@@ -334,6 +338,7 @@ export class Island {
   collapse() {
     State.isPinned = false;
     this.fsm.pinned = false;
+    State.view = State.defaultView();
     // Drive the state machine rather than the mode: setting the mode behind its
     // back left it thinking the island was still open, and a click on the compact
     // island then did nothing — the island could never be reopened.
@@ -607,7 +612,7 @@ export class Island {
     }
     if (!inIsland && this.wasInIsland) {
       this.fsm.mouseLeft();
-      if (this.fsm.state === "home" && !State.isPinned) {
+      if (this.fsm.state === "home" && !State.isPinned && State.view !== "voicecall") {
         this.homeCollapseAt = performance.now() + State.settings.autoCloseInterval * 1000;
       }
     }

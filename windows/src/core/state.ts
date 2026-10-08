@@ -100,6 +100,10 @@ export interface Settings {
   hooksInstalled: boolean;
   /** Claude model used by the chat. */
   model: string;
+  /** Gemini Live model used by voice call. */
+  geminiModel: string;
+  /** Provider for text chat (gemini, claude, openai) */
+  chatProvider: string;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -114,6 +118,8 @@ export const DEFAULT_SETTINGS: Settings = {
   autostart: false,
   hooksInstalled: false,
   model: "claude-opus-5",
+  geminiModel: "models/gemini-2.0-flash-exp",
+  chatProvider: "gemini",
 };
 
 type Listener = () => void;

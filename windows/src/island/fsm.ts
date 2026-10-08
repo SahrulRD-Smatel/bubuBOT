@@ -112,9 +112,12 @@ export class IslandStateMachine {
     }, this.petitToHiddenDelay * 1000);
   }
 
+  preventCollapse = false;
+
   private scheduleHomeCollapse() {
     this.clear("homeCollapse");
-    if (this.pinned) return;
+    // Do not auto-collapse if explicitly pinned, or if collapse is prevented
+    if (this.pinned || this.preventCollapse) return;
     this.homeCollapse = window.setTimeout(() => {
       this.homeCollapse = null;
       if (this.state === "home") this.transition("petit");

@@ -561,3 +561,190 @@ mod tests {
         let _ = std::fs::remove_dir_all(&tmp);
     }
 }
+
+
+// ── Antigravity / Gemini CLI hooks ───────────────────────────────────────────
+
+pub fn antigravity_settings_path() -> PathBuf {
+    home().join(".gemini").join("config").join("hooks.json")
+}
+
+pub fn antigravity_adapter_path() -> PathBuf {
+    home().join(".gemini").join("config").join("bubu-adapter.mjs")
+}
+
+pub fn antigravity_status() -> HookStatus {
+    let adapter_exists = std::fs::metadata(antigravity_adapter_path()).is_ok();
+    
+    let path = antigravity_settings_path();
+    let installed = if let Ok(bytes) = std::fs::read(&path) {
+        if let Ok(v) = serde_json::from_slice::<Value>(&bytes) {
+            v.get("bubu-integration").is_some() && adapter_exists
+        } else { false }
+    } else { false };
+
+    HookStatus {
+        installed,
+        settings_path: path.display().to_string(),
+        hook_path: antigravity_adapter_path().display().to_string(),
+        hook_ready: true, // We will write the adapter ourselves, so it's always ready to be installed
+    }
+}
+
+pub fn antigravity_preview(install: bool) -> Result<HookPreview, String> {
+    let path = antigravity_settings_path();
+    let current_bytes = std::fs::read(&path).unwrap_or_else(|_| b"{}".to_vec());
+    let current_json: Value = serde_json::from_slice(&current_bytes).unwrap_or_else(|_| json!({}));
+    
+    let mut new_json = current_json.clone();
+    
+    if install {
+        let adapter_path_str = antigravity_adapter_path().display().to_string().replace("\\", "/");
+        new_json["bubu-integration"] = json!({
+            "PreToolUse": [
+                {
+                    "matcher": ".*",
+                    "hooks": [
+                        {
+                            "type": "command",
+                            "command": format!("node {} PreToolUse", adapter_path_str),
+                            "timeout": 5
+                        }
+                    ]
+                }
+            ],
+            "PostToolUse": [
+                {
+                    "matcher": ".*",
+                    "hooks": [
+                        {
+                            "type": "command",
+                            "command": format!("node {} PostToolUse", adapter_path_str),
+                            "timeout": 5
+                        }
+                    ]
+                }
+            ]
+        });
+    } else {
+        if let Some(obj) = new_json.as_object_mut() {
+            obj.remove("bubu-integration");
+        }
+    }
+    
+    let current_str = serde_json::to_string_pretty(&current_json).unwrap();
+    let new_str = serde_json::to_string_pretty(&new_json).unwrap();
+    
+    let diff = unified_diff(&current_str, &new_str);
+    
+    Ok(HookPreview {
+        diff,
+        backup: "".into(),
+        settings_path: path.display().to_string(),
+        fingerprint: fingerprint(&current_bytes),
+    })
+}
+
+const ADAPTER_JS: &str = r#"import { spawn } from 'child_process';
+import * as fs from 'fs';
+import * as path from 'path';
+import { fileURLToPath } from 'url';
+
+function safeExit() {
+    process.exit(0);
+}
+
+setTimeout(safeExit, 1000);
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+try {
+    const input = fs.readFileSync(0, 'utf-8');
+    if (!input.trim()) safeExit();
+    
+    const payload = JSON.parse(input);
+    const event = process.argv[2] || "Notification";
+    
+    let bubuEvent = "Notification";
+    let bubuPayload = {
+        hook_event_name: event,
+        cwd: process.cwd(),
+        bubu_agent: "antigravity"
+    };
+
+    if (event === "PreToolUse") {
+        bubuEvent = "PreToolUse";
+        bubuPayload.tool_name = payload?.toolCall?.name;
+        bubuPayload.tool_input = payload?.toolCall?.args;
+    } else if (event === "PostToolUse") {
+        bubuEvent = "PostToolUse";
+        bubuPayload.tool_name = payload?.toolCall?.name;
+        bubuPayload.tool_input = payload?.toolCall?.args;
+        if (payload?.toolReturn?.error) bubuEvent = "PostToolUseFailure";
+    }
+
+    if (bubuEvent) {
+        const localAppData = process.env.LOCALAPPDATA || process.env.USERPROFILE + "\\AppData\\Local";
+        let hookExe = path.join(localAppData, "bubu/bin/bubu-hook.exe");
+
+        if (!fs.existsSync(hookExe)) {
+            hookExe = path.resolve(__dirname, "../../AppData/Local/bubu/bin/bubu-hook.exe");
+        }
+
+        const child = spawn(hookExe, [bubuEvent], {
+            detached: true,
+            stdio: ['pipe', 'ignore', 'ignore']
+        });
+
+        child.on('error', () => { });
+
+        if (child.stdin) {
+            child.stdin.write(JSON.stringify(bubuPayload));
+            child.stdin.end();
+        }
+
+        child.unref();
+    }
+} catch (e) {
+}
+safeExit();
+"#;
+
+pub fn antigravity_write(install: bool, expected_fingerprint: &str) -> Result<String, String> {
+    let path = antigravity_settings_path();
+    let current_bytes = std::fs::read(&path).unwrap_or_else(|_| b"{}".to_vec());
+    
+    if fingerprint(&current_bytes) != expected_fingerprint {
+        return Err("settings.json changed while you were looking at the preview. Please try again.".into());
+    }
+    
+    let current_json: Value = serde_json::from_slice(&current_bytes).unwrap_or_else(|_| json!({}));
+    let mut new_json = current_json.clone();
+    
+    if install {
+        let adapter_path = antigravity_adapter_path();
+        if let Some(parent) = adapter_path.parent() {
+            std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+        }
+        std::fs::write(&adapter_path, ADAPTER_JS).map_err(|e| e.to_string())?;
+        
+        let adapter_path_str = adapter_path.display().to_string().replace("\\", "/");
+        new_json["bubu-integration"] = json!({
+            "PreToolUse": [ { "matcher": ".*", "hooks": [ { "type": "command", "command": format!("node {} PreToolUse", adapter_path_str), "timeout": 5 } ] } ],
+            "PostToolUse": [ { "matcher": ".*", "hooks": [ { "type": "command", "command": format!("node {} PostToolUse", adapter_path_str), "timeout": 5 } ] } ]
+        });
+    } else {
+        if let Some(obj) = new_json.as_object_mut() {
+            obj.remove("bubu-integration");
+        }
+        let _ = std::fs::remove_file(antigravity_adapter_path());
+    }
+    
+    let new_str = serde_json::to_string_pretty(&new_json).unwrap();
+    if let Some(parent) = path.parent() {
+        std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+    }
+    std::fs::write(&path, new_str).map_err(|e| e.to_string())?;
+    
+    Ok("Written.".into())
+}

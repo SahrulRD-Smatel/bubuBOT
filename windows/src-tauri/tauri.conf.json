@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Bubu",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "identifier": "com.sahrulrd.bubu",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -35,7 +35,7 @@
         "minimizable": false,
         "closable": false,
         "dragDropEnabled": true,
-        "additionalBrowserArgs": "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection --autoplay-policy=no-user-gesture-required"
+        "additionalBrowserArgs": "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection --autoplay-policy=no-user-gesture-required --use-fake-ui-for-media-stream"
       }
     ]
   },

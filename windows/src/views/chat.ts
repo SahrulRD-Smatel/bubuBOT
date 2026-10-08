@@ -36,7 +36,7 @@ function contextChip(label: string): HTMLElement {
   return chip;
 }
 
-export function buildPrompt(actions: ViewActions, onHeightChange: () => void): ViewHost {
+export function buildPrompt(_actions: ViewActions, onHeightChange: () => void): ViewHost {
   const chipRow = h("div", { class: "chip-row" });
   const log = h("div", { class: "chat-log" });
   const input = h("input", {
@@ -45,9 +45,9 @@ export function buildPrompt(actions: ViewActions, onHeightChange: () => void): V
     placeholder: "Ask me anything…",
     spellcheck: "false",
   }) as HTMLInputElement;
+  const micBtn = h("button", { class: "icon-btn", title: "Dictate", style: "background:transparent;border:none;cursor:pointer;opacity:0.7;padding:0 8px;" }, svg(ICONS.mic, 14));
   const send = h("button", { class: "send-btn", title: "Send" }, svg(ICONS.arrowUp, 11));
-  const mic = h("button", { class: "send-btn", title: "Dictate", style: "margin-right: 4px;" }, svg(ICONS.mic, 11));
-  const bar = h("div", { class: "chat-bar" }, input, mic, send);
+  const bar = h("div", { class: "chat-bar" }, micBtn, input, send);
 
   const el = h(
     "div",
@@ -59,9 +59,87 @@ export function buildPrompt(actions: ViewActions, onHeightChange: () => void): V
   let sending = false;
   let renderedCount = -1;
 
+  let recognition: any = null;
+  let originalPlaceholder = input.placeholder;
+
+  if ("webkitSpeechRecognition" in window) {
+    const SpeechRecognition = (window as any).webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.lang = "id-ID";
+    recognition.interimResults = true;
+    recognition.continuous = false;
+
+    recognition.onresult = (e: any) => {
+      let finalTranscript = "";
+      for (let i = e.resultIndex; i < e.results.length; ++i) {
+        if (e.results[i].isFinal) {
+          finalTranscript += e.results[i][0].transcript;
+        }
+      }
+      if (finalTranscript) {
+        const current = input.value.trim();
+        input.value = current ? current + " " + finalTranscript : finalTranscript;
+      }
+    };
+
+    recognition.onerror = () => {
+      input.placeholder = originalPlaceholder;
+      micBtn.style.color = "";
+      micBtn.style.opacity = "0.7";
+    };
+    recognition.onend = () => {
+      input.placeholder = originalPlaceholder;
+      micBtn.style.color = "";
+      micBtn.style.opacity = "0.7";
+      // Auto-submit if there is text!
+      if (input.value.trim() && !sending) {
+        void submit();
+      }
+    };
+
+    micBtn.addEventListener("click", () => {
+      if (micBtn.style.color === "red") {
+        recognition.stop();
+      } else {
+        originalPlaceholder = input.placeholder;
+        input.placeholder = "🎤 Sedang mendengarkan...";
+        micBtn.style.color = "red";
+        micBtn.style.opacity = "1";
+        recognition.start();
+      }
+    });
+  }
+
+  // Allow wake-word to trigger the high-quality Web Speech API
+  void onEvent("wakeword-detected", () => {
+    if (State.view === "voicecall") return;
+    if (recognition && micBtn.style.color !== "red") {
+      // Start directly instead of synthetic click to bypass gesture requirements
+      originalPlaceholder = input.placeholder;
+      input.placeholder = "🎤 Mendengarkan...";
+      micBtn.style.color = "red";
+      micBtn.style.opacity = "1";
+      recognition.start();
+    } else {
+      input.placeholder = "🎤 Bubu mendengarkan...";
+    }
+  });
+
   async function submit() {
     const query = input.value.trim();
     if (!query || sending) return;
+
+    // Smart intent routing:
+    // If user wants to talk/chat/call, switch to the full Gemini Live Voice Call UI
+    const lowerQuery = query.toLowerCase();
+    if (lowerQuery.includes("ngobrol") || lowerQuery.includes("telepon") || lowerQuery.includes("bicara") || lowerQuery.includes("curhat") || lowerQuery.includes("call")) {
+      input.value = "";
+      Sound.play("blip");
+      State.view = "voicecall";
+      State.notify();
+      return;
+    }
+
     input.value = "";
     sending = true;
     Sound.play("send");
@@ -72,39 +150,35 @@ export function buildPrompt(actions: ViewActions, onHeightChange: () => void): V
     onHeightChange();
 
     try {
-      const lowerQuery = query.toLowerCase();
-      if (lowerQuery.startsWith("buka ") || lowerQuery.startsWith("open ")) {
-        const appName = query.substring(5).trim();
+      const file = State.droppedFile;
+      const context: ChatContext | null =
+        State.chatHistory.length === 1 && file ? { kind: "file", name: file.name, path: file.path } : null;
+
+      const reply = await Bridge.chatSend(query, context);
+      let replyText = reply.text;
+
+      // Extract and execute commands from the AI's response
+      const openAppMatch = replyText.match(/\[COMMAND:\s*OPEN_APP,\s*([^\]]+)\]/i);
+      const searchWebMatch = replyText.match(/\[COMMAND:\s*SEARCH_WEB,\s*([^\]]+)\]/i);
+
+      if (openAppMatch) {
+        const appName = openAppMatch[1].trim();
         const success = await Bridge.launchApp(appName);
-        const replyText = success
-          ? `Membuka ${appName}... 🚀`
-          : `Maaf, Bubu tidak bisa menemukan aplikasi "${appName}".`;
-
-        State.chatHistory.push({ id: nextId++, role: "assistant", content: replyText });
-        State.stateOverride = null;
+        replyText = replyText.replace(openAppMatch[0], "").trim();
+        if (!success) replyText += `\n\n(Maaf, Bubu gagal membuka aplikasi ${appName} di komputermu)`;
         Sound.play(success ? "finish" : "error");
-      } else if (lowerQuery.startsWith("cari ") || lowerQuery.startsWith("search ")) {
-        const searchQuery = lowerQuery.startsWith("cari ") ? query.substring(5).trim() : query.substring(7).trim();
-        if (searchQuery) {
-          const url = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
-          await Bridge.openUrl(url);
-          State.chatHistory.push({ id: nextId++, role: "assistant", content: `Mencarikan "${searchQuery}" di browser... 🔍` });
-          State.stateOverride = null;
-          Sound.play("finish");
-        } else {
-          State.stateOverride = null;
-          Sound.play("error");
-        }
+      } else if (searchWebMatch) {
+        const searchQuery = searchWebMatch[1].trim();
+        const url = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
+        await Bridge.openUrl(url);
+        replyText = replyText.replace(searchWebMatch[0], "").trim();
+        Sound.play("finish");
       } else {
-        const file = State.droppedFile;
-        const context: ChatContext | null =
-          State.chatHistory.length === 1 && file ? { kind: "file", name: file.name, path: file.path } : null;
-
-        const reply = await Bridge.chatSend(query, context);
-        State.chatHistory.push({ id: nextId++, role: "assistant", content: reply.text });
-        State.stateOverride = null;
         Sound.play("finish");
       }
+
+      State.chatHistory.push({ id: nextId++, role: "assistant", content: replyText });
+      State.stateOverride = null;
     } catch (err) {
       State.stateOverride = null;
       State.noteMessage = String(err).replace(/^Error:\s*/, "");
@@ -127,47 +201,45 @@ export function buildPrompt(actions: ViewActions, onHeightChange: () => void): V
     e.stopPropagation(); // Escape closes the island, not the chat
   });
 
-  let isRecording = false;
-
-  void onEvent("wakeword-detected", () => {
-    console.log("[Bubu Voice] Wake word detected!");
-    isRecording = true;
-    mic.classList.add("recording");
-    input.placeholder = "🎤 Bubu mendengarkan...";
-    Sound.play("blip");
-    // Focus the window so user sees the change
-    void Bridge.focusWindow(true);
-  });
 
   void onEvent<string>("voice-text", (text) => {
-    console.log("[Bubu Voice] Heard text:", text);
-    isRecording = false;
-    mic.classList.remove("recording");
-    input.placeholder = State.chatHistory.length === 0 ? "Ask me anything…" : "Continue…";
+    if (State.view === "voicecall") return;
+
+    let currentModelName = "Gemini";
+    if (State.settings.chatProvider === "openai") {
+      currentModelName = "ChatGPT";
+    } else if (State.settings.chatProvider === "claude") {
+      currentModelName = (State.settings.model || "Claude").split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    } else {
+      currentModelName = (State.settings.geminiModel || "Gemini").replace("models/", "").split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    }
+
+    input.placeholder = State.chatHistory.length === 0 ? `Tanya Bubu (${currentModelName})...` : `Lanjut ngobrol (${currentModelName})...`;
 
     if (text) {
-      input.value = text;
-      Sound.play("send");
-      void submit();
+      const lowerText = text.toLowerCase();
+      if (lowerText.includes("ngobrol") || lowerText.includes("telepon") || lowerText.includes("bicara") || lowerText.includes("curhat") || lowerText.includes("call")) {
+        Sound.play("blip");
+        State.view = "voicecall";
+        State.notify();
+      } else {
+        // We only use the local voice engine text if Web Speech API is unsupported.
+        // Otherwise, we let the Web Speech API handle it flawlessly.
+        if (!("webkitSpeechRecognition" in window)) {
+          input.value = text;
+          Sound.play("send");
+          void submit();
+        }
+      }
     }
   });
 
   void onEvent("voice-timeout", () => {
-    console.log("[Bubu Voice] Timeout - no command heard");
-    isRecording = false;
-    mic.classList.remove("recording");
-    input.placeholder = State.chatHistory.length === 0 ? "Ask me anything…" : "Continue…";
-    // Auto-collapse if user didn't type anything during voice session
-    if (!input.value.trim()) {
-      actions.collapse();
-    }
-  });
+    if (State.view === "voicecall") return;
 
-  mic.addEventListener("click", () => {
-    // If the mic is clicked, we could toggle recording, but the engine is handling it automatically now.
-    // For now, let's just make it visually do something or inform the user
-    if (!isRecording) {
-      input.placeholder = "Mendengarkan via Wake Word (Halo Bubu)...";
+    input.placeholder = State.chatHistory.length === 0 ? "Ask me anything…" : "Continue…";
+    if (!input.value.trim()) {
+      _actions.collapse();
     }
   });
 
@@ -192,7 +264,16 @@ export function buildPrompt(actions: ViewActions, onHeightChange: () => void): V
         log.scrollTop = log.scrollHeight;
       }
 
-      input.placeholder = State.chatHistory.length === 0 ? "Ask me anything…" : "Continue…";
+      let currentModelName = "Gemini";
+      if (State.settings.chatProvider === "openai") {
+        currentModelName = "ChatGPT";
+      } else if (State.settings.chatProvider === "claude") {
+        currentModelName = (State.settings.model || "Claude").split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      } else {
+        currentModelName = (State.settings.geminiModel || "Gemini").replace("models/", "").split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      }
+
+      input.placeholder = State.chatHistory.length === 0 ? `Tanya Bubu (${currentModelName})...` : `Lanjut ngobrol (${currentModelName})...`;
       input.disabled = sending;
     },
     focus() {

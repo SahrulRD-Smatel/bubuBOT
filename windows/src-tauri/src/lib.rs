@@ -199,6 +199,7 @@ async fn start_voice_recognition(_app: tauri::AppHandle) -> Result<String, Strin
     Ok("".to_string())
 }
 
+// Spawns the local Python/Vosk engine just for wake-word detection (WAKE).
 fn spawn_voice_engine(app: tauri::AppHandle) {
     use std::io::BufRead;
     
@@ -386,6 +387,25 @@ fn approval_decline(app: AppHandle, request_id: String) {
     pipe::decline(&app, &request_id);
 }
 
+
+
+// ── Antigravity hooks ─────────────────────────────────────────────────────────
+
+#[tauri::command]
+fn antigravity_hooks_status() -> hooks::HookStatus {
+    hooks::antigravity_status()
+}
+
+#[tauri::command]
+fn antigravity_hooks_preview(install: bool) -> Result<hooks::HookPreview, String> {
+    hooks::antigravity_preview(install)
+}
+
+#[tauri::command]
+fn antigravity_hooks_apply(install: bool, fingerprint: String) -> Result<String, String> {
+    hooks::antigravity_write(install, &fingerprint)
+}
+
 // ── Chat, files and secrets ───────────────────────────────────────────────────
 
 /// One chat turn. The API key and any file bytes stay on the Rust side.
@@ -396,8 +416,14 @@ async fn chat_send(
     query: String,
     context: Option<ChatContext>,
 ) -> Result<ChatReply, String> {
-    let model = shared.settings.lock().unwrap().model.clone();
-    claude::send(&chat, &model, query, context).await
+    let settings = shared.settings.lock().unwrap().clone();
+    let provider = settings.chat_provider;
+    let model = if provider == "gemini" {
+        settings.gemini_model
+    } else {
+        settings.model
+    };
+    claude::send(&chat, &provider, &model, query, context).await
 }
 
 #[tauri::command]
@@ -427,6 +453,15 @@ fn secret_clear(key: String) -> Result<(), String> {
     secrets::clear(&key)
 }
 
+/// Returns the Gemini API key for voice call sessions.
+/// The key is read from the Credential Manager and handed to the frontend,
+/// which passes it to the .NET voice relay over a localhost WebSocket.
+#[tauri::command]
+fn get_gemini_api_key() -> Result<String, String> {
+    secrets::get("gemini-api-key")
+        .ok_or_else(|| "Gemini API key not set. Open Settings to add it.".to_string())
+}
+
 /// Opens the configured n8n instance — the URL lives in the Credential Manager.
 #[tauri::command]
 fn open_n8n() {
@@ -454,7 +489,7 @@ fn log_line(message: String) {
 /// for the *same* arguments as the island (see `additionalBrowserArgs` in
 /// tauri.conf.json) — a mismatch makes the second window come up blank, with no
 /// error anywhere.
-const BROWSER_ARGS: &str = "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection --autoplay-policy=no-user-gesture-required";
+const BROWSER_ARGS: &str = "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection --autoplay-policy=no-user-gesture-required --use-fake-ui-for-media-stream";
 
 /// In a dev build the pages are served by Vite, so the second window needs the
 /// absolute dev URL; a bundled build resolves it inside the app bundle.
@@ -503,9 +538,11 @@ pub fn show_settings_window(app: &AppHandle) {
         log::line("settings window missing");
         return;
     };
+    log::line("showing settings window...");
     let _ = win.unminimize();
     let _ = win.show();
     let _ = win.set_focus();
+    log::line("show settings window completed");
 }
 
 #[tauri::command]
@@ -543,6 +580,9 @@ pub fn run() {
             hooks_status,
             hooks_preview,
             hooks_apply,
+            antigravity_hooks_status,
+            antigravity_hooks_preview,
+            antigravity_hooks_apply,
             approval_decision,
             approval_ack,
             approval_decline,
@@ -557,6 +597,7 @@ pub fn run() {
             open_n8n,
             open_settings_window,
             set_paused,
+            get_gemini_api_key,
         ])
         .setup(move |app| {
             let handle = app.handle().clone();
@@ -577,7 +618,10 @@ pub fn run() {
             }
             gate.set_active(true);
             island::spawn_cursor_poll(handle.clone(), gate.clone());
+            // Voice relay is now handled by the .NET backend (voice-relay/),
+            // but we still run bubu-voice-engine.exe purely for local Wake Word detection ("Bubu").
             spawn_voice_engine(handle.clone());
+            log::line("Voice: using .NET Gemini Live relay at localhost:5123".to_string());
 
             log::line(format!("--- Bubu {} started ---", env!("CARGO_PKG_VERSION")));
             hooks::ensure_hook_exe(&handle);

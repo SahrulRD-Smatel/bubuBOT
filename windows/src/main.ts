@@ -59,6 +59,19 @@ async function main() {
 
   await onEvent<null>("screen-changed", () => void Bridge.reposition());
 
+  await onEvent<null>("wakeword-detected", () => {
+    console.log("[Main] Wake word detected!");
+    // If the user is already in a voice call, don't interrupt them by switching to chat!
+    if (State.view === "voicecall") return;
+    
+    Sound.play("blip");
+    State.view = "prompt";
+    State.notify();
+    island.alert("prompt");
+    // Ensure window takes focus so we can capture mic
+    void Bridge.focusWindow(true);
+  });
+
   // The settings window writes preferences; apply them here without a restart.
   await onEvent<Settings>("settings-changed", (s) => {
     State.settings = { ...State.settings, ...s };
