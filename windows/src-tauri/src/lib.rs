@@ -602,6 +602,15 @@ fn open_settings_window(app: AppHandle) {
 }
 
 pub fn run() {
+    // Ensure any previously orphaned background processes are killed
+    // before we attempt to spawn them and bind to ports/microphones again.
+    let _ = std::process::Command::new("taskkill")
+        .args(["/F", "/IM", "bubu-voice-engine.exe"])
+        .output();
+    let _ = std::process::Command::new("taskkill")
+        .args(["/F", "/IM", "bubu-voice-relay.exe"])
+        .output();
+
     let loaded = settings::load();
     let gate = Arc::new(PollGate::new());
 
