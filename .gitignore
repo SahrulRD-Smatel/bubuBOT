@@ -35,3 +35,15 @@ model/
 bubu-voice-engine.exe
 bubu-voice-relay.exe
 *.dll
+
+# .NET Core
+bin/
+obj/
+
+# Voice Engine Models (Too large for GitHub)
+model/
+
+# Tauri Built Executables
+bubu-voice-engine.exe
+bubu-voice-relay.exe
+*.dll
