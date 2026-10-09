@@ -52,7 +52,10 @@
     ],
     "resources": {
       "../target/release/bubu-hook.exe": "bubu-hook.exe",
-      "bubu-voice-engine.exe": "bubu-voice-engine.exe"
+      "bubu-voice-engine.exe": "bubu-voice-engine.exe",
+      "bubu-voice-relay.exe": "bubu-voice-relay.exe",
+      "model/*": "model",
+      "*.dll": "."
     },
     "copyright": "© Sahrul Ramadhani",
     "category": "DeveloperTool",

@@ -29,7 +29,7 @@ interface HookPayload {
 
 /** Same rule as HookServer.validateAgent on macOS. "claude" is reserved. */
 function validateAgent(raw: string | undefined): string | null {
-  if (!raw || raw.length > 24 || raw === "claude") return null;
+  if (!raw || raw.length > 24 || raw === "claude" || raw === "antigravity") return null;
   if (!/^[a-z0-9-]+$/.test(raw)) return null;
   return raw;
 }

@@ -7,6 +7,8 @@ using System.Text.Json;
 using BubuVoiceRelay.Server.Gemini;
 using BubuVoiceRelay.Server.Protocol;
 using BubuVoiceRelay.Server.Tools;
+using Silk.NET.OpenAL;
+using Silk.NET.OpenAL.Extensions.EXT;
 
 namespace BubuVoiceRelay.Server.WebSocket;
 
@@ -18,6 +20,7 @@ public sealed class VoiceSession : IAsyncDisposable
     private readonly ToolExecutor _toolExecutor;
     private GeminiLiveConnection? _gemini;
     private readonly CancellationTokenSource _cts = new();
+    private bool _micMuted = false;
 
     private static DateTime? _lastDisconnectTime = null;
     private static int _spamCount = 0;
@@ -63,8 +66,8 @@ public sealed class VoiceSession : IAsyncDisposable
 
                 if (result.MessageType == WebSocketMessageType.Binary)
                 {
-                    // Raw PCM audio from client → forward to Gemini
-                    await HandleClientAudio(result.Count);
+                    // Client no longer sends mic audio — NAudio captures it server-side.
+                    // Binary frames from the client are simply ignored.
                 }
                 else if (result.MessageType == WebSocketMessageType.Text)
                 {
@@ -130,48 +133,115 @@ public sealed class VoiceSession : IAsyncDisposable
                 // while it's still generating, so we just log it here.
                 break;
 
+            case "mic.mute":
+                if (doc.RootElement.TryGetProperty("muted", out var mutedProp))
+                {
+                    _micMuted = mutedProp.GetBoolean();
+                    _logger.LogInformation("Mic {State}", _micMuted ? "MUTED" : "UNMUTED");
+                }
+                break;
+
             default:
                 _logger.LogWarning("Unknown client message type: {Type}", type);
                 break;
         }
     }
 
-    private async Task HandleClientAudio(int byteCount)
-    {
-        // Ignored: Server now uses NAudio directly to capture the microphone
-        // instead of relying on the web frontend.
-        await Task.CompletedTask;
-    }
 
-    private NAudio.Wave.WaveInEvent? _waveIn;
+
+    private int _audioChunkCount = 0;
 
     private void StartMicCapture()
     {
-        try
+        var thread = new Thread(() =>
         {
-            _waveIn = new NAudio.Wave.WaveInEvent
+            unsafe
             {
-                WaveFormat = new NAudio.Wave.WaveFormat(16000, 16, 1),
-                BufferMilliseconds = 100
-            };
-            
-            _waveIn.DataAvailable += async (s, e) =>
-            {
-                if (_gemini is not null && _gemini.IsConnected && !_cts.IsCancellationRequested)
+                try
                 {
-                    var pcm = new byte[e.BytesRecorded];
-                    Buffer.BlockCopy(e.Buffer, 0, pcm, 0, e.BytesRecorded);
-                    await _gemini.SendAudioAsync(pcm);
+                    var alc = ALContext.GetApi(true); // true = soft
+                    if (!alc.TryGetExtension(null, out Capture captureAPI))
+                    {
+                        _logger.LogError("Silk.NET.OpenAL: Capture extension not supported by the audio driver.");
+                        return;
+                    }
+
+
+
+                    // Device name null = default device.
+                    // 16000Hz, Mono 16-bit, buffer size for 2 seconds (32000 samples)
+                    var device = captureAPI.CaptureOpenDevice(null, 16000, Silk.NET.OpenAL.BufferFormat.Mono16, 32000);
+                    
+                    if (device == null)
+                    {
+                        _logger.LogError("Silk.NET.OpenAL: Failed to open capture device.");
+                        return;
+                    }
+
+                    captureAPI.CaptureStart(device);
+                    _logger.LogInformation("OpenAL mic capture started at 16kHz mono");
+
+                    while (!_cts.IsCancellationRequested)
+                    {
+                        int samplesAvailable = captureAPI.GetAvailableSamples(device);
+
+                        if (samplesAvailable >= 1600) // Read in ~100ms chunks (1600 samples)
+                        {
+                            if (!_micMuted && _gemini is not null && _gemini.IsConnected)
+                            {
+                                short[] buffer = new short[samplesAvailable];
+                                fixed (short* pBuffer = buffer)
+                                {
+                                    captureAPI.CaptureSamples(device, pBuffer, samplesAvailable);
+                                }
+
+                                byte[] pcm = new byte[samplesAvailable * 2];
+                                Buffer.BlockCopy(buffer, 0, pcm, 0, pcm.Length);
+
+                                _audioChunkCount++;
+                                if (_audioChunkCount % 50 == 1)
+                                {
+                                    double rms = 0;
+                                    for (int i = 0; i < buffer.Length; i++)
+                                    {
+                                        rms += buffer[i] * buffer[i];
+                                    }
+                                    rms = Math.Sqrt(rms / buffer.Length);
+                                    _logger.LogInformation(
+                                        "OpenAL chunk #{Count}: {Bytes} bytes, RMS={Rms:F0}",
+                                        _audioChunkCount, pcm.Length, rms);
+                                }
+
+                                _gemini.SendAudioAsync(pcm).GetAwaiter().GetResult();
+                            }
+                            else
+                            {
+                                // Drain buffer if muted or disconnected
+                                short[] drop = new short[samplesAvailable];
+                                fixed (short* pDrop = drop)
+                                {
+                                    captureAPI.CaptureSamples(device, pDrop, samplesAvailable);
+                                }
+                            }
+                        }
+
+                        Thread.Sleep(10);
+                    }
+
+                    captureAPI.CaptureStop(device);
+                    captureAPI.CaptureCloseDevice(device);
+                    _logger.LogInformation("OpenAL mic capture stopped.");
                 }
-            };
-            
-            _waveIn.StartRecording();
-            _logger.LogInformation("NAudio mic capture started at 16kHz");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to start NAudio mic capture");
-        }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "OpenAL mic capture failed — is a microphone connected?");
+                }
+            }
+        });
+        
+        thread.IsBackground = true;
+        thread.Name = "MicCaptureThread";
+        thread.Start();
     }
 
     // ── Gemini session lifecycle ─────────────────────────────────────────────
@@ -385,13 +455,6 @@ public sealed class VoiceSession : IAsyncDisposable
     public async ValueTask DisposeAsync()
     {
         _lastDisconnectTime = DateTime.Now;
-
-        if (_waveIn is not null)
-        {
-            try { _waveIn.StopRecording(); } catch { }
-            _waveIn.Dispose();
-            _waveIn = null;
-        }
 
         if (_gemini is not null)
         {

@@ -22,6 +22,8 @@ pub struct Settings {
     pub model: String,
     #[serde(default = "default_gemini_model")]
     pub gemini_model: String,
+    #[serde(default = "default_gemini_chat_model")]
+    pub gemini_chat_model: String,
     #[serde(default = "default_chat_provider")]
     pub chat_provider: String,
 }
@@ -32,6 +34,10 @@ fn default_model() -> String {
 
 fn default_gemini_model() -> String {
     "models/gemini-3.8-live".to_string()
+}
+
+fn default_gemini_chat_model() -> String {
+    "models/gemini-3.8-flash".to_string()
 }
 
 fn default_chat_provider() -> String {
@@ -56,6 +62,7 @@ impl Default for Settings {
             hooks_installed: false,
             model: default_model(),
             gemini_model: default_gemini_model(),
+            gemini_chat_model: default_gemini_chat_model(),
             chat_provider: default_chat_provider(),
         }
     }

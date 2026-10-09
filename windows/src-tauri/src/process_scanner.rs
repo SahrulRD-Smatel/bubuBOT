@@ -43,7 +43,7 @@ pub struct AppEvent {
 
 const KNOWN_APPS: &[KnownApp] = &[
     KnownApp { exes: &["code.exe", "code"],            label: "VS Code",    color: "#007ACC" },
-    KnownApp { exes: &["antigravity.exe", "antigravity ide.exe", "antigravity", "antigravity-ide"], label: "Antigravity", color: "#8B5CF6" },
+    KnownApp { exes: &[ "antigravity ide.exe"], label: "Antigravity", color: "#8B5CF6" },
     KnownApp { exes: &["docker.exe", "docker desktop.exe", "dockerd", "docker"], label: "Docker",     color: "#2496ED" },
     KnownApp { exes: &["ssms.exe"],             label: "SQL Server", color: "#CC2927" },
     KnownApp { exes: &["chrome.exe", "chrome", "google-chrome"], label: "Chrome",     color: "#4285F4" },
@@ -56,6 +56,9 @@ const KNOWN_APPS: &[KnownApp] = &[
     KnownApp { exes: &["discord.exe", "discord"],          label: "Discord",    color: "#5865F2" },
     KnownApp { exes: &["node.exe", "node"],             label: "Node.js",    color: "#339933" },
     KnownApp { exes: &["mongod.exe", "mongod"],           label: "MongoDB",    color: "#47A248" },
+    KnownApp { exes: &["winword.exe", "word"],            label: "Word",       color: "#55b5f5ff" },
+    KnownApp { exes: &["excel.exe", "excel"],             label: "Excel",      color: "#42a16dff" },
+    KnownApp { exes: &["powerpnt.exe", "powerpoint"],     label: "PowerPoint", color: "#be614aff" },
 ];
 
 /// Build a lookup table: lowercase exe name → index into KNOWN_APPS.

@@ -220,6 +220,7 @@ fn spawn_voice_engine(app: tauri::AppHandle) {
             crate::log::line(format!("Voice Engine: spawning from {:?}", exe_path));
             match platform::no_console(
                 Command::new(&exe_path)
+                    .current_dir(exe_path.parent().unwrap_or(std::path::Path::new(".")))
                     .stdout(std::process::Stdio::piped())
                     .stderr(std::process::Stdio::piped())
             ).spawn()
@@ -274,6 +275,56 @@ fn spawn_voice_engine(app: tauri::AppHandle) {
                 }
             }
             std::thread::sleep(std::time::Duration::from_secs(2));
+        }
+    });
+}
+
+fn spawn_voice_relay(app: tauri::AppHandle) {
+    use std::io::BufRead;
+    
+    std::thread::spawn(move || {
+        let resource_path = app
+            .path()
+            .resource_dir()
+            .map(|r| r.join("bubu-voice-relay.exe"))
+            .unwrap_or_else(|_| std::path::PathBuf::from("bubu-voice-relay.exe"));
+
+        let exe_path = if resource_path.exists() {
+            resource_path
+        } else {
+            std::path::PathBuf::from("bubu-voice-relay.exe")
+        };
+
+        loop {
+            crate::log::line(format!("Voice Relay: spawning from {:?}", exe_path));
+            match platform::no_console(
+                Command::new(&exe_path)
+                    .current_dir(exe_path.parent().unwrap_or(std::path::Path::new(".")))
+                    .stdout(std::process::Stdio::piped())
+                    .stderr(std::process::Stdio::piped())
+            ).spawn()
+            {
+                Ok(mut child) => {
+                    if let Some(stdout) = child.stdout.take() {
+                        let mut reader = std::io::BufReader::new(stdout);
+                        let mut line = String::new();
+                        
+                        while reader.read_line(&mut line).unwrap_or(0) > 0 {
+                            let trimmed = line.trim();
+                            if !trimmed.is_empty() {
+                                crate::log::line(format!("Voice Relay: {}", trimmed));
+                            }
+                            line.clear();
+                        }
+                    }
+                    let status = child.wait();
+                    crate::log::line(format!("Voice Relay: process exited with {:?}", status));
+                }
+                Err(e) => {
+                    crate::log::line(format!("Voice Relay failed to start: {}", e));
+                }
+            }
+            std::thread::sleep(std::time::Duration::from_secs(5));
         }
     });
 }
@@ -419,7 +470,7 @@ async fn chat_send(
     let settings = shared.settings.lock().unwrap().clone();
     let provider = settings.chat_provider;
     let model = if provider == "gemini" {
-        settings.gemini_model
+        settings.gemini_chat_model
     } else {
         settings.model
     };
@@ -621,6 +672,7 @@ pub fn run() {
             // Voice relay is now handled by the .NET backend (voice-relay/),
             // but we still run bubu-voice-engine.exe purely for local Wake Word detection ("Bubu").
             spawn_voice_engine(handle.clone());
+            spawn_voice_relay(handle.clone());
             log::line("Voice: using .NET Gemini Live relay at localhost:5123".to_string());
 
             log::line(format!("--- Bubu {} started ---", env!("CARGO_PKG_VERSION")));

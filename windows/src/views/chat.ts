@@ -62,12 +62,18 @@ export function buildPrompt(_actions: ViewActions, onHeightChange: () => void): 
   let recognition: any = null;
   let originalPlaceholder = input.placeholder;
 
+  let isListeningWithWebSpeech = false;
+
   if ("webkitSpeechRecognition" in window) {
     const SpeechRecognition = (window as any).webkitSpeechRecognition;
     recognition = new SpeechRecognition();
     recognition.lang = "id-ID";
     recognition.interimResults = true;
     recognition.continuous = false;
+
+    recognition.onstart = () => {
+      isListeningWithWebSpeech = true;
+    };
 
     recognition.onresult = (e: any) => {
       let finalTranscript = "";
@@ -83,11 +89,13 @@ export function buildPrompt(_actions: ViewActions, onHeightChange: () => void): 
     };
 
     recognition.onerror = () => {
+      isListeningWithWebSpeech = false;
       input.placeholder = originalPlaceholder;
       micBtn.style.color = "";
       micBtn.style.opacity = "0.7";
     };
     recognition.onend = () => {
+      isListeningWithWebSpeech = false;
       input.placeholder = originalPlaceholder;
       micBtn.style.color = "";
       micBtn.style.opacity = "0.7";
@@ -105,7 +113,7 @@ export function buildPrompt(_actions: ViewActions, onHeightChange: () => void): 
         input.placeholder = "🎤 Sedang mendengarkan...";
         micBtn.style.color = "red";
         micBtn.style.opacity = "1";
-        recognition.start();
+        try { recognition.start(); } catch(e) {}
       }
     });
   }
@@ -119,9 +127,16 @@ export function buildPrompt(_actions: ViewActions, onHeightChange: () => void): 
       input.placeholder = "🎤 Mendengarkan...";
       micBtn.style.color = "red";
       micBtn.style.opacity = "1";
-      recognition.start();
-    } else {
-      input.placeholder = "🎤 Bubu mendengarkan...";
+      try { 
+        recognition.start(); 
+        // If it throws here synchronously, it means gesture requirement blocked it
+      } catch(e) {
+        console.error("Web Speech API blocked by browser", e);
+        input.placeholder = "Pencet tombol Mic 🎤 biar aku dengar jelas!";
+        micBtn.style.color = "";
+        micBtn.style.opacity = "0.7";
+        Sound.play("blip"); // play a sound to notify user
+      }
     }
   });
 
@@ -141,6 +156,7 @@ export function buildPrompt(_actions: ViewActions, onHeightChange: () => void): 
     }
 
     input.value = "";
+    input.placeholder = ""; // Force render() to re-evaluate it
     sending = true;
     Sound.play("send");
 
@@ -211,7 +227,7 @@ export function buildPrompt(_actions: ViewActions, onHeightChange: () => void): 
     } else if (State.settings.chatProvider === "claude") {
       currentModelName = (State.settings.model || "Claude").split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
     } else {
-      currentModelName = (State.settings.geminiModel || "Gemini").replace("models/", "").split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      currentModelName = (State.settings.geminiChatModel || "Gemini").replace("models/", "").split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
     }
 
     input.placeholder = State.chatHistory.length === 0 ? `Tanya Bubu (${currentModelName})...` : `Lanjut ngobrol (${currentModelName})...`;
@@ -223,9 +239,9 @@ export function buildPrompt(_actions: ViewActions, onHeightChange: () => void): 
         State.view = "voicecall";
         State.notify();
       } else {
-        // We only use the local voice engine text if Web Speech API is unsupported.
-        // Otherwise, we let the Web Speech API handle it flawlessly.
-        if (!("webkitSpeechRecognition" in window)) {
+        // We use the local voice engine text if Web Speech API didn't actively listen.
+        // We rely on the AI's phonetics understanding to decipher "fans will" etc.
+        if (!isListeningWithWebSpeech) {
           input.value = text;
           Sound.play("send");
           void submit();
@@ -270,10 +286,13 @@ export function buildPrompt(_actions: ViewActions, onHeightChange: () => void): 
       } else if (State.settings.chatProvider === "claude") {
         currentModelName = (State.settings.model || "Claude").split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
       } else {
-        currentModelName = (State.settings.geminiModel || "Gemini").replace("models/", "").split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        currentModelName = (State.settings.geminiChatModel || "Gemini").replace("models/", "").split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
       }
 
-      input.placeholder = State.chatHistory.length === 0 ? `Tanya Bubu (${currentModelName})...` : `Lanjut ngobrol (${currentModelName})...`;
+      // Don't overwrite the listening indicator!
+      if (!input.placeholder.includes("mendengarkan")) {
+        input.placeholder = State.chatHistory.length === 0 ? `Tanya Bubu (${currentModelName})...` : `Lanjut ngobrol (${currentModelName})...`;
+      }
       input.disabled = sending;
     },
     focus() {

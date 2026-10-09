@@ -67,7 +67,8 @@ function idleCard(task: AgentTask, openSettings: () => void): HTMLElement {
   } else {
     // The Claude Code pill is about hooks, not a key — the macOS wording would be misleading here.
     const missing = task.id === "integration_claude" ? "Hooks not installed" : "Key not configured";
-    label = error ?? (configured ? "Connected · loading…" : missing);
+    const idleMsg = task.id === "integration_claude" ? "Memantau aktivitas CMD... 👀" : "Connected · loading…";
+    label = error ?? (configured ? idleMsg : missing);
     statusColor = error || !configured ? "#F4505E" : "#22C55E";
   }
 

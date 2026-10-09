@@ -1,0 +1,165 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0/win-x64",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {},
+    ".NETCoreApp,Version=v10.0/win-x64": {
+      "bubu-voice-engine/1.0.0": {
+        "dependencies": {
+          "Silk.NET.OpenAL": "2.23.0",
+          "Silk.NET.OpenAL.Extensions.EXT": "2.23.0",
+          "Silk.NET.OpenAL.Soft.Native": "1.23.1",
+          "org.k2fsa.sherpa.onnx": "1.13.8"
+        },
+        "runtime": {
+          "bubu-voice-engine.dll": {}
+        }
+      },
+      "Microsoft.DotNet.PlatformAbstractions/3.1.6": {
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.DotNet.PlatformAbstractions.dll": {
+            "assemblyVersion": "3.1.6.0",
+            "fileVersion": "3.100.620.31604"
+          }
+        }
+      },
+      "Microsoft.Extensions.DependencyModel/9.0.9": {
+        "runtime": {
+          "lib/net9.0/Microsoft.Extensions.DependencyModel.dll": {
+            "assemblyVersion": "9.0.0.9",
+            "fileVersion": "9.0.925.41916"
+          }
+        }
+      },
+      "org.k2fsa.sherpa.onnx/1.13.8": {
+        "dependencies": {
+          "org.k2fsa.sherpa.onnx.runtime.win-x64": "1.13.8"
+        },
+        "runtime": {
+          "lib/net10.0/sherpa-onnx.dll": {
+            "assemblyVersion": "1.13.8.0",
+            "fileVersion": "1.13.8.0"
+          }
+        }
+      },
+      "org.k2fsa.sherpa.onnx.runtime.win-x64/1.13.8": {
+        "native": {
+          "runtimes/win-x64/native/onnxruntime.dll": {
+            "fileVersion": "1.28.2.0"
+          },
+          "runtimes/win-x64/native/sherpa-onnx-c-api.dll": {
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "Silk.NET.Core/2.23.0": {
+        "dependencies": {
+          "Microsoft.DotNet.PlatformAbstractions": "3.1.6",
+          "Microsoft.Extensions.DependencyModel": "9.0.9"
+        },
+        "runtime": {
+          "lib/net6.0/Silk.NET.Core.dll": {
+            "assemblyVersion": "2.23.0.0",
+            "fileVersion": "2.23.0.0"
+          }
+        }
+      },
+      "Silk.NET.OpenAL/2.23.0": {
+        "dependencies": {
+          "Silk.NET.Core": "2.23.0"
+        },
+        "runtime": {
+          "lib/net5.0/Silk.NET.OpenAL.dll": {
+            "assemblyVersion": "2.23.0.0",
+            "fileVersion": "2.23.0.0"
+          }
+        }
+      },
+      "Silk.NET.OpenAL.Extensions.EXT/2.23.0": {
+        "dependencies": {
+          "Silk.NET.Core": "2.23.0",
+          "Silk.NET.OpenAL": "2.23.0"
+        },
+        "runtime": {
+          "lib/net5.0/Silk.NET.OpenAL.Extensions.EXT.dll": {
+            "assemblyVersion": "2.23.0.0",
+            "fileVersion": "2.23.0.0"
+          }
+        }
+      },
+      "Silk.NET.OpenAL.Soft.Native/1.23.1": {
+        "native": {
+          "runtimes/win-x64/native/soft_oal.dll": {
+            "fileVersion": "1.23.1.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "bubu-voice-engine/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Microsoft.DotNet.PlatformAbstractions/3.1.6": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-jek4XYaQ/PGUwDKKhwR8K47Uh1189PFzMeLqO83mXrXQVIpARZCcfuDedH50YDTepBkfijCZN5U/vZi++erxtg==",
+      "path": "microsoft.dotnet.platformabstractions/3.1.6",
+      "hashPath": "microsoft.dotnet.platformabstractions.3.1.6.nupkg.sha512"
+    },
+    "Microsoft.Extensions.DependencyModel/9.0.9": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-fNGvKct2De8ghm0Bpfq0iWthtzIWabgOTi+gJhNOPhNJIowXNEUE2eZNW/zNCzrHVA3PXg2yZ+3cWZndC2IqYA==",
+      "path": "microsoft.extensions.dependencymodel/9.0.9",
+      "hashPath": "microsoft.extensions.dependencymodel.9.0.9.nupkg.sha512"
+    },
+    "org.k2fsa.sherpa.onnx/1.13.8": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-CVBBX154lJ0STD8At5t0LvnSuOiXRwOI/8YeTvEEd+K1xwbtLZTQ4tQESyGEcfdIXTf+ucaGF4LMpHfI4R5yCw==",
+      "path": "org.k2fsa.sherpa.onnx/1.13.8",
+      "hashPath": "org.k2fsa.sherpa.onnx.1.13.8.nupkg.sha512"
+    },
+    "org.k2fsa.sherpa.onnx.runtime.win-x64/1.13.8": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-qQS9IQTRet05fl82IlM93XLNnuhW50lhepOBR2qzbjxWKjSXFTvx8SlALAoCLDGyURrQ5iOgl97JZFEeIG9A9g==",
+      "path": "org.k2fsa.sherpa.onnx.runtime.win-x64/1.13.8",
+      "hashPath": "org.k2fsa.sherpa.onnx.runtime.win-x64.1.13.8.nupkg.sha512"
+    },
+    "Silk.NET.Core/2.23.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-D7AT/nnwlB+4RZ84XY8QNGBZMJI5z9l4CSSETIJ1wCfRJzRt/341y3MRZ4HbnFz4r/IGaWOEZr86iE+0/65yyQ==",
+      "path": "silk.net.core/2.23.0",
+      "hashPath": "silk.net.core.2.23.0.nupkg.sha512"
+    },
+    "Silk.NET.OpenAL/2.23.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-O8EaDRWGOcKniZ2VxKD/xOmugzUJz747KpqGRw3cezDsz8nD66OZW217o1rT06cG76f8eYigy/yY6eRdhRqHHQ==",
+      "path": "silk.net.openal/2.23.0",
+      "hashPath": "silk.net.openal.2.23.0.nupkg.sha512"
+    },
+    "Silk.NET.OpenAL.Extensions.EXT/2.23.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-nhn0wv7o+RFqcxv5QTbHyEcZAf4ojqyK5aE4xoIyBubIlHBPXvV46O7w7ybo0z0ChZCBBS/teP42vaxx5YP+tQ==",
+      "path": "silk.net.openal.extensions.ext/2.23.0",
+      "hashPath": "silk.net.openal.extensions.ext.2.23.0.nupkg.sha512"
+    },
+    "Silk.NET.OpenAL.Soft.Native/1.23.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-gZIbksInoiXbJZmepYnTs5O6Edg5O5k86c1+Uus0zSaVnQx5WRbInGz2VTlvudbs0qAqXs/asL1YvJzco/nfAQ==",
+      "path": "silk.net.openal.soft.native/1.23.1",
+      "hashPath": "silk.net.openal.soft.native.1.23.1.nupkg.sha512"
+    }
+  }
+}

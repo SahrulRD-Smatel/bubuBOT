@@ -1,10 +1,10 @@
-// Voice call client — connects to the .NET Voice Relay via WebSocket,
-// captures mic audio as 16kHz PCM, plays back Gemini audio at 24kHz.
+// Voice call client — connects to the .NET Voice Relay via WebSocket.
+// Mic capture is handled server-side by NAudio (higher quality, no WebView2 issues).
+// This client only manages the connection and plays back Gemini audio.
 
 import { State } from "./state";
 
 const RELAY_URL = "ws://localhost:5123/ws/voice";
-const MIC_SAMPLE_RATE = 16000;
 const PLAYBACK_SAMPLE_RATE = 24000;
 
 export type VoiceCallState = "idle" | "connecting" | "active" | "error";
@@ -22,9 +22,6 @@ export interface VoiceCallEvents {
 export class VoiceCallClient {
   private ws: WebSocket | null = null;
   private audioCtx: AudioContext | null = null;
-  private micStream: MediaStream | null = null;
-  private scriptNode: ScriptProcessorNode | null = null;
-  private sourceNode: MediaStreamAudioSourceNode | null = null;
 
   // Playback queue
   private playbackQueue: Float32Array[] = [];
@@ -55,31 +52,16 @@ export class VoiceCallClient {
     this.setState("connecting");
 
     try {
-      // 1. Get mic access
-      this.micStream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-        },
-      });
-      console.log("[VoiceCall] USING MICROPHONE:", this.micStream.getAudioTracks()[0]?.label);
-
-      // 2. Set up AudioContext for mic capture
-      this.audioCtx = new AudioContext({ sampleRate: MIC_SAMPLE_RATE });
+      // AudioContext for playback only — use the system's native sample rate
+      // for the highest quality output. We resample Gemini's 24kHz to this.
+      this.audioCtx = new AudioContext();
       if (this.audioCtx.state === "suspended") {
         await this.audioCtx.resume();
       }
-      console.log(`[VoiceCall] AudioContext state is: ${this.audioCtx.state}`);
-      this.sourceNode = this.audioCtx.createMediaStreamSource(this.micStream);
+      console.log(`[VoiceCall] Playback AudioContext ready (${this.audioCtx.sampleRate}Hz)`);
+      console.log("[VoiceCall] Mic capture is handled server-side by NAudio");
 
-      // ScriptProcessorNode for capturing raw PCM (deprecated but works everywhere)
-      // Buffer size: 4096 samples at 16kHz ≈ 256ms chunks
-      this.scriptNode = this.audioCtx.createScriptProcessor(4096, 1, 1);
-      this.scriptNode.onaudioprocess = (e) => this.onMicAudio(e);
-      this.sourceNode.connect(this.scriptNode);
-      this.scriptNode.connect(this.audioCtx.destination); // required for it to process
-
-      // 3. Connect WebSocket to relay
+      // Connect WebSocket to relay
       this.ws = new WebSocket(RELAY_URL);
       this.ws.binaryType = "arraybuffer";
 
@@ -124,36 +106,11 @@ export class VoiceCallClient {
     this.setState("idle");
   }
 
-  /** Mute or unmute the microphone. */
+  /** Mute or unmute the microphone (tells the server to pause/resume NAudio capture). */
   setMuted(muted: boolean): void {
-    if (!this.micStream) return;
-    this.micStream.getAudioTracks().forEach(track => {
-      track.enabled = !muted;
-    });
-  }
-
-  // ── Mic capture ─────────────────────────────────────────────────────────
-
-  private onMicAudio(e: AudioProcessingEvent): void {
-    if (this.state !== "active" || !this.ws || this.ws.readyState !== WebSocket.OPEN) return;
-
-    const inputData = e.inputBuffer.getChannelData(0);
-
-    // Convert Float32 [-1,1] → Int16 PCM
-    const pcm = new Int16Array(inputData.length);
-    let isSilent = true;
-    for (let i = 0; i < inputData.length; i++) {
-      const s = Math.max(-1, Math.min(1, inputData[i]));
-      if (Math.abs(s) > 0.01) isSilent = false;
-      pcm[i] = s < 0 ? s * 0x8000 : s * 0x7fff;
+    if (this.ws?.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify({ type: "mic.mute", muted }));
     }
-
-    if (isSilent && Math.random() < 0.05) {
-      console.warn("[VoiceCall] MIC IS SILENT! WebView2 might not have permission or mic is muted in hardware.");
-    }
-
-    // Send as binary WebSocket frame
-    this.ws.send(pcm.buffer);
   }
 
   // ── Relay message handling ──────────────────────────────────────────────
@@ -220,7 +177,11 @@ export class VoiceCallClient {
 
   /** Enqueue PCM audio (Int16, 24kHz) for smooth playback. */
   private enqueueAudio(data: ArrayBuffer): void {
+    if (data.byteLength < 2) return; // Need at least one Int16 sample
+
     const int16 = new Int16Array(data);
+    if (int16.length === 0) return;
+
     const float32 = new Float32Array(int16.length);
     for (let i = 0; i < int16.length; i++) {
       float32[i] = int16[i] / 32768;
@@ -232,8 +193,6 @@ export class VoiceCallClient {
   private drainPlaybackQueue(): void {
     if (!this.audioCtx || this.playbackQueue.length === 0) return;
 
-    // Create a separate context for playback at 24kHz if needed,
-    // or resample to the mic context's sample rate.
     const ctx = this.audioCtx;
     const currentTime = ctx.currentTime;
 
@@ -244,12 +203,12 @@ export class VoiceCallClient {
     while (this.playbackQueue.length > 0) {
       const samples = this.playbackQueue.shift()!;
 
-      // We need to resample from 24kHz to the AudioContext's sample rate (16kHz)
-      // Simple linear interpolation resampling
+      // Resample from 24kHz to the AudioContext's native sample rate
       const ratio = PLAYBACK_SAMPLE_RATE / ctx.sampleRate;
       const outputLen = Math.floor(samples.length / ratio);
-      
-      if (outputLen <= 0) continue; // Prevent crash on empty chunks
+
+      // Guard: createBuffer requires at least 1 frame
+      if (outputLen < 1) continue;
 
       const buffer = ctx.createBuffer(1, outputLen, ctx.sampleRate);
       const output = buffer.getChannelData(0);
@@ -267,7 +226,7 @@ export class VoiceCallClient {
       source.buffer = buffer;
       source.connect(ctx.destination);
       source.start(this.nextPlayTime);
-      
+
       this.activeSources.push(source);
       source.onended = () => {
         this.activeSources = this.activeSources.filter(s => s !== source);
@@ -280,14 +239,6 @@ export class VoiceCallClient {
   // ── Cleanup ─────────────────────────────────────────────────────────────
 
   private cleanup(): void {
-    this.scriptNode?.disconnect();
-    this.sourceNode?.disconnect();
-    this.scriptNode = null;
-    this.sourceNode = null;
-
-    this.micStream?.getTracks().forEach((t) => t.stop());
-    this.micStream = null;
-
     if (this.audioCtx?.state !== "closed") {
       void this.audioCtx?.close();
     }

@@ -323,10 +323,20 @@ function geminiApiSection(hasKey: boolean): HTMLElement {
     void save();
   });
 
+  const chatModelSelect = h("select", {}) as HTMLSelectElement;
+  chatModelSelect.append(h("option", { value: settings.geminiChatModel || "models/gemini-3.8-flash", text: settings.geminiChatModel || "models/gemini-3.8-flash" }));
+  chatModelSelect.value = settings.geminiChatModel || "models/gemini-3.8-flash";
+  chatModelSelect.addEventListener("change", () => {
+    settings.geminiChatModel = chatModelSelect.value;
+    void save();
+  });
+
   async function loadModels(apiKey: string | null) {
     clear(modelSelect);
+    clear(chatModelSelect);
     if (!apiKey) {
       modelSelect.append(h("option", { value: "", text: "Save API key to load models..." }));
+      chatModelSelect.append(h("option", { value: "", text: "Save API key to load models..." }));
       return;
     }
 
@@ -352,27 +362,45 @@ function geminiApiSection(hasKey: boolean): HTMLElement {
       } while (pageToken);
       
       clear(modelSelect);
+      clear(chatModelSelect);
       for (const [id, label] of models) {
         modelSelect.append(h("option", { value: id, text: label }));
+        chatModelSelect.append(h("option", { value: id, text: label }));
       }
       if (!models.some(([id]: [string, string]) => id === settings.geminiModel)) {
         modelSelect.append(h("option", { value: settings.geminiModel || "models/gemini-3.8-live", text: settings.geminiModel || "Unknown Model" }));
       }
       modelSelect.value = settings.geminiModel || "models/gemini-3.8-live";
+
+      if (!models.some(([id]: [string, string]) => id === settings.geminiChatModel)) {
+        chatModelSelect.append(h("option", { value: settings.geminiChatModel || "models/gemini-3.8-flash", text: settings.geminiChatModel || "Unknown Model" }));
+      }
+      chatModelSelect.value = settings.geminiChatModel || "models/gemini-3.8-flash";
     } catch (err) {
       console.error("Failed to load Gemini models:", err);
       clear(modelSelect);
-      const fallback = [
-        ["models/gemini-3.8-live", "Gemini 3.8 Live (Rekomendasi Utama)"],
-        ["models/gemini-2.0-flash-exp", "Gemini 2.0 Flash Exp"],
+      clear(chatModelSelect);
+      const fallbackVoice = [
+        ["models/gemini-3.8-live", "Gemini 3.8 Live (Khusus Call)"],
+        ["models/gemini-2.0-flash-exp", "Gemini 2.0 Flash Exp (Bisa Call)"],
+      ];
+      const fallbackChat = [
+        ["models/gemini-3.8-flash", "Gemini 3.8 Flash (Cepat)"],
+        ["models/gemini-3.8-pro", "Gemini 3.8 Pro (Pintar)"],
         ["models/gemini-1.5-pro", "Gemini 1.5 Pro"],
         ["models/gemini-1.5-flash", "Gemini 1.5 Flash"],
       ];
-      for (const [id, label] of fallback) modelSelect.append(h("option", { value: id, text: label }));
-      if (!fallback.some(([id]) => id === settings.geminiModel)) {
+      for (const [id, label] of fallbackVoice) modelSelect.append(h("option", { value: id, text: label }));
+      if (!fallbackVoice.some(([id]) => id === settings.geminiModel)) {
         modelSelect.append(h("option", { value: settings.geminiModel || "models/gemini-3.8-live", text: settings.geminiModel || "Unknown Model" }));
       }
       modelSelect.value = settings.geminiModel || "models/gemini-3.8-live";
+
+      for (const [id, label] of fallbackChat) chatModelSelect.append(h("option", { value: id, text: label }));
+      if (!fallbackChat.some(([id]) => id === settings.geminiChatModel)) {
+        chatModelSelect.append(h("option", { value: settings.geminiChatModel || "models/gemini-3.8-flash", text: settings.geminiChatModel || "Unknown Model" }));
+      }
+      chatModelSelect.value = settings.geminiChatModel || "models/gemini-3.8-flash";
     }
   }
 
@@ -385,10 +413,11 @@ function geminiApiSection(hasKey: boolean): HTMLElement {
   return h(
     "section",
     {},
-    h("h2", {}, dot, h("span", { text: "Gemini (Voice Call)" })),
+    h("h2", {}, dot, h("span", { text: "Gemini (Google)" })),
     state,
     h("div", { class: "row" }, h("label", { text: "API key" }), field, saveBtn, clearBtn),
-    h("div", { class: "row" }, h("label", { text: "Model" }), modelSelect),
+    h("div", { class: "row" }, h("label", { text: "Voice Call Model" }), modelSelect),
+    h("div", { class: "row" }, h("label", { text: "Text Chat Model" }), chatModelSelect),
     feedback,
   );
 }

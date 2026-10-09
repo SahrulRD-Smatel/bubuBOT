@@ -102,6 +102,8 @@ export interface Settings {
   model: string;
   /** Gemini Live model used by voice call. */
   geminiModel: string;
+  /** Gemini model used by the text chat. */
+  geminiChatModel: string;
   /** Provider for text chat (gemini, claude, openai) */
   chatProvider: string;
 }
@@ -119,6 +121,7 @@ export const DEFAULT_SETTINGS: Settings = {
   hooksInstalled: false,
   model: "claude-opus-5",
   geminiModel: "models/gemini-2.0-flash-exp",
+  geminiChatModel: "models/gemini-3.8-flash",
   chatProvider: "gemini",
 };
 
@@ -319,8 +322,8 @@ class AppState {
     this.notify();
   }
 
-  defaultView(): IslandViewName {
-    return this.tasks.length === 0 ? "empty" : "overview";
+  defaultView(): "overview" | "empty" {
+    return Object.keys(this.integrations).length === 0 && this.otherTasks.length === 0 ? "empty" : "overview";
   }
 }
 

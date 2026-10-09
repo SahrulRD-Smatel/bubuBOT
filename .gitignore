@@ -23,3 +23,15 @@ _prive/
 # AI Agent Configs (Antigravity/Claude Code)
 .agents/skills/sync-from-coucou/
 AGENTS.md
+
+# .NET Core
+bin/
+obj/
+
+# Voice Engine Models (Too large for GitHub)
+model/
+
+# Tauri Built Executables
+bubu-voice-engine.exe
+bubu-voice-relay.exe
+*.dll

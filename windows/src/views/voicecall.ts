@@ -37,23 +37,15 @@ export function buildVoiceCall(actions: ViewActions, onHeightChange: () => void)
 
   const controls = h("div", { class: "vc-controls" }, muteBtn, endBtn);
 
-  const avatar = h(
-    "div",
-    { class: "vc-avatar" },
-    h("div", { class: "vc-avatar-ring" }),
-    h("div", { class: "vc-avatar-inner", text: "🎙️" }),
-  );
-
   const card = h(
     "div",
     { class: "card wash vc-card" },
-    avatar,
-    statusText,
-    transcriptEl,
+    h("div", { class: "vc-top-section" }, statusText),
     waveformEl,
+    transcriptEl,
     controls,
   );
-  card.style.setProperty("--wash", "rgba(139,92,246,0.6)");
+  card.style.setProperty("--wash", "rgba(139,92,246,0.3)"); // Subtle modern wash
 
   const el = h("div", { class: "view" }, card);
 
@@ -71,10 +63,8 @@ export function buildVoiceCall(actions: ViewActions, onHeightChange: () => void)
         if (state === "active") {
           Sound.play("open");
           statusText.textContent = "Bubu mendengarkan... 💜";
-          avatar.classList.add("active");
           waveformEl.classList.add("active");
         } else if (state === "idle") {
-          avatar.classList.remove("active");
           waveformEl.classList.remove("active");
           transcriptEl.textContent = "";
           statusText.textContent = "";
