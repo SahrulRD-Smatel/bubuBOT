@@ -24,7 +24,7 @@ struct LinkTestView: View {
 
                 Section("Sessions on your Mac") {
                     if link.sessions.isEmpty {
-                        Text("No session yet. Open bubu on your Mac (NotchBuddyCloud).")
+                        Text("No session yet. Open Coucou on your Mac (NotchBuddyCloud).")
                             .foregroundStyle(.secondary)
                     }
                     ForEach(link.sessions) { session in
@@ -35,8 +35,8 @@ struct LinkTestView: View {
                                 .background(Color.mochiTile(hex: session.color), in: RoundedRectangle(cornerRadius: 10))
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(session.name.isEmpty ? session.pillName : session.name)
-                                Text("\(session.pillName) Â· \(session.state.rawValue)" +
-                                     (session.steps.isEmpty ? "" : " Â· \(session.stepIndex + 1)/\(session.steps.count)"))
+                                Text("\(session.pillName) · \(session.state.rawValue)" +
+                                     (session.steps.isEmpty ? "" : " · \(session.stepIndex + 1)/\(session.steps.count)"))
                                     .font(.caption).foregroundStyle(.secondary)
                                 if session.needsApproval {
                                     Text(session.approvalCommand.isEmpty ? "Waiting for your approval" : session.approvalCommand)
@@ -80,7 +80,7 @@ struct LinkTestView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(ping.message.isEmpty ? "Ping" : ping.message)
                             HStack {
-                                Text("\(ping.macName) Â· \(ping.app)")
+                                Text("\(ping.macName) · \(ping.app)")
                                 Spacer()
                                 Text(ping.sentAt, style: .time)
                             }
@@ -93,7 +93,7 @@ struct LinkTestView: View {
                     }
                 }
             }
-            .navigationTitle("bubu link test")
+            .navigationTitle("Coucou link test")
             .refreshable { await link.refresh() }
             .toolbar {
                 NavigationLink("Kit") { KitPreviewView() }
@@ -103,13 +103,13 @@ struct LinkTestView: View {
     @ViewBuilder private var statusRow: some View {
         switch link.status {
         case .starting:
-            Label("Connecting to iCloudâ€¦", systemImage: "icloud")
+            Label("Connecting to iCloud…", systemImage: "icloud")
         case .noAccount(let reason):
             Label("iCloud not connected. \(reason) Sign in in Settings, using the same account as your Mac.",
                   systemImage: "icloud.slash")
                 .foregroundStyle(.orange)
         case .zoneMissing:
-            Label("The bubu zone doesn't exist yet. Launch bubu on your Mac (NotchBuddyCloud scheme), then pull to refresh.",
+            Label("The Coucou zone doesn't exist yet. Launch Coucou on your Mac (NotchBuddyCloud scheme), then pull to refresh.",
                   systemImage: "tray")
                 .foregroundStyle(.orange)
         case .ready:

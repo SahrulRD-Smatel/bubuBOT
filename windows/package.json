@@ -1,16 +1,17 @@
 {
-  "name": "bubu-windows",
+  "name": "coucou-windows",
   "private": true,
-  "version": "0.1.1",
+  "version": "0.4.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
+    "test": "node --import ./tests/setup.mjs --test \"tests/**/*.test.mjs\"",
     "icons": "node scripts/gen-icons.mjs",
     "tauri": "tauri",
-    "predev": "cargo build --release -p bubu-hook",
-    "prebuild": "cargo build --release -p bubu-hook",
+    "predev": "cargo build --release -p coucou-hook",
+    "prebuild": "cargo build --release -p coucou-hook",
     "pack": "tauri build && node scripts/pack.mjs"
   },
   "devDependencies": {

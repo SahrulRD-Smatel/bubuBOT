@@ -72,7 +72,7 @@ export class VoiceCallClient {
             type: "session.start",
             apiKey,
             language: "id",
-            model: State.settings.geminiModel || "models/gemini-3.8-live",
+            model: (State.settings as any).geminiModel || State.settings.chatModels?.["gemini"] || "models/gemini-3.8-live",
           }),
         );
       };

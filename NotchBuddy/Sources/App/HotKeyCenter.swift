@@ -4,14 +4,14 @@ import Carbon.HIToolbox
 // MARK: - C-level event handler
 //
 // Carbon's InstallEventHandler requires a top-level C-compatible function.
-// We store state in nonisolated(unsafe) globals â€” safe because all mutations
+// We store state in nonisolated(unsafe) globals — safe because all mutations
 // happen on the main thread (Carbon dispatches hot-key events on the main thread).
 
 private nonisolated(unsafe) var gHotKeyHandler: EventHandlerRef? = nil
 private nonisolated(unsafe) var gHotKeyTable: [UInt32: ShortcutAction] = [:]
 private nonisolated(unsafe) var gOnAction: ((ShortcutAction) -> Void)? = nil
 
-private func bubuHotKeyEventHandler(
+private func coucouHotKeyEventHandler(
     _: EventHandlerCallRef?,
     _ event: EventRef?,
     _: UnsafeMutableRawPointer?
@@ -47,10 +47,10 @@ final class HotKeyCenter {
     static let shared = HotKeyCenter()
     private init() {}
 
-    // "COUC" in big-endian â€” unique signature for bubu's hot-key IDs
+    // "COUC" in big-endian — unique signature for Coucou's hot-key IDs
     private let kSignature = OSType(0x434F5543)
 
-    // Live registered refs (action â†’ EventHotKeyRef)
+    // Live registered refs (action → EventHotKeyRef)
     private var refs: [ShortcutAction: EventHotKeyRef] = [:]
 
     /// Actions whose `RegisterEventHotKey` call failed (system conflict).
@@ -59,7 +59,7 @@ final class HotKeyCenter {
     // MARK: - Lifecycle
 
     /// Start the hot-key engine and fire `onAction` whenever the user presses a registered shortcut.
-    /// Safe to call more than once â€” the handler is installed only once.
+    /// Safe to call more than once — the handler is installed only once.
     func start(onAction: @escaping @MainActor (ShortcutAction) -> Void) {
         gOnAction = onAction
 
@@ -70,7 +70,7 @@ final class HotKeyCenter {
             )
             InstallEventHandler(
                 GetApplicationEventTarget(),
-                bubuHotKeyEventHandler,
+                coucouHotKeyEventHandler,
                 1, &spec,
                 nil, &gHotKeyHandler
             )

@@ -156,7 +156,7 @@ private struct RecapSharePanelView: View {
                 Button("Save…") {
                     guard let img = nsImage else { return }
                     let panel = NSSavePanel()
-                    panel.nameFieldStringValue = "Bubu-weekly-recap.png"
+                    panel.nameFieldStringValue = "coucou-weekly-recap.png"
                     panel.allowedContentTypes = [.png]
                     panel.begin { result in
                         guard result == .OK, let url = panel.url else { return }
@@ -224,7 +224,7 @@ struct RecapShareImageView: View {
                 .frame(width: 200, height: 200)
                 .padding(.bottom, 20)
 
-                Text("Bubu")
+                Text("Coucou")
                     .font(.system(size: 52, weight: .black, design: .rounded))
                     .foregroundColor(Color(hex: "#F1F2F4"))
                 Text(String(localized: "recap.title"))
@@ -302,7 +302,7 @@ struct RecapShareImageView: View {
 
                 Spacer()
 
-                Text("Bubu · github.com/Sahrul/Bubu")
+                Text("Coucou · github.com/Louis-CFM/coucou")
                     .font(.system(size: 20, weight: .medium, design: .monospaced))
                     .foregroundColor(Color(hex: "#8E939C").opacity(0.6))
                     .padding(.bottom, 60)
@@ -366,4 +366,3 @@ struct RecapShareImageView: View {
         return m == 0 ? "\(h)h" : "\(h)h \(m)m"
     }
 }
-

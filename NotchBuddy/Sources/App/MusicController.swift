@@ -17,7 +17,7 @@ final class MusicController: ObservableObject {
 
     private var notifTokens: [Any] = []
     private var cancellables = Set<AnyCancellable>()
-    private let queue = DispatchQueue(label: "fr.louisraille.bubu.music")
+    private let queue = DispatchQueue(label: "fr.louisraille.coucou.music")
 
     private var isPillActive: Bool {
         AppState.shared.activeIntegrations.contains("integration_music")
@@ -42,7 +42,7 @@ final class MusicController: ObservableObject {
         }
         notifTokens.append(tok1)
 
-        // Track Music launch Ã¢â‚¬â€ read current state only if granted and pill active
+        // Track Music launch — read current state only if granted and pill active
         let tok2 = NSWorkspace.shared.notificationCenter.addObserver(
             forName: NSWorkspace.didLaunchApplicationNotification,
             object: nil,
@@ -54,7 +54,7 @@ final class MusicController: ObservableObject {
             Task { @MainActor [weak self] in
                 guard let self else { return }
                 guard self.isPillActive,
-                      UserDefaults.standard.bool(forKey: "bubu.musicAutomationGranted") else { return }
+                      UserDefaults.standard.bool(forKey: "coucou.musicAutomationGranted") else { return }
                 self.fetchAndApply()
             }
         }
@@ -73,13 +73,13 @@ final class MusicController: ObservableObject {
         }
         notifTokens.append(tok3)
 
-        // Observe activeIntegrations Ã¢â‚¬â€ pill activated Ã¢â€ â€™ initial read; deactivated Ã¢â€ â€™ clear
+        // Observe activeIntegrations — pill activated → initial read; deactivated → clear
         AppState.shared.$activeIntegrations
             .sink { [weak self] integrations in
                 guard let self else { return }
                 if integrations.contains("integration_music") {
                     if self.isMusicRunning(),
-                       UserDefaults.standard.bool(forKey: "bubu.musicAutomationGranted") {
+                       UserDefaults.standard.bool(forKey: "coucou.musicAutomationGranted") {
                         self.fetchAndApply()
                     }
                 } else {
@@ -145,7 +145,7 @@ final class MusicController: ObservableObject {
         AppState.shared.musicPlaying = playing
         syncTaskName()
 
-        // Reveal only on transition from not-playing Ã¢â€ â€™ playing
+        // Reveal only on transition from not-playing → playing
         if playing && !wasPlaying {
             NotificationCenter.default.post(name: .musicReveal, object: nil)
         }
@@ -204,9 +204,31 @@ final class MusicController: ObservableObject {
 
     // MARK: - Playback controls
 
+    func getVolume() async -> Int? {
+        guard isMusicRunning() else { return nil }
+        let result = await runAppleScript(#"tell application id "com.apple.Music" to return sound volume"#)
+        if case .success(let vals) = result, let str = vals.first, let v = Int(str) { return v }
+        return nil
+    }
+
     func playPause() {
         guard isMusicRunning() else { return }
         Task { await runAppleScript(#"tell application id "com.apple.Music" to playpause"#) }
+    }
+
+    func play() {
+        guard isMusicRunning() else { return }
+        Task { await runAppleScript(#"tell application id "com.apple.Music" to play"#) }
+    }
+
+    func pause() {
+        guard isMusicRunning() else { return }
+        Task { await runAppleScript(#"tell application id "com.apple.Music" to pause"#) }
+    }
+
+    func setVolume(_ pct: Int) {
+        let clamped = max(0, min(100, pct))
+        Task { await runAppleScript(#"tell application id "com.apple.Music" to set sound volume to \#(clamped)"#) }
     }
 
     func nextTrack() {
@@ -217,6 +239,62 @@ final class MusicController: ObservableObject {
     func previousTrack() {
         guard isMusicRunning() else { return }
         Task { await runAppleScript(#"tell application id "com.apple.Music" to back track"#) }
+    }
+
+    func adjustVolume(by delta: Int) {
+        Task {
+            let result = await runAppleScript(
+                #"tell application id "com.apple.Music" to set sound volume to (sound volume + \#(delta))"#
+            )
+            _ = result
+        }
+    }
+
+    func playArtist(_ name: String) async -> Bool {
+        let escaped = name
+            .replacingOccurrences(of: "\\", with: "\\\\")
+            .replacingOccurrences(of: "\"", with: "\\\"")
+        let result = await runAppleScript("""
+            tell application id "com.apple.Music"
+                try
+                    set tr to (first track of library playlist 1 whose artist contains "\(escaped)")
+                    play tr
+                    return "ok"
+                on error
+                    return "notfound"
+                end try
+            end tell
+        """)
+        if case .success(let vals) = result, vals.first == "ok" { return true }
+        return false
+    }
+
+    func playSearch(_ query: String) async -> Bool {
+        let escaped = query
+            .replacingOccurrences(of: "\\", with: "\\\\")
+            .replacingOccurrences(of: "\"", with: "\\\"")
+        let result = await runAppleScript("""
+            tell application id "com.apple.Music"
+                try
+                    set tr to (first track of library playlist 1 whose name contains "\(escaped)" or artist contains "\(escaped)")
+                    play tr
+                    return "ok"
+                on error
+                    return "notfound"
+                end try
+            end tell
+        """)
+        if case .success(let vals) = result, vals.first == "ok" { return true }
+        return false
+    }
+
+    func playPlaylist(_ name: String) async -> Bool {
+        let escaped = name
+            .replacingOccurrences(of: "\\", with: "\\\\")
+            .replacingOccurrences(of: "\"", with: "\\\"")
+        let result = await runAppleScript(#"tell application id "com.apple.Music" to play playlist "\#(escaped)""#)
+        if case .success(_) = result { return true }
+        return false
     }
 
     func openMusic() {
@@ -249,7 +327,7 @@ final class MusicController: ObservableObject {
                     if code == -1743 {
                         Task { @MainActor in
                             AppState.shared.musicAutomationDenied = true
-                            UserDefaults.standard.set(false, forKey: "bubu.musicAutomationGranted")
+                            UserDefaults.standard.set(false, forKey: "coucou.musicAutomationGranted")
                         }
                         cont.resume(returning: .denied)
                     } else {
@@ -258,7 +336,7 @@ final class MusicController: ObservableObject {
                     return
                 }
                 Task { @MainActor in
-                    UserDefaults.standard.set(true, forKey: "bubu.musicAutomationGranted")
+                    UserDefaults.standard.set(true, forKey: "coucou.musicAutomationGranted")
                     AppState.shared.musicAutomationDenied = false
                 }
                 // Extract values on this queue before resuming (avoids NSAppleEventDescriptor Sendable issues)

@@ -4,7 +4,7 @@ import CloudKit
 
 // MARK: - iPhone link
 //
-// Starts and stops the iPhone sync (Settings Ã¢â€ â€™ General Ã¢â€ â€™ iPhone, off by
+// Starts and stops the iPhone sync (Settings → General → iPhone, off by
 // default): push registration and SessionPublisher. Nothing runs and nothing
 // is sent to iCloud while it is off.
 //
@@ -19,9 +19,9 @@ import CloudKit
 final class CloudProbe {
     static let shared = CloudProbe()
 
-    static let containerID = "iCloud.fr.louisraille.bubu"
-    static let zoneID = CKRecordZone.ID(zoneName: "bubu", ownerName: CKCurrentUserDefaultName)
-    private static let subscriptionID = "bubu-zone-mac"
+    static let containerID = "iCloud.fr.louisraille.Coucou"
+    static let zoneID = CKRecordZone.ID(zoneName: "Coucou", ownerName: CKCurrentUserDefaultName)
+    private static let subscriptionID = "coucou-zone-mac"
 
     private let container = CKContainer(identifier: CloudProbe.containerID)
     private var database: CKDatabase { container.privateCloudDatabase }
@@ -32,14 +32,14 @@ final class CloudProbe {
     private var changeToken: CKServerChangeToken?
     private var seenPongs = Set<String>()
     private var fetching = false
-    private var lastPushAt: Date?
+    private(set) var lastPushAt: Date?
     private var started = false
     private var pingTask: Task<Void, Never>?
     private var pollTask: Task<Void, Never>?
 
     private var appLabel: String {
         #if APPSTORE
-        "bubuAppStore"
+        "CoucouAppStore"
         #else
         "NotchBuddy"
         #endif
@@ -71,6 +71,13 @@ final class CloudProbe {
         NSApplication.shared.unregisterForRemoteNotifications()
         SessionPublisher.shared.stop()
         ApprovalRelay.shared.stop()
+        QuestionRelay.shared.stop()
+        ServiceDetailRunner.shared.stop()
+        ServicePublisher.shared.stop()
+        TurnRecorder.shared.stop()
+        #if !APPSTORE
+        InstructionRunner.shared.stop()
+        #endif
         LiveActivityRelay.shared.stop()
         log("iPhone sync off")
     }
@@ -87,7 +94,16 @@ final class CloudProbe {
         NSApplication.shared.registerForRemoteNotifications()
         SessionPublisher.shared.start()
         ApprovalRelay.shared.start()
+        QuestionRelay.shared.start()
+        ServiceDetailRunner.shared.start()
+        ServicePublisher.shared.start()
+        TurnRecorder.shared.start()
+        #if !APPSTORE
+        InstructionRunner.shared.startIfEnabled()
+        #endif
         LiveActivityRelay.shared.startIfEnabled()
+        // The silent database subscription, so the iPhone's requests (services) wake this Mac.
+        Task { _ = await prepare() }
 
         // Step 1 Ping/Pong test: off unless asked for, so the Mac stays idle at rest
         // (defaults write fr.louisraille.NotchBuddy phoneLinkPing -bool YES).
@@ -122,7 +138,7 @@ final class CloudProbe {
                 return false
             }
             _ = try await database.modifyRecordZones(saving: [CKRecordZone(zoneID: Self.zoneID)], deleting: [])
-            log("zone bubu ready")
+            log("zone Coucou ready")
 
             let sub = CKDatabaseSubscription(subscriptionID: Self.subscriptionID)
             let info = CKSubscription.NotificationInfo()
@@ -168,6 +184,13 @@ final class CloudProbe {
             return
         }
         lastPushAt = Date()
+        // A request from the iPhone (a service to read, an action) may be waiting.
+        Task { await ServiceDetailRunner.shared.checkNow() }
+        #if !APPSTORE
+        // An instruction from the iPhone may be waiting too: no need to wait for the poll.
+        Task { await InstructionRunner.shared.checkNow() }
+        #endif
+        guard pingTask != nil else { return }   // the Pong fetch is only for the ping test
         log("push received")
         Task { await fetchChanges(source: "push") }
     }
@@ -189,7 +212,7 @@ final class CloudProbe {
         } catch let error as CKError where error.code == .changeTokenExpired {
             changeToken = nil
         } catch let error as CKError where error.code == .zoneNotFound {
-            log("zone bubu missing, recreating")
+            log("zone Coucou missing, recreating")
             ready = false
         } catch {
             log("fetch (\(source)) failed: \(error.localizedDescription)")

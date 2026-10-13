@@ -4,6 +4,12 @@ import SwiftUI
 
 struct ClaudePlanCardView: View {
     let usage: PlanUsage?   // nil = installed, no data yet
+    #if !APPSTORE
+    /// Claude and Codex both shown: Codex is a third row (the header has room for one pill).
+    var codexRow: Bool = false
+    var codexUsage: CodexPlanUsage? = nil
+    var onCodex: () -> Void = {}
+    #endif
 
     @State private var now = Date()
 
@@ -15,7 +21,7 @@ struct ClaudePlanCardView: View {
                 Circle()
                     .fill(Color(hex: ClaudePlanGauge.color(for: dominant)))
                     .frame(width: 7, height: 7)
-                Text("Claude plan")
+                Text(String(localized: "plan.card.title"))
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(Color(hex: "#F5F6F8"))
                 Text(subtitleText)
@@ -30,8 +36,20 @@ struct ClaudePlanCardView: View {
 
             // Gauge rows
             VStack(alignment: .leading, spacing: 5) {
-                GaugeRowView(label: "5 hours", window: usage?.fiveHour, now: now)
-                GaugeRowView(label: "Week",    window: usage?.sevenDay,  now: now, weekly: true)
+                GaugeRowView(label: String(localized: "plan.5hours"), window: usage?.fiveHour, now: now)
+                GaugeRowView(label: String(localized: "plan.week"),   window: usage?.sevenDay,  now: now, weekly: true)
+                #if !APPSTORE
+                if codexRow {
+                    // The Codex window closest to its limit; a click opens the Codex card.
+                    Button(action: onCodex) {
+                        let window = codexDominantWindow
+                        GaugeRowView(label: "Codex", window: window, now: now,
+                                     weekly: window != nil && window == codexUsage?.sevenDay)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                }
+                #endif
             }
             .padding(.top, 8)
             .padding(.leading, 108)
@@ -47,27 +65,39 @@ struct ClaudePlanCardView: View {
         )
     }
 
+    #if !APPSTORE
+    private var codexDominantWindow: PlanWindow? {
+        guard let u = codexUsage else { return nil }
+        switch (u.fiveHour, u.sevenDay) {
+        case (nil, nil): return nil
+        case (let f?, nil): return f
+        case (nil, let w?): return w
+        case (let f?, let w?):
+            return ClaudePlanGauge.effectivePct(f) >= ClaudePlanGauge.effectivePct(w) ? f : w
+        }
+    }
+    #endif
+
     private var subtitleText: String {
-        guard let usage else { return "Waiting for a Claude Code reply" }
+        guard let usage else { return String(localized: "plan.waiting") }
         let diff = now.timeIntervalSince(usage.updatedAt)
-        if diff < 60 { return String(localized: "plan.just-now", defaultValue: "just now") }
+        if diff < 60 { return String(localized: "plan.just-now") }
         let mins = Int(diff / 60)
-        if mins < 60 { return String(format: String(localized: "plan.mins-ago %lld", defaultValue: "%lld min ago"), Int64(mins)) }
-        return "\(mins / 60) h ago"
+        if mins < 60 { return String(format: String(localized: "plan.mins-ago %lld"), Int64(mins)) }
+        return String(format: String(localized: "plan.hours-ago %lld"), Int64(mins / 60))
     }
 }
 
 // MARK: - Gauge Row
 
-// DateFormatter created once, in English, for the weekly reset label
+// DateFormatter created once for the weekly reset label
 private let weeklyResetFormatter: DateFormatter = {
     let fmt = DateFormatter()
-    fmt.locale = Locale(identifier: "en_US_POSIX")
     fmt.dateFormat = "EEE H:mm"
     return fmt
 }()
 
-private struct GaugeRowView: View {
+struct GaugeRowView: View {
     let label: String
     let window: PlanWindow?
     let now: Date
@@ -115,14 +145,14 @@ private struct GaugeRowView: View {
 
     private func resetLabel(_ w: PlanWindow) -> String {
         let secs = w.resetsAt.timeIntervalSince(now)
-        guard secs > 0 else { return "Resetting…" }
+        guard secs > 0 else { return String(localized: "plan.resetting") }
         if weekly {
             return weeklyResetFormatter.string(from: w.resetsAt)
         } else {
             let h = Int(secs / 3600)
             let m = Int((secs.truncatingRemainder(dividingBy: 3600)) / 60)
-            if h > 0 { return "in \(h) h \(m)" }
-            return "in \(m) min"
+            if h > 0 { return String(format: String(localized: "plan.reset-in-hm %lld %lld"), Int64(h), Int64(m)) }
+            return String(format: String(localized: "plan.reset-in-m %lld"), Int64(m))
         }
     }
 }

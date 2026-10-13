@@ -1,4 +1,4 @@
-# bubu relay
+# Coucou relay
 
 A tiny Cloudflare Worker that lets the Mac app start and update the iPhone's
 Live Activity (Mochi in the Dynamic Island while the Mac is locked).
@@ -8,13 +8,15 @@ key can't ship inside the Mac app. The Mac posts Mochi's state here; the relay
 signs and forwards it to Apple.
 
 What it sees: the push token of the iPhone's Live Activity and Mochi's state
-(agent name, state, "working Â· 3/7", counts). Never a project name, a command,
-a path or a message. It stores nothing and logs nothing.
+(agent name, state, "working · 3/7", counts), plus, while a command waits for
+your OK, its fingerprint (a SHA-256 hash, so the Lock Screen's Allow and Deny
+answer that exact command). Never a project name, a command, a path or a
+message. It stores nothing and logs nothing.
 
 ## Deploy (once)
 
-1. Apple Developer â†’ Certificates, Identifiers & Profiles â†’ **Keys** â†’ **+**.
-   Name it "bubu relay", tick **Apple Push Notifications service (APNs)**,
+1. Apple Developer → Certificates, Identifiers & Profiles → **Keys** → **+**.
+   Name it "Coucou relay", tick **Apple Push Notifications service (APNs)**,
    environment **Sandbox & Production**, Continue, Register, **Download** the
    `AuthKey_XXXXXXXXXX.p8` (only downloadable once). Note the **Key ID**.
 2. A free Cloudflare account, then in this folder:
@@ -25,8 +27,8 @@ a path or a message. It stores nothing and logs nothing.
    npx wrangler secret put APNS_KEY < ~/Downloads/AuthKey_XXXXXXXXXX.p8
    npx wrangler deploy
    ```
-   `deploy` prints the URL, like `https://bubu-relay.<you>.workers.dev`.
-3. Check it: `curl https://bubu-relay.<you>.workers.dev/` answers "bubu relay".
+   `deploy` prints the URL, like `https://coucou-relay.<you>.workers.dev`.
+3. Check it: `curl https://coucou-relay.<you>.workers.dev/` answers "Coucou relay".
 
 ## API
 

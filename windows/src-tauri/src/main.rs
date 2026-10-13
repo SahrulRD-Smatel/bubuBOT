@@ -1,6 +1,6 @@
-// Bubu runs without a console window: Mochi is the whole UI.
+// Coucou runs without a console window: Mochi is the whole UI.
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    bubu_lib::run()
+    coucou_lib::run()
 }

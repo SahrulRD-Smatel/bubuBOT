@@ -9,7 +9,7 @@ import CryptoKit
 // While Claude Code (or Cursor, Codex) waits for a permission:
 //  1. an `ApprovalRequest` record goes to iCloud; the iPhone's query subscription
 //     turns it into a notification;
-//  2. the Mac looks for a `Decision` record every 2 s â€” only while a request is
+//  2. the Mac looks for a `Decision` record every 2 s — only while a request is
 //     pending, so nothing runs at rest;
 //  3. a decision is applied only if its fingerprint matches the request still
 //     pending (same session, tool, command and input). A late decision, or one
@@ -21,7 +21,7 @@ import CryptoKit
 final class ApprovalRelay {
     static let shared = ApprovalRelay()
 
-    private let container = CKContainer(identifier: "iCloud.fr.louisraille.bubu")
+    private let container = CKContainer(identifier: "iCloud.fr.louisraille.Coucou")
     private var database: CKDatabase { container.privateCloudDatabase }
     private var zoneID: CKRecordZone.ID { SessionSnapshot.zoneID }
 
@@ -149,10 +149,10 @@ final class ApprovalRelay {
         switch decision {
         case "allow":
             log("allowed from the iPhone: \(pending.tool)")
-            HookServer.shared.sendApprovalDecision("allow")
+            HookServer.shared.sendApprovalDecision("allow", for: pending.id)
         case "deny":
             log("denied from the iPhone: \(pending.tool)")
-            HookServer.shared.sendApprovalDecision("deny")
+            HookServer.shared.sendApprovalDecision("deny", for: pending.id)
         default:
             log("unknown decision '\(decision)', ignored")
         }

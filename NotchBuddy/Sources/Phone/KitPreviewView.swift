@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Step 3 check: BubuKit (Mochi, pills, diff, models) drawn on the iPhone
+/// Step 3 check: CoucouKit (Mochi, pills, diff, models) drawn on the iPhone
 /// with the Mac's own code.
 struct KitPreviewView: View {
     private let poses: [(BotState, EyeShape?, String)] = [
@@ -16,12 +16,12 @@ struct KitPreviewView: View {
 
     private let sampleDiff = DiffEngine.fromEdit(
         old: "func greet() {\n    print(\"Hello\")\n}\n",
-        new: "func greet(name: String) {\n    print(\"bubu \\(name)\")\n}\n",
-        path: "/bubu/Greeting.swift")
+        new: "func greet(name: String) {\n    print(\"Coucou \\(name)\")\n}\n",
+        path: "/coucou/Greeting.swift")
 
     var body: some View {
         List {
-            Section("Mochi Ã¢â‚¬â€ fixed poses") {
+            Section("Mochi — fixed poses") {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 72))], spacing: 12) {
                     ForEach(Array(poses.enumerated()), id: \.offset) { index, pose in
                         VStack(spacing: 4) {
@@ -55,7 +55,7 @@ struct KitPreviewView: View {
                 }
             }
 
-            Section("Diff Ã¢â‚¬â€ \(sampleDiff.name) +\(sampleDiff.added) Ã¢Ë†â€™\(sampleDiff.removed)") {
+            Section("Diff — \(sampleDiff.name) +\(sampleDiff.added) −\(sampleDiff.removed)") {
                 VStack(alignment: .leading, spacing: 0) {
                     ForEach(Array(sampleDiff.hunks.flatMap(\.lines).enumerated()), id: \.offset) { _, line in
                         Text(prefix(line.kind) + line.text)
@@ -67,7 +67,7 @@ struct KitPreviewView: View {
                 }
             }
         }
-        .navigationTitle("BubuKit")
+        .navigationTitle("CoucouKit")
     }
 
     private func tileColor(_ index: Int) -> Color {
@@ -78,7 +78,7 @@ struct KitPreviewView: View {
     private func prefix(_ kind: DiffLine.Kind) -> String {
         switch kind {
         case .added: "+ "
-        case .removed: "Ã¢Ë†â€™ "
+        case .removed: "− "
         case .context: "  "
         }
     }

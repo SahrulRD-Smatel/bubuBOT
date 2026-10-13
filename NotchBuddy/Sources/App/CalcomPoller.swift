@@ -8,7 +8,7 @@ final class CalcomPoller: @unchecked Sendable {
     func start() {
         guard timer == nil else { return }
         let t = DispatchSource.makeTimerSource(queue: .global(qos: .background))
-        t.schedule(deadline: .now() + 8, repeating: 300)
+        t.schedule(deadline: .now() + 8, repeating: 300, leeway: .seconds(30))
         t.setEventHandler { [weak self] in self?.poll() }
         t.resume()
         timer = t
@@ -26,7 +26,14 @@ final class CalcomPoller: @unchecked Sendable {
         let startStr = iso.string(from: today)
         let endStr   = iso.string(from: future)
 
-        guard let url = URL(string: "https://api.cal.com/v2/bookings?status=upcoming&start=\(startStr)&end=\(endStr)") else { return }
+        // API v2 (2024-08-13) filters on afterStart / beforeEnd; `start` and `end` aren't
+        // query parameters there, so they returned nothing.
+        var components = URLComponents(string: "https://api.cal.com/v2/bookings")!
+        components.queryItems = [URLQueryItem(name: "status", value: "upcoming"),
+                                 URLQueryItem(name: "afterStart", value: startStr),
+                                 URLQueryItem(name: "beforeEnd", value: endStr),
+                                 URLQueryItem(name: "take", value: "50")]
+        guard let url = components.url else { return }
         var req = URLRequest(url: url, timeoutInterval: 10)
         req.setValue("Bearer \(key)", forHTTPHeaderField: "Authorization")
         req.setValue("2024-08-13", forHTTPHeaderField: "cal-api-version")
@@ -39,7 +46,7 @@ final class CalcomPoller: @unchecked Sendable {
                 if code == 401 { msg = "Invalid API key (401)" }
                 else if code == 0 { msg = error?.localizedDescription ?? "No connection" }
                 else { msg = "API error \(code)" }
-                DispatchQueue.main.async { AppState.shared.calcomError = msg }
+                DispatchQueue.main.async { AppState.shared.setIfChanged(\.calcomError, msg) }
                 return
             }
             guard let data,
@@ -48,9 +55,9 @@ final class CalcomPoller: @unchecked Sendable {
 
             let parsed = rawList.compactMap { self.parseBooking($0) }
             DispatchQueue.main.async {
-                AppState.shared.calcomError    = nil
-                AppState.shared.calcomBookings = parsed
-                AppState.shared.calcomLoaded   = true
+                AppState.shared.setIfChanged(\.calcomError, nil)
+                AppState.shared.setIfChanged(\.calcomBookings, parsed)
+                AppState.shared.setIfChanged(\.calcomLoaded, true)
             }
         }.resume()
     }

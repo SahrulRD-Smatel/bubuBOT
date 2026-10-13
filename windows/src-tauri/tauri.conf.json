@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Bubu",
-  "version": "0.1.2",
-  "identifier": "com.sahrulrd.bubu",
+  "productName": "Coucou",
+  "version": "0.4.0",
+  "identifier": "fr.louisraille.coucou",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
@@ -12,16 +12,16 @@
   "app": {
     "withGlobalTauri": false,
     "security": {
-      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self' ipc: http://ipc.localhost",
-      "devCsp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self' ipc: http://ipc.localhost ws://localhost:1420 http://localhost:1420"
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self' ipc: http://ipc.localhost ws://localhost:5123",
+      "devCsp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self' ipc: http://ipc.localhost ws://localhost:1420 http://localhost:1420 ws://localhost:5123"
     },
     "windows": [
       {
         "label": "island",
-        "title": "Bubu",
+        "title": "Coucou",
         "url": "index.html",
         "width": 240,
-        "height": 20,
+        "height": 6,
         "resizable": false,
         "decorations": false,
         "transparent": true,
@@ -34,16 +34,14 @@
         "maximizable": false,
         "minimizable": false,
         "closable": false,
-        "dragDropEnabled": true,
+        "dragDropEnabled": false,
         "additionalBrowserArgs": "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection --autoplay-policy=no-user-gesture-required --use-fake-ui-for-media-stream"
       }
     ]
   },
   "bundle": {
     "active": true,
-    "targets": [
-      "nsis"
-    ],
+    "targets": ["nsis", "msi"],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
@@ -51,23 +49,18 @@
       "icons/icon.ico"
     ],
     "resources": {
-      "../target/release/bubu-hook.exe": "bubu-hook.exe",
+      "../target/release/coucou-hook.exe": "coucou-hook.exe",
       "bubu-voice-engine.exe": "bubu-voice-engine.exe",
-      "bubu-voice-relay.exe": "bubu-voice-relay.exe",
-      "model/*": "model",
-      "*.dll": "."
+      "bubu-voice-relay.exe": "bubu-voice-relay.exe"
     },
-    "copyright": "© Sahrul Ramadhani",
+    "copyright": "© Louis Raille",
     "category": "DeveloperTool",
     "shortDescription": "Mochi lives at the top of your screen",
-    "longDescription": "Bubu puts Mochi at the top of your screen: it shows your Claude Code sessions and a few integrations, and lets you approve, answer, chat and drop files without leaving what you are doing.",
+    "longDescription": "Coucou puts Mochi at the top of your screen: it shows your Claude Code sessions and a few integrations, and lets you approve, answer, chat and drop files without leaving what you are doing.",
     "windows": {
       "nsis": {
         "installMode": "currentUser",
-        "languages": [
-          "English",
-          "French"
-        ],
+        "languages": ["English", "French"],
         "installerHooks": "nsis/hooks.nsh"
       }
     }

@@ -6,7 +6,7 @@ import Combine
 // MARK: - iPhone plan, step 4: publish agent sessions to iCloud
 //
 // One `Session` record per agent pill (VS Code / Claude Code, Cursor, Codex,
-// Antigravity, Gemini CLI…) in the private zone `bubu`, so the iPhone can show
+// Antigravity, Gemini CLI…) in the private zone `Coucou`, so the iPhone can show
 // them. Driven only by AppState changes (debounced), never by a timer: nothing
 // runs while no agent changes. Integrations (Stripe, Vercel…) are not sessions.
 //
@@ -18,7 +18,7 @@ import Combine
 final class SessionPublisher {
     static let shared = SessionPublisher()
 
-    private let container = CKContainer(identifier: "iCloud.fr.louisraille.bubu")
+    private let container = CKContainer(identifier: "iCloud.fr.louisraille.Coucou")
     private var database: CKDatabase { container.privateCloudDatabase }
     private var cancellable: AnyCancellable?
 
@@ -171,15 +171,20 @@ struct SessionSnapshot: Equatable {
     let approvalCommand: String
     let approvalFingerprint: String
     let question: String
+    /// The question's choices (QuestionPayload JSON) and its fingerprint, for answering from the iPhone.
+    var questionPayload: String = ""
+    var questionFingerprint: String = ""
 
     static func all(tasks: [AgentTask], approval: ApprovalInfo?,
                     question: AskQuestion?) -> [String: SessionSnapshot] {
         var result: [String: SessionSnapshot] = [:]
-        for task in tasks where task.source != .n8n {
+        // Services (Stripe, GitHub…) go through ServicePublisher, with their data.
+        for task in tasks where task.source != .n8n && PillCatalog.isSession(task.id) {
             let hasApproval = approval?.pillId == task.id
             let questionText = task.state == .question
                 ? (question?.questions.map(\.question).joined(separator: "\n") ?? "")
                 : ""
+            let payload = task.state == .question ? question.map(QuestionPayload.init(ask:)) : nil
             result[task.id] = SessionSnapshot(
                 pillId: task.id,
                 name: task.name,
@@ -192,7 +197,9 @@ struct SessionSnapshot: Equatable {
                 approvalTool: hasApproval ? (approval?.tool ?? "") : "",
                 approvalCommand: hasApproval ? (approval?.command ?? "") : "",
                 approvalFingerprint: hasApproval ? (approval.map(ApprovalRelay.fingerprint) ?? "") : "",
-                question: questionText)
+                question: questionText,
+                questionPayload: payload?.json ?? "",
+                questionFingerprint: payload?.fingerprint ?? "")
         }
         return result
     }
@@ -204,7 +211,7 @@ struct SessionSnapshot: Equatable {
 
     /// Same zone as CloudProbe.zoneID, rebuilt here because that one is main-actor isolated.
     static var zoneID: CKRecordZone.ID {
-        CKRecordZone.ID(zoneName: "bubu", ownerName: CKCurrentUserDefaultName)
+        CKRecordZone.ID(zoneName: "Coucou", ownerName: CKCurrentUserDefaultName)
     }
 
     static func recordID(for pillId: String) -> CKRecord.ID {
@@ -228,8 +235,15 @@ struct SessionSnapshot: Equatable {
         // Identifies the exact request; the iPhone sends it back with its decision.
         record["approvalFingerprint"] = approvalFingerprint
         record["needsAnswer"] = !question.isEmpty
+        record["questionFingerprint"] = questionFingerprint
         record["updatedAt"] = Date()
         record["macName"] = Host.current().localizedName ?? ""
+        // Whether this Mac runs instructions sent from the iPhone (GitHub build, switch on).
+        #if APPSTORE
+        record["acceptsInstructions"] = false
+        #else
+        record["acceptsInstructions"] = InstructionRunner.isEnabled && (pillId == "integration_claude" || pillId == "agent_cursor")
+        #endif
         record.encryptedValues["name"] = name
         record.encryptedValues["steps"] = steps
         record.encryptedValues["cwd"] = cwd
@@ -237,6 +251,7 @@ struct SessionSnapshot: Equatable {
         record.encryptedValues["approvalTool"] = approvalTool
         record.encryptedValues["approvalCommand"] = approvalCommand
         record.encryptedValues["question"] = question
+        record.encryptedValues["questionPayload"] = questionPayload
         return record
     }
 }

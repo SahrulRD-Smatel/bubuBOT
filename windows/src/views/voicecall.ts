@@ -26,12 +26,12 @@ export function buildVoiceCall(actions: ViewActions, onHeightChange: () => void)
 
   const muteBtn = h(
     "button",
-    { class: "vc-btn vc-mute", title: "Mute" },
+    { class: "vc-btn vc-mute" },
     svg(ICONS.mic, 16),
   );
   const endBtn = h(
     "button",
-    { class: "vc-btn vc-end", title: "End Call" },
+    { class: "vc-btn vc-end" },
     h("span", { text: "✕" }),
   );
 
@@ -153,7 +153,6 @@ export function buildVoiceCall(actions: ViewActions, onHeightChange: () => void)
   muteBtn.addEventListener("click", () => {
     isMuted = !isMuted;
     muteBtn.classList.toggle("muted", isMuted);
-    muteBtn.title = isMuted ? "Unmute" : "Mute";
     voiceClient?.setMuted(isMuted);
   });
 
