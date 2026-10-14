@@ -13,6 +13,14 @@ options:
 # Production CloudKit environment, so the iPhone joins it with the
 # BubuPhoneProduction scheme. Release also compiles PHONE_LINK (the sync
 # stays off until turned on in Settings); Debug stays unsigned without it.
+# FluidAudio (Apache-2.0): Parakeet speech-to-text and speaker diarization on the Mac's
+# Neural Engine, for Flow dictation and the Notetaker (GitHub build only). Its models are
+# downloaded from Hugging Face only when the user clicks Download in Bubu Flow → Settings.
+packages:
+  FluidAudio:
+    url: https://github.com/FluidInference/FluidAudio
+    exactVersion: 0.17.7
+
 configs:
   Debug: debug
   DebugCloud: debug
@@ -136,7 +144,8 @@ targets:
         NSHighResolutionCapable: YES
         NSSupportsAutomaticGraphicsSwitching: YES
         NSAppleEventsUsageDescription: "Pour sauter au terminal, envoyer des mails et piloter Musique et Spotify."
-        NSMicrophoneUsageDescription: "Bubu uses the microphone when you dictate a message in the chat."
+        NSMicrophoneUsageDescription: "Bubu uses the microphone when you dictate, and to note your calls when you ask it to."
+        NSAudioCaptureUsageDescription: "Bubu records what your Mac plays only while you note a call, to write down what the other people say."
         NSSpeechRecognitionUsageDescription: "Bubu turns your voice into the text of a chat message."
         NSAccessibilityUsageDescription: "Pour lire le titre de la fenêtre active et l'attacher comme contexte."
         NSContactsUsageDescription: "Bubu looks up an email address when you ask it, by voice, to prepare an email."
@@ -178,6 +187,8 @@ targets:
           CODE_SIGN_ENTITLEMENTS: Resources/BubuReleaseCloud.entitlements
           SWIFT_ACTIVE_COMPILATION_CONDITIONS: PHONE_LINK
           PROVISIONING_PROFILE_SPECIFIER: "Bubu Developer ID"
+    dependencies:
+      - package: FluidAudio
     postBuildScripts:
       - name: "Write Git Hash to Info.plist"
         script: |
@@ -208,7 +219,7 @@ targets:
       properties:
         CFBundleName: Bubu
         CFBundleDisplayName: Bubu
-        CFBundleIdentifier: com.bubu.desktop
+        CFBundleIdentifier: fr.louisraille.Bubu
         CFBundleVersion: "6"
         CFBundleShortVersionString: "1.1"
         CFBundlePackageType: APPL
@@ -232,7 +243,7 @@ targets:
           - zh-Hans
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.bubu.desktop
+        PRODUCT_BUNDLE_IDENTIFIER: fr.louisraille.Bubu
         PRODUCT_NAME: Bubu
         INFOPLIST_FILE: Resources/InfoAppStore.plist
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
@@ -283,7 +294,7 @@ targets:
       properties:
         CFBundleName: Bubu
         CFBundleDisplayName: Bubu
-        CFBundleIdentifier: com.bubu.desktop
+        CFBundleIdentifier: fr.louisraille.Bubu
         CFBundleVersion: "3"
         CFBundleShortVersionString: "1.0"
         CFBundlePackageType: APPL
@@ -307,23 +318,23 @@ targets:
         # Steps change often while an agent works: without this, iOS holds back
         # updates once its budget is spent, and "waiting for your OK" came late.
         NSSupportsLiveActivitiesFrequentUpdates: YES
-        # bubu://session/<id>: the widgets open a session in the app.
+        # coucou://session/<id>: the widgets open a session in the app.
         CFBundleURLTypes:
-          - CFBundleURLName: com.bubu.desktop
+          - CFBundleURLName: fr.louisraille.Bubu
             CFBundleURLSchemes:
-              - bubu
+              - coucou
         # Which APNs environment the Live Activity tokens belong to (read by the Mac).
-        BubuAPNsEnvironment: $(BUBU_APNS_ENV)
+        BubuAPNsEnvironment: $(COUCOU_APNS_ENV)
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.bubu.desktop
+        PRODUCT_BUNDLE_IDENTIFIER: fr.louisraille.Bubu
         PRODUCT_NAME: Bubu
         INFOPLIST_FILE: Resources/InfoPhone.plist
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         # Mochi in other colors, picked in Settings (UIApplication.setAlternateIconName).
         ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES: "AppIcon-Blue AppIcon-Green AppIcon-Purple AppIcon-Pink AppIcon-Graphite"
         ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS: NO
-        BUBU_APNS_ENV: production
+        COUCOU_APNS_ENV: production
         IPHONEOS_DEPLOYMENT_TARGET: "18.0"
         TARGETED_DEVICE_FAMILY: "1"
         SUPPORTS_MACCATALYST: NO
@@ -337,10 +348,10 @@ targets:
         OTHER_CODE_SIGN_FLAGS: ""
       configs:
         Debug:
-          BUBU_APNS_ENV: development
+          COUCOU_APNS_ENV: development
         DebugCloud:
           CODE_SIGN_ENTITLEMENTS: Resources/BubuPhoneProduction.entitlements
-          BUBU_APNS_ENV: development
+          COUCOU_APNS_ENV: development
 
   # Home Screen and Lock Screen widgets (Solo, Team, List, accessories). They
   # read the sessions the iPhone app saves to the shared App Group.
@@ -363,7 +374,7 @@ targets:
       properties:
         CFBundleName: BubuWidgets
         CFBundleDisplayName: Bubu
-        CFBundleIdentifier: com.bubu.desktop.Widgets
+        CFBundleIdentifier: fr.louisraille.Bubu.Widgets
         CFBundleVersion: "3"
         CFBundleShortVersionString: "1.0"
         CFBundlePackageType: XPC!
@@ -371,7 +382,7 @@ targets:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.bubu.desktop.Widgets
+        PRODUCT_BUNDLE_IDENTIFIER: fr.louisraille.Bubu.Widgets
         SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) WIDGET_EXTENSION"
         PRODUCT_NAME: BubuWidgets
         INFOPLIST_FILE: Resources/InfoWidgets.plist
@@ -406,7 +417,7 @@ targets:
       properties:
         CFBundleName: BubuNotificationContent
         CFBundleDisplayName: Bubu
-        CFBundleIdentifier: com.bubu.desktop.NotificationContent
+        CFBundleIdentifier: fr.louisraille.Bubu.NotificationContent
         CFBundleVersion: "3"
         CFBundleShortVersionString: "1.0"
         CFBundlePackageType: XPC!
@@ -414,12 +425,12 @@ targets:
           NSExtensionPointIdentifier: com.apple.usernotifications.content-extension
           NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).NotificationViewController
           NSExtensionAttributes:
-            UNNotificationExtensionCategory: BUBU_APPROVAL
+            UNNotificationExtensionCategory: COUCOU_APPROVAL
             UNNotificationExtensionInitialContentSizeRatio: 0.45
             UNNotificationExtensionDefaultContentHidden: true
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.bubu.desktop.NotificationContent
+        PRODUCT_BUNDLE_IDENTIFIER: fr.louisraille.Bubu.NotificationContent
         PRODUCT_NAME: BubuNotificationContent
         INFOPLIST_FILE: Resources/InfoNotificationContent.plist
         IPHONEOS_DEPLOYMENT_TARGET: "18.0"

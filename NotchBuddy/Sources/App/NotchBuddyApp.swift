@@ -9,5 +9,16 @@ struct NotchBuddyApp: App {
         Settings {
             SettingsView()
         }
+        #if !APPSTORE
+        .commands {
+            // ⌘, and Bubu → Settings… open the notch's pages of the Bubu window.
+            CommandGroup(replacing: .appSettings) {
+                Button(NSLocalizedString("Settings…", comment: "")) {
+                    delegate.openSettings()
+                }
+                .keyboardShortcut(",")
+            }
+        }
+        #endif
     }
 }

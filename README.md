@@ -313,6 +313,8 @@ OpenCode, Amp and Hermes use a plugin model rather than a hook command. Bubu ins
 | Drag Mochi onto a window *(macOS)* | attaches it as context |
 | Click the model name above the chat box *(macOS)* | switch AI provider or model |
 | Say « OK Bubu, play some music » *(macOS)* | listens, thinks, and does it |
+| Hold right ⌥ and speak, in any app *(macOS)* | Mochi listens in the pill, your words are pasted |
+| Hover the pill at the bottom of the screen *(macOS)* | opens a toolbar: dictate, record a call, open Bubu |
 
 ## How it works
 

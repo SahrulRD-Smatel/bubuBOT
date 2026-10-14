@@ -496,17 +496,6 @@
       "ru": "Сначала подключите {name} в «Настройки → Локальные модели».",
       "id": "Hubungkan {name} dulu di Pengaturan → Model lokal."
     },
-    "Copied": {
-      "zh-Hans": "已复制",
-      "hi": "कॉपी हो गया",
-      "es": "Copiado",
-      "ar": "تم النسخ",
-      "fr": "Copié",
-      "bn": "কপি হয়েছে",
-      "pt-BR": "Copiado",
-      "ru": "Скопировано",
-      "id": "Disalin"
-    },
     "Copied — paste it anywhere.": {
       "zh-Hans": "已复制 — 可以粘贴到任何地方。",
       "hi": "कॉपी हो गया — कहीं भी पेस्ट करें।",
@@ -1464,17 +1453,6 @@
       "ru": "Открыть Claude",
       "id": "Buka Claude"
     },
-    "Open Settings": {
-      "zh-Hans": "打开设置",
-      "hi": "सेटिंग्स खोलें",
-      "es": "Abrir Configuración",
-      "ar": "فتح الإعدادات",
-      "fr": "Ouvrir les réglages",
-      "bn": "সেটিংস খুলুন",
-      "pt-BR": "Abrir Configurações",
-      "ru": "Открыть настройки",
-      "id": "Buka Pengaturan"
-    },
     "Open in VS Code": {
       "zh-Hans": "在 VS Code 中打开",
       "hi": "VS Code में खोलें",
@@ -1969,17 +1947,6 @@
       "pt-BR": "Sessões, e Permitir / Negar pela ilha",
       "ru": "Сессии и «Разрешить / Отклонить» из острова",
       "id": "Sesi, dan Izinkan / Tolak dari pulau"
-    },
-    "Settings": {
-      "zh-Hans": "设置",
-      "hi": "सेटिंग्स",
-      "es": "Configuración",
-      "ar": "الإعدادات",
-      "fr": "Réglages",
-      "bn": "সেটিংস",
-      "pt-BR": "Configurações",
-      "ru": "Настройки",
-      "id": "Pengaturan"
     },
     "Share your week": {
       "zh-Hans": "分享你的一周",
