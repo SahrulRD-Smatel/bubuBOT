@@ -129,8 +129,8 @@ targets:
         CFBundleName: Bubu
         CFBundleDisplayName: Bubu
         CFBundleIdentifier: fr.louisraille.NotchBuddy
-        CFBundleVersion: "15"
-        CFBundleShortVersionString: "0.3.0"
+        CFBundleVersion: "16"
+        CFBundleShortVersionString: "0.4.0"
         CFBundlePackageType: APPL
         LSUIElement: YES
         NSHighResolutionCapable: YES
