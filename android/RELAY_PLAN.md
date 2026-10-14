@@ -1,4 +1,4 @@
-# Relay plan: Coucou for Android away from home Wi-Fi (PROPOSAL, nothing is built)
+# Relay plan: Bubu for Android away from home Wi-Fi (PROPOSAL, nothing is built)
 
 Status: **approved by the user on 2026-10-10**, with the decisions and two additions below. Implementation goes stage by stage
 (R0 first); the user is told the commit id after each stage. Nothing is deployed, published or sent to Louis, and Louis's
@@ -42,7 +42,7 @@ Wi-Fi), with no USB, no VPN and no shared Wi-Fi. The direct LAN link stays as th
 ## 2. Architecture in one picture
 
 ```
- PC (Coucou, Rust)  ──outbound WSS──►  Cloudflare Worker  ──►  Durable Object "room"  ◄──  outbound WSS ──  Phone (Kotlin)
+ PC (Bubu, Rust)  ──outbound WSS──►  Cloudflare Worker  ──►  Durable Object "room"  ◄──  outbound WSS ──  Phone (Kotlin)
                                         (routes by room id)     (forwards opaque frames)
         └────────────────── direct LAN link (TLS, pinned) stays the fast path ──────────────────┘
 ```
@@ -63,7 +63,7 @@ URL shape: `wss://<the user's worker>/v1/room/<roomId>?role=pc|phone`.
 The pairing link and QR gain optional fields (old phones ignore unknown keys and keep pairing over the LAN only):
 
 ```
-coucou://pair?v=1&host=...&port=...&fp=...&token=...&name=...&relay=wss%3A%2F%2Fmy-relay.example.workers.dev&room=<22 chars>&key=<43 chars>
+bubu://pair?v=1&host=...&port=...&fp=...&token=...&name=...&relay=wss%3A%2F%2Fmy-relay.example.workers.dev&room=<22 chars>&key=<43 chars>
 ```
 
 - `room`: 128 random bits (base64url, 22 characters). Unguessable. It is a locator, not a secret the design leans on.
@@ -78,9 +78,9 @@ coucou://pair?v=1&host=...&port=...&fp=...&token=...&name=...&relay=wss%3A%2F%2F
 
 | name | derivation | use |
 |---|---|---|
-| `K_auth` | `HKDF(K, info="coucou-relay/v1 auth")` | MACs the two handshake frames |
-| `K_join` | `HKDF(K, info="coucou-relay/v1 join")` | presented to the relay as a join proof (section 6) |
-| `k_p2h`, `k_h2p` | `HKDF(K, salt = N_phone ‖ N_pc, info="coucou-relay/v1 session")`, 32 bytes each | session keys, one per direction |
+| `K_auth` | `HKDF(K, info="bubu-relay/v1 auth")` | MACs the two handshake frames |
+| `K_join` | `HKDF(K, info="bubu-relay/v1 join")` | presented to the relay as a join proof (section 6) |
+| `k_p2h`, `k_h2p` | `HKDF(K, salt = N_phone ‖ N_pc, info="bubu-relay/v1 session")`, 32 bytes each | session keys, one per direction |
 
 **Cipher.** AES-256-GCM (hardware-accelerated on both sides; `ring::aead` and `javax.crypto`, so no new crate or library).
 One key per direction and per connection, and a **96-bit nonce = direction byte ‖ 3 zero bytes ‖ 64-bit frame counter** (addition 2). A counter nonce
@@ -97,7 +97,7 @@ nonces are not used. A session ends at 2^32 frames and re-handshakes.
 5. If either side reconnects, steps 1 to 4 run again with fresh nonces: new keys, counters back to 0.
 
 **Frame** (WebSocket binary message): `ver(1) ‖ type(1) ‖ counter(8) ‖ AES-GCM(ciphertext ‖ tag)`.
-- AAD = `"coucou-relay/v1" ‖ room ‖ direction ‖ ver ‖ type ‖ counter`. A frame cannot be moved to another room, turned
+- AAD = `"bubu-relay/v1" ‖ room ‖ direction ‖ ver ‖ type ‖ counter`. A frame cannot be moved to another room, turned
   around, or have its header changed.
 - Data frames carry exactly one v1 line (UTF-8 JSON, at most 64 KiB, as on the LAN), padded to a multiple of 128 bytes
   so the size does not tell "ping" from "approval" (decision D7).
@@ -163,10 +163,10 @@ path, approval, chat text or file name, and not K.
 
 ## 6. The relay's rules, in detail
 
-- `GET /` answers `Coucou link relay` (a health check, like Louis's).
+- `GET /` answers `Bubu link relay` (a health check, like Louis's).
 - `GET /v1/room/<id>?role=pc|phone` with `Upgrade: websocket`; `<id>` must be 22 base64url characters, else 404 before any
   object is touched; `Authorization: Bearer <access key>` must match the Worker secret (401, constant-time, fail closed).
-  Sub-protocol offer `coucou.v1, coucou.join.<K_join>` carries the join proof (base64url of 32 bytes). The wire is specified in `docs/RELAY_LINK.md`.
+  Sub-protocol offer `bubu.v1, bubu.join.<K_join>` carries the join proof (base64url of 32 bytes). The wire is specified in `docs/RELAY_LINK.md`.
 - **Join proof, held in memory only:** the first socket of a room sets `verifier = SHA-256(K_join)` in the socket's
   hibernation attachment (not storage). Later sockets must present a `K_join` that hashes to the same value or are refused
   (1008). When the room is empty the verifier is gone, so nothing is ever stored. Consequence: an attacker who knows the
@@ -255,7 +255,7 @@ The relay transport lives inside the same service. Design:
 - Louis's `relay/` is a Cloudflare Worker that holds his **APNs key** and does one job: Live Activity pushes for the iPhone. It is
   not touched.
 - The Android fork would add a **separate, key-less, user-deployed** relay (`android/relay/`, never under his `relay/`), used only
-  by Coucou for Android, **off by default, with no URL built in**, and nothing flows to any server he runs or pays for.
+  by Bubu for Android, **off by default, with no URL built in**, and nothing flows to any server he runs or pays for.
 - The PC-side part sits in `windows/src-tauri/src/phone_link/` behind an opt-in switch; if he ever wants it upstream it is a
   small, self-contained, reviewed change, and no PR is opened without the user's decision.
 - No telemetry, no accounts, no third party in the data path except the user's own Cloudflare account, and the payload is
@@ -280,7 +280,7 @@ Each stage is a small series of commits with tests, "Phone link" CI green, `Co-A
 
 - The Workers test plugin was renamed upstream: R1 uses `@cloudflare/vitest-plugin` 1.4.0 (the old `vitest-pool-workers` is
   deprecated) with `vitest` 4.1.x. npm's resolver crashes on its peer range, so `android/relay/.npmrc` sets `legacy-peer-deps`.
-- The sub-protocol offer is `coucou.v1, coucou.join.<proof>` (a strict client needs the server's choice to be one it offered).
+- The sub-protocol offer is `bubu.v1, bubu.join.<proof>` (a strict client needs the server's choice to be one it offered).
 - The relay has no idle timer (it would wake the room); the heartbeat is a text `ping` answered `pong` by the platform.
 - The Workers Rate Limiting binding works in workerd; the tests raise its limit and the 429 path has its own test.
 - Wrangler may send anonymous usage statistics (Cloudflare's tool, not ours): the guide says how to turn it off.
@@ -320,8 +320,8 @@ Each stage is a small series of commits with tests, "Phone link" CI green, `Co-A
 cd android/relay
 npm install
 npx wrangler login
-npx wrangler deploy            # prints https://coucou-link.<you>.workers.dev
-curl https://coucou-link.<you>.workers.dev/   # "Coucou link relay"
+npx wrangler deploy            # prints https://bubu-link.<you>.workers.dev
+curl https://bubu-link.<you>.workers.dev/   # "Bubu link relay"
 ```
 
 One secret is needed, the access key, and it never goes in git: `openssl rand -base64 32 | tr '+/' '-_' | tr -d '='` to make it, then `npx wrangler secret put ACCESS_KEY` and paste it. The relay holds no content key. `wrangler.toml` contains no key. On the PC: Settings → Android phone →
@@ -341,7 +341,7 @@ One secret is needed, the access key, and it never goes in git: `openssl rand -b
 8. Kill the relay URL (change it on the PC): the PC shows "Relay unavailable", the agent is never delayed, and the LAN still works at home.
 9. "Pair again" on the PC: the phone is cut off at once and must scan the new code; the old phone cannot reconnect.
 10. **Doze/battery:** phone on mobile data, screen off, stationary, 30 minutes: does an approval still arrive? Then overnight:
-    `adb shell dumpsys batterystats --reset` before, `--charged com.coucou.android` after; report the percentage used.
+    `adb shell dumpsys batterystats --reset` before, `--charged com.bubu.android` after; report the percentage used.
 11. `npx wrangler tail` during a session: it should show connections and **no frame contents** (there are none to show).
 
 ## 14. What I will not be able to test, said now
@@ -395,7 +395,7 @@ no permission is ever approved without an explicit click and the phone's screen-
 - **Checked against someone else's WebSocket**: `RelayNodeTwinTest` talks to the relay's Node twin (the `ws` package, a separate
   implementation of the RFC): both directions, five 40 KB lines in a row, the unchanged `LinkClient` hello/welcome, a wrong access key
   (401), a wrong pairing key in a room in use, a computer that is not there, one that joins later, one that leaves, and a second phone
-  replacing the first. It runs when `COUCOU_NODE_RELAY=1` (CI does `npm ci` in `android/relay` first); everything else runs everywhere.
+  replacing the first. It runs when `BUBU_NODE_RELAY=1` (CI does `npm ci` in `android/relay` first); everything else runs everywhere.
 - The Node twin refused to start on Node 22 because `Bucket` used a constructor parameter property, which Node's type stripping does not
   allow although the file said "erasable TypeScript only". Fixed in `src/protocol.ts` (plain fields); the relay's own tests still pass.
 - **`LinkClient` did not change** except for the new capability: the relay is a `Connector` returning a `Socket` whose bytes are the

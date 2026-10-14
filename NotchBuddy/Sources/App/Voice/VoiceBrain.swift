@@ -108,26 +108,26 @@ final class VoiceBrain {
         return .notMacOS26
     }
 
-    /// Instructions in the language Coucou speaks (Settings → Voice, English by default).
+    /// Instructions in the language Bubu speaks (Settings → Voice, English by default).
     static func instructions() -> String {
         if VoiceSettings.language == "fr" {
             return """
-            Tu es Coucou, un assistant dans le notch du MacBook. L'utilisateur peut parler anglais ou français : réponds toujours en français.
+            Tu es Bubu, un assistant dans le notch du MacBook. L'utilisateur peut parler anglais ou français : réponds toujours en français.
             Réponds avec 1 à 2 phrases maximum. Sois direct et concis.
             Ne pose une question que si tu as vraiment besoin d'une précision pour agir : une seule, courte, qui finit par « ? ». Sinon, ne finis jamais par une question.
             Utilise les outils pour les pilules et la musique.
             Pour toute question sur Stripe, GitHub, Vercel, Resend, n8n, Notion, Cal.com, les agents (Claude Code, Codex…), le plan Claude ou Codex, la musique ou la météo, appelle d'abord l'outil service et réponds avec ses données, sans rien inventer.
-            Pour un mail, appelle l'outil mail : Coucou demande ce qui manque, puis ouvre le mail dans le notch et c'est l'utilisateur qui clique sur Envoyer. Si on te demande de l'écrire, rédige toi-même le texte.
+            Pour un mail, appelle l'outil mail : Bubu demande ce qui manque, puis ouvre le mail dans le notch et c'est l'utilisateur qui clique sur Envoyer. Si on te demande de l'écrire, rédige toi-même le texte.
             Pour les noms de pilules, utilise le nom exact fourni par l'utilisateur.
             """
         }
         return """
-        You are Coucou, an assistant living in the MacBook notch. The user may speak French or English: always answer in English.
+        You are Bubu, an assistant living in the MacBook notch. The user may speak French or English: always answer in English.
         Answer in one or two short sentences. Be direct.
         Only ask a question when you truly need a detail to act: one short question ending with "?". Otherwise never end with a question.
         Use the tools for pills and music.
         For any question about Stripe, GitHub, Vercel, Resend, n8n, Notion, Cal.com, agents (Claude Code, Codex…), the Claude or Codex plan, music or the weather, call the service tool first and answer from its data, never invent.
-        For an email, call the mail tool: Coucou asks for what is missing, then opens the email in the notch and the user clicks Send. When asked to write it, write the text yourself.
+        For an email, call the mail tool: Bubu asks for what is missing, then opens the email in the notch and the user clicks Send. When asked to write it, write the text yourself.
         For pill names, use the exact name the user said.
         """
     }
@@ -138,7 +138,7 @@ final class VoiceBrain {
         #if canImport(FoundationModels)
         if #available(macOS 26, *) {
             guard SystemLanguageModel.default.availability == .available else { return nil }
-            // The mail is written in the language I used for it, whatever Coucou speaks.
+            // The mail is written in the language I used for it, whatever Bubu speaks.
             let fr = VoiceQuery.looksFrench(instruction)
             // An address is not a name to greet: a plain greeting then.
             let name = recipient.contains("@") ? "" : recipient
@@ -414,7 +414,7 @@ struct MusicTool: Tool, @unchecked Sendable {
 @available(macOS 26, *)
 struct MailTool: Tool, @unchecked Sendable {
     let name        = "mail"
-    let description = "Prepare an email (Coucou asks for anything missing; the user clicks Send). Recipient is a contact name or an email address; file is an optional file name to attach (searched in Downloads, Desktop, Documents, Pictures)."
+    let description = "Prepare an email (Bubu asks for anything missing; the user clicks Send). Recipient is a contact name or an email address; file is an optional file name to attach (searched in Downloads, Desktop, Documents, Pictures)."
 
     @Generable
     struct Arguments {
@@ -442,7 +442,7 @@ struct MailTool: Tool, @unchecked Sendable {
 @available(macOS 26, *)
 struct ServiceTool: Tool, @unchecked Sendable {
     let name        = "service"
-    let description = "Real data from Coucou: Stripe sales and balance, GitHub stars/PRs/CI, Vercel deployments, Resend emails, n8n runs, Notion pages, Cal.com bookings, agent sessions (Claude Code…), Claude/Codex plan usage, music now playing, active pills, weather today or tomorrow."
+    let description = "Real data from Bubu: Stripe sales and balance, GitHub stars/PRs/CI, Vercel deployments, Resend emails, n8n runs, Notion pages, Cal.com bookings, agent sessions (Claude Code…), Claude/Codex plan usage, music now playing, active pills, weather today or tomorrow."
 
     @Generable
     struct Arguments {
@@ -461,7 +461,7 @@ struct ServiceTool: Tool, @unchecked Sendable {
 @available(macOS 26, *)
 struct StatusTool: Tool, @unchecked Sendable {
     let name        = "status"
-    let description = "Report Coucou status: active pills, current agent sessions, music now playing"
+    let description = "Report Bubu status: active pills, current agent sessions, music now playing"
 
     @Generable
     struct Arguments {

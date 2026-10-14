@@ -7,8 +7,10 @@ export const RATE_PER_SECOND = 30;
 export const RATE_BURST = 60;
 export const ROOM_ID = /^[A-Za-z0-9_-]{22}$/;
 export const B64URL_32 = /^[A-Za-z0-9_-]{43}$/;
-export const SUBPROTOCOL = "coucou.v1";
-const JOIN_PREFIX = "coucou.join.";
+export const SUBPROTOCOL = "bubu.v1";
+export const LEGACY_SUBPROTOCOL = "bubu.v1";
+const JOIN_PREFIX = "bubu.join.";
+const LEGACY_JOIN_PREFIX = "bubu.join.";
 
 export type Role = "pc" | "phone";
 export const otherRole = (r: Role): Role => (r === "pc" ? "phone" : "pc");
@@ -28,14 +30,15 @@ export function bearer(header: string | null): string | null {
   return m ? m[1] : null;
 }
 
-/** The join proof from the offered sub-protocols (`coucou.v1, coucou.join.<43 chars>`), or null. */
+/** The join proof from the offered sub-protocols (`bubu.v1, bubu.join.<43 chars>`), or null. */
 export function parseJoinProof(header: string | null): string | null {
   if (!header) return null;
   const offered = header.split(",").map((s) => s.trim());
-  if (!offered.includes(SUBPROTOCOL)) return null;
-  const join = offered.filter((s) => s.startsWith(JOIN_PREFIX));
+  if (!offered.includes(SUBPROTOCOL) && !offered.includes(LEGACY_SUBPROTOCOL)) return null;
+  const join = offered.filter((s) => s.startsWith(JOIN_PREFIX) || s.startsWith(LEGACY_JOIN_PREFIX));
   if (join.length !== 1) return null;
-  const proof = join[0].slice(JOIN_PREFIX.length);
+  const prefix = join[0].startsWith(JOIN_PREFIX) ? JOIN_PREFIX : LEGACY_JOIN_PREFIX;
+  const proof = join[0].slice(prefix.length);
   return B64URL_32.test(proof) ? proof : null;
 }
 

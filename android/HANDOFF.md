@@ -1,17 +1,17 @@
-# Handoff: Coucou for Android (read this first)
+# Handoff: Bubu for Android (read this first)
 
 For a new coding session with no memory of the earlier work.
 
 ## What this is
 
-**Coucou** (https://github.com/Louis-CFM/coucou, by Louis Raillé) is a macOS app, with a Windows/Linux Tauri port in `windows/`, where
+**Bubu** (https://github.com/Louis-CFM/bubu, by Louis Raillé) is a macOS app, with a Windows/Linux Tauri port in `windows/`, where
 **Mochi** shows the state of AI coding agents and lets the user approve their permission requests. **Our project** is the
-Android port in `android/` (Kotlin + Compose), built by Rhytam Biswas (`Rhytam23`) with Claude on branch `android` of the fork
-`Rhytam23/coucou` (`upstream` = Louis-CFM/coucou, read-only for us).
+Android port in `android/` (Kotlin + Compose), built by Sahrul Ramadhani with Claude on branch `android` of the fork
+`SahrulRamadhani/bubu` (`upstream` = Louis-CFM/bubu, read-only for us).
 
 ## Rules that must never be broken
 
-Louis agreed by email (`PERMISSION.md`): Mochi, the sounds, visuals, icon and the name "Coucou for Android" for this Android app only, and
+Louis agreed by email (`PERMISSION.md`): Mochi, the sounds, visuals, icon and the name "Bubu for Android" for this Android app only, and
 only if it is **free (no ads, paid features or analytics; CI greps for them)**, credits him in the app (About and Licences) with a link to his
 repo, keeps the MIT notice, and **he approves the build and the store listing BEFORE anything is published**. Pushing source to the fork is fine.
 Never create a release, upload an APK, submit to a store, or open a PR to `upstream` without the user saying so.
@@ -23,7 +23,7 @@ approve a permission without an explicit click; don't restyle Louis's shipped de
 
 ## Where things are
 
-- `android/app/src/main/kotlin/com/coucou/android`: `mochi/` (engine, painter, `outfit/`), `link/` (protocol, pairing, TLS client, discovery,
+- `android/app/src/main/kotlin/com/bubu/android`: `mochi/` (engine, painter, `outfit/`), `link/` (protocol, pairing, TLS client, discovery,
   `WebSocket.kt`, `RelayLink.kt`, `RelayCrypto.kt`, `Transport.kt`, `LinkHealth.kt` (what Home says, the alarm and battery rules), `Reconnect.kt`, `Diagnostics.kt`), `core/` (pure rules), `ui/` (Compose), `app/` (`AppModel`, notifications,
   `LinkService`, `SecureStore`, biometric gate), `scan/` (QR), `sound/`. Overview and features: `android/README.md`.
 - Desktop side: `windows/src-tauri/src/phone_link/` (hub = rules, server = TLS, pairing, admission, discovery, chat, `relay_client.rs`,
@@ -42,7 +42,7 @@ cd windows && cargo test --workspace --locked && npm test && npx tsc --noEmit
 cd android/relay && npm ci && npm test && npm run vectors
 ```
 
-The Kotlin suite is about 640 tests (some need `node`/`cargo` and skip without them: set `COUCOU_RUST_INTEROP=1` and `COUCOU_NODE_RELAY=1`).
+The Kotlin suite is about 640 tests (some need `node`/`cargo` and skip without them: set `BUBU_RUST_INTEROP=1` and `BUBU_NODE_RELAY=1`).
 Gradle and Compose compile only in CI in a cloud session; the pure Kotlin files can be compiled with kotlinc and JUnit.
 
 ## What has and has not been seen on a real phone

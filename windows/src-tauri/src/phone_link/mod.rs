@@ -1,5 +1,5 @@
-// Copyright (c) 2026 Rhytam Biswas. MIT License, like the rest of Coucou; see android/LICENSE for the text.
-// The phone link: lets the Android app ("Coucou for Android") see the agents'
+// Copyright (c) 2026 Sahrul Ramadhani. MIT License, like the rest of Bubu; see android/LICENSE for the text.
+// The phone link: lets the Android app ("Bubu for Android") see the agents'
 // sessions and answer permission requests from the phone.
 // Protocol: docs/ANDROID_LINK.md.
 //
@@ -11,7 +11,7 @@
 // The island keeps owning the sessions and the pending request. It publishes a
 // picture of them (`phone_link_publish`), the hub works out what changed, and a
 // phone's decision comes back through `TauriHost`, which answers the waiting
-// `coucou-hook` exactly as a click on the island would — but only for the request
+// `bubu-hook` exactly as a click on the island would — but only for the request
 // that is still pending (hub.rs). The desktop's own card keeps working all along.
 
 mod admission;

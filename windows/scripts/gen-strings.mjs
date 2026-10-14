@@ -23,7 +23,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const SOURCE = resolve(here, "../../NotchBuddy/Resources/Localizable.xcstrings");
 const OUTPUT = resolve(here, "../src/i18n/strings.json");
 
-/** The languages Coucou ships, in the Mac's picker order. English is the source. */
+/** The languages Bubu ships, in the Mac's picker order. English is the source. */
 export const LANGUAGES = ["en", "zh-Hans", "hi", "es", "ar", "fr", "bn", "pt-BR", "ru", "id"];
 
 /**
@@ -97,6 +97,8 @@ export function generate(catalog) {
     }
     // The English plural forms are needed to pick "one" in English too.
     if (typeof en !== "string") out.en = en;
+    // Skip entries with no translations or incomplete translations (they live in extra.json if needed).
+    if (Object.keys(out).length === 0 || LANGUAGES.some((l) => l !== "en" && out[l] === undefined)) continue;
     strings[key] = out;
   }
   const sorted = Object.fromEntries(Object.entries(strings).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)));

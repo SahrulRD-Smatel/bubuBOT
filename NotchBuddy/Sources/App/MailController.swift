@@ -54,7 +54,7 @@ struct MailMessage: Identifiable, Equatable, Sendable {
 /// Reads the inboxes of Apple Mail (every account added to Mail, Gmail included) through
 /// Apple Events: unread count, latest messages, and a message's text on demand.
 /// Read-only except for the user's own clicks (mark as read, reply window, open in Mail);
-/// it never sends anything. Mail is never launched by Coucou: nothing is read while Mail
+/// it never sends anything. Mail is never launched by Bubu: nothing is read while Mail
 /// is closed. Polls every 60 s, only while the pill is active and Mail is open.
 /// GitHub build only (Apple Events are not allowed in the App Store build).
 @MainActor
@@ -81,7 +81,7 @@ final class MailController: ObservableObject {
     private var timer: Timer?
     private var fetching = false
     private var lastFetch: Date = .distantPast
-    private let queue = DispatchQueue(label: "fr.louisraille.coucou.mail")
+    private let queue = DispatchQueue(label: "com.bubu.desktop.mail")
 
     private var isPillActive: Bool {
         AppState.shared.activeIntegrations.contains(Self.pillId)

@@ -35,7 +35,7 @@ Test names are abbreviated: *Rust* = `windows/src-tauri/src/phone_link/` (`relay
 
 1. **The pairing link had a size limit that the relay fields could break.** The phone refused links over 1,024 characters. With
    the four relay fields, a long relay host and a 48-character accented computer name the link can reach about 900 characters
-   once percent-encoded; with the old limit a legitimate code could have been refused as "not a Coucou link". The limit is now
+   once percent-encoded; with the old limit a legitimate code could have been refused as "not a Bubu link". The limit is now
    2,048 and a test (Rust and Kotlin) builds the longest realistic link and checks both the phone's parser and the QR encoder.
 2. **The phone's pairing confirmation did not show the relay.** The spec says it must. It now names the relay's host, so a code
    that points somewhere you did not set up is visible before anything is stored (`RelayLinkTest.theConfirmationShows...`).

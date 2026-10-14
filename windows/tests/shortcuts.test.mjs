@@ -466,7 +466,7 @@ test("the desktop shortcut arrives like the others, and runs from the command li
   emit("shortcut", "desktopToggle");
   assert.deepEqual(did, ["resume", "desktop"]);
   const rust = readFileSync(new URL("../src-tauri/src/shortcuts.rs", import.meta.url), "utf8");
-  assert.match(rust, /from_args\(&args\(&\["coucou", "--shortcut", "desktopToggle"\]\)\), Some\("desktopToggle"\)/);
+  assert.match(rust, /from_args\(&args\(&\["Bubu", "--shortcut", "desktopToggle"\]\)\), Some\("desktopToggle"\)/);
 });
 
 test("actions that aren't the island's do nothing here", () => {

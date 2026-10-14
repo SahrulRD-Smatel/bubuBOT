@@ -221,11 +221,11 @@ final class MacDictation: @unchecked Sendable {
     // MARK: Languages
 
     /// The languages Automatic listens for: last winner, macOS languages, keyboard layouts,
-    /// Coucou's own language, then English — one per language, up to three.
+    /// Bubu's own language, then English — one per language, up to three.
     static func automaticLocales() -> [Locale] {
         var ids: [String] = []
         if let last = UserDefaults.standard.string(forKey: lastHeardKey) { ids.append(last) }
-        // The Mac's languages (not Coucou's override in Settings → General → Language).
+        // The Mac's languages (not Bubu's override in Settings → General → Language).
         ids += (CFPreferencesCopyValue("AppleLanguages" as CFString, kCFPreferencesAnyApplication,
                                        kCFPreferencesCurrentUser, kCFPreferencesAnyHost) as? [String]) ?? []
         ids += keyboardLanguages()

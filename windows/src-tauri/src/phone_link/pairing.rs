@@ -47,7 +47,7 @@ pub fn load_or_create_identity(store: &dyn SecretStore) -> Result<Identity, Stri
     }
     let key_pair = rcgen::KeyPair::generate_for(&rcgen::PKCS_ECDSA_P256_SHA256).map_err(|e| e.to_string())?;
     let mut params = rcgen::CertificateParams::new(Vec::<String>::new()).map_err(|e| e.to_string())?;
-    params.distinguished_name.push(rcgen::DnType::CommonName, "Coucou phone link");
+    params.distinguished_name.push(rcgen::DnType::CommonName, "Bubu phone link");
     params.not_before = rcgen::date_time_ymd(2024, 1, 1);
     params.not_after = rcgen::date_time_ymd(2124, 1, 1);
     let cert = params.self_signed(&key_pair).map_err(|e| e.to_string())?;
@@ -88,10 +88,10 @@ fn random_token() -> Result<String, String> {
     Ok(bytes.iter().map(|b| ALPHABET[(b & 63) as usize] as char).collect())
 }
 
-/// `coucou://pair?v=1&host=…&port=…&fp=…&token=…&name=…`
+/// `bubu://pair?v=1&host=…&port=…&fp=…&token=…&name=…`
 pub fn pairing_link(host: &str, port: u16, fingerprint: &str, token: &str, name: &str) -> String {
     format!(
-        "coucou://pair?v=1&host={}&port={port}&fp={fingerprint}&token={token}&name={}",
+        "bubu://pair?v=1&host={}&port={port}&fp={fingerprint}&token={token}&name={}",
         percent_encode(host),
         percent_encode(name)
     )
@@ -168,7 +168,7 @@ pub fn computer_name() -> String {
         .filter(|n| !n.trim().is_empty())
         .or_else(|| std::fs::read_to_string("/etc/hostname").ok().map(|n| n.trim().to_string()))
         .filter(|n| !n.is_empty())
-        .unwrap_or_else(|| "Coucou".to_string());
+        .unwrap_or_else(|| "Bubu".to_string());
     name.chars().take(48).collect()
 }
 
@@ -279,7 +279,7 @@ pub mod tests {
         assert_eq!(
             link,
             format!(
-                "coucou://pair?v=1&host=192.168.1.20&port=47821&fp={}&token=tok_en-1234567890abcd&name=L%C3%A9a%27s%20PC%20%26%20co",
+                "bubu://pair?v=1&host=192.168.1.20&port=47821&fp={}&token=tok_en-1234567890abcd&name=L%C3%A9a%27s%20PC%20%26%20co",
                 "ab".repeat(32)
             )
         );
@@ -317,7 +317,7 @@ pub mod tests {
         assert!(link.len() < 2048, "the phone refuses a link of 2,048 characters or more (PairingScan.MAX_LINK): {}", link.len());
         assert!(qr_svg(&link).is_some(), "and the QR code can hold it");
         // The ordinary case is far shorter, so the code stays easy to scan.
-        let usual = pairing_link_with_relay("192.168.1.20", 47821, &"ab".repeat(32), &"t".repeat(32), "My PC", &RelayLink { url: "wss://coucou-link.me.workers.dev", room: &"A".repeat(22), key: &"B".repeat(43), access: &"C".repeat(43) });
+        let usual = pairing_link_with_relay("192.168.1.20", 47821, &"ab".repeat(32), &"t".repeat(32), "My PC", &RelayLink { url: "wss://bubu-link.me.workers.dev", room: &"A".repeat(22), key: &"B".repeat(43), access: &"C".repeat(43) });
         assert!(usual.len() < 450, "{}", usual.len());
     }
 

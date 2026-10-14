@@ -1,12 +1,12 @@
-# Coucou for Android
+# Bubu for Android
 
-The Android app of [Coucou](https://github.com/Louis-CFM/coucou) by Louis Raillé, by Rhytam Biswas. It shows your coding
+The Android app of [Bubu](https://github.com/SahrulRamadhani/bubu), by Sahrul Ramadhani. It shows your coding
 agents as Mochi on your phone and lets you approve or deny their permission requests, answer their questions and chat
 through your computer's AI providers.
 
 The name, the Mochi character, the icon and the sounds are © Louis Raillé and used with permission (see
-[PERMISSION.md](PERMISSION.md)). The Android code is © Rhytam Biswas under the MIT License (see [LICENSE](LICENSE)). The app is free: no ads, no billing, no analytics.
-It is English only and dark only. Download the signed APK from the [Releases](https://github.com/Louis-CFM/coucou/releases/tag/android-v0.1.0) (Android 11 or later; it needs Coucou 0.4.0 or later on Windows or Linux).
+[PERMISSION.md](PERMISSION.md)). The Android code is © Sahrul Ramadhani under the MIT License (see [LICENSE](LICENSE)). The app is free: no ads, no billing, no analytics.
+It is English only and dark only. Download the signed APK from the [Releases](https://github.com/SahrulRamadhani/bubu/releases/tag/android-v0.1.0) (Android 11 or later; it needs Bubu 0.4.0 or later on Windows or Linux).
 
 ## Screenshots
 
@@ -27,7 +27,7 @@ node scripts/gen-strings.mjs --check      # res/values/strings.xml is generated 
 
 A release build (R8 shrinking and obfuscation, resources shrunk, `android.util.Log` calls removed, not debuggable) is `./gradlew assembleRelease`;
 `lint` already depends on it in CI, with a check that no debug log text is left in the APK. Signing keys are never in the repository: set
-`COUCOU_KEYSTORE_FILE`, `COUCOU_KEYSTORE_PASSWORD`, `COUCOU_KEY_ALIAS` (and `COUCOU_KEY_PASSWORD` if it differs) in the environment or in
+`BUBU_KEYSTORE_FILE`, `BUBU_KEYSTORE_PASSWORD`, `BUBU_KEY_ALIAS` (and `BUBU_KEY_PASSWORD` if it differs) in the environment or in
 `~/.gradle/gradle.properties`. Without them the release APK is unsigned (it cannot be installed), never signed with a debug key. Keep
 `app/build/outputs/mapping/release/mapping.txt` with the build you ship. Nothing is published from here.
 
@@ -52,7 +52,7 @@ The desktop side is in `windows/src-tauri/src/phone_link`; the protocol is `docs
   tested (`core/Island*.kt`); `ui/IslandOverlay.kt` draws.
 - **Chat** (a tab, when the computer offers it), **session details**, **file changes** and **plan usage** are opt-in switches on the
   computer (Settings > Android phone), all off by default; the phone is told only what it asks for and the computer allows.
-- **Pairing**: scan the QR code with the in-app camera (CameraX + zxing, offline) or paste the link; a scan or a `coucou://pair`
+- **Pairing**: scan the QR code with the in-app camera (CameraX + zxing, offline) or paste the link; a scan or a `bubu://pair`
   link always asks to confirm. The certificate is pinned. If the computer's address changes the phone finds it again by itself (mDNS,
   checked against the pinned certificate before the token is sent), or you can type the address.
 - **Away from home Wi-Fi** (optional): through your own Cloudflare relay, end-to-end encrypted; the direct link is always tried first.
@@ -62,19 +62,19 @@ The desktop side is in `windows/src-tauri/src/phone_link`; the protocol is `docs
 
 ## Getting the phone link running on Windows
 
-1. Download the portable build from the repository's **Windows** workflow run (Actions, Windows, the `Coucou-Windows-portable`
-   artifact). It holds `coucou.exe` and `coucou-hook.exe`.
-2. **Close any other Coucou first.** An installed copy (for example in `C:\Program Files\Coucou`) starts at login and has no
-   phone link, so the phone would say "Connecting…" forever. Then start the portable `coucou.exe`.
+1. Download the portable build from the repository's **Windows** workflow run (Actions, Windows, the `Bubu-Windows-portable`
+   artifact). It holds `bubu.exe` and `bubu-hook.exe`.
+2. **Close any other Bubu first.** An installed copy (for example in `C:\Program Files\Bubu`) starts at login and has no
+   phone link, so the phone would say "Connecting…" forever. Then start the portable `bubu.exe`.
 3. Settings > **Android phone** > turn **Phone link** on. It is off by default and listens on your local network only. If Windows
-   asks about the firewall, allow Coucou on **private** networks (a network marked *Public* blocks the phone).
+   asks about the firewall, allow Bubu on **private** networks (a network marked *Public* blocks the phone).
 4. **Show pairing code**, then scan the QR code with the app (or paste the link). The phone and the computer must be on the same Wi-Fi.
 5. Optional, each with its own switch on the same page: session details, answers to questions, file changes, chat through the
    computer's own keys, plan usage, services.
 
 What to know when you try approvals from the phone:
 
-- Only **Claude Code** (the command-line tool), Codex, Copilot CLI and Muse Code can be approved from Coucou or the phone. Requests
+- Only **Claude Code** (the command-line tool), Codex, Copilot CLI and Muse Code can be approved from Bubu or the phone. Requests
   from the **Claude Desktop app** are asked in that app only: the computer declines them at once (`windows/src/island/agents.ts`,
   `APPROVAL_AGENTS`; the same rule as on the Mac).
 - Claude Code must be in a mode that **asks**. In auto or bypass mode it never asks, so nothing reaches the phone. To test:

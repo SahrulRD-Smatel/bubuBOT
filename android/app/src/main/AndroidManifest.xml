@@ -20,13 +20,13 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
 
     <application
-        android:name=".app.CoucouApp"
+        android:name=".app.BubuApp"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:theme="@style/Theme.Coucou">
+        android:theme="@style/Theme.Bubu">
 
         <activity
             android:name=".MainActivity"
@@ -36,13 +36,13 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <!-- Scanning the pairing QR code with the camera app opens coucou://pair?... here. -->
+            <!-- Scanning the pairing QR code with the camera app opens bubu://pair?... here. -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="coucou" android:host="pair" />
-            </intent-filter>
+                <data android:scheme="bubu" android:host="pair" />
+                </intent-filter>
         </activity>
 
         <!-- Not exported: only our own notification actions can start it (MainActivity must not trust intents from other apps). -->
@@ -71,10 +71,10 @@
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-            <meta-data android:name="android.appwidget.provider" android:resource="@xml/coucou_widget_info" />
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/bubu_widget_info" />
         </receiver>
 
-        <!-- The quick-settings tile: on while the computer is connected; a tap opens Coucou. -->
+        <!-- The quick-settings tile: on while the computer is connected; a tap opens Bubu. -->
         <service
             android:name=".app.GlanceTile"
             android:exported="true"

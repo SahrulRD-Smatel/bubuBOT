@@ -1,15 +1,15 @@
 # Maintainer: FabioLukas123
-# Coucou for Arch Linux — built from the Tauri app in windows/, which runs on
+# Bubu for Arch Linux — built from the Tauri app in windows/, which runs on
 # Windows and Linux alike.
 
-pkgname=coucou-git
-_pkgname=coucou
+pkgname=bubu-git
+_pkgname=bubu
 pkgver=0.4.0
 pkgrel=1
 pkgdesc="Mochi lives at the top of your screen and keeps an eye on your Claude Code sessions"
 arch=('x86_64' 'aarch64')
-url="https://github.com/Louis-CFM/coucou"
-license=("MIT" "LicenseRef-coucou-assets")
+url="https://github.com/SahrulRamadhani/bubu"
+license=("MIT" "LicenseRef-bubu-assets")
 depends=(
   'webkit2gtk-4.1'
   'gtk3'
@@ -30,7 +30,7 @@ provides=("$_pkgname")
 conflicts=("$_pkgname")
 # makepkg's default LTO and debug flags make the Rust build very slow.
 options=('!lto' '!debug')
-source=("$_pkgname::git+https://github.com/Louis-CFM/coucou.git")
+source=("$_pkgname::git+https://github.com/SahrulRamadhani/bubu.git")
 sha256sums=('SKIP')
 
 pkgver() {
@@ -51,19 +51,19 @@ build() {
   cd "$_pkgname/windows"
   export RUSTUP_TOOLCHAIN=stable
   export CARGO_TARGET_DIR="$PWD/target"
-  # beforeBuildCommand builds the front end and the coucou-hook relay.
+  # beforeBuildCommand builds the front end and the bubu-hook relay.
   npx tauri build --no-bundle
 }
 
 package() {
   cd "$_pkgname"
-  install -Dm755 windows/target/release/coucou "$pkgdir/usr/bin/coucou"
-  # Found next to the app, then copied into ~/.local/share/coucou/bin at launch.
-  install -Dm755 windows/target/release/coucou-hook "$pkgdir/usr/bin/coucou-hook"
-  install -Dm644 linux/arch/coucou.desktop "$pkgdir/usr/share/applications/coucou.desktop"
-  install -Dm644 windows/src-tauri/icons/32x32.png "$pkgdir/usr/share/icons/hicolor/32x32/apps/coucou.png"
-  install -Dm644 windows/src-tauri/icons/128x128.png "$pkgdir/usr/share/icons/hicolor/128x128/apps/coucou.png"
-  install -Dm644 windows/src-tauri/icons/128x128@2x.png "$pkgdir/usr/share/icons/hicolor/256x256/apps/coucou.png"
+  install -Dm755 windows/target/release/bubu "$pkgdir/usr/bin/bubu"
+  # Found next to the app, then copied into ~/.local/share/bubu/bin at launch.
+  install -Dm755 windows/target/release/bubu-hook "$pkgdir/usr/bin/bubu-hook"
+  install -Dm644 linux/arch/bubu.desktop "$pkgdir/usr/share/applications/bubu.desktop"
+  install -Dm644 windows/src-tauri/icons/32x32.png "$pkgdir/usr/share/icons/hicolor/32x32/apps/bubu.png"
+  install -Dm644 windows/src-tauri/icons/128x128.png "$pkgdir/usr/share/icons/hicolor/128x128/apps/bubu.png"
+  install -Dm644 windows/src-tauri/icons/128x128@2x.png "$pkgdir/usr/share/icons/hicolor/256x256/apps/bubu.png"
   install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
   install -Dm644 LICENSE-ASSETS.md "$pkgdir/usr/share/licenses/$pkgname/LICENSE-ASSETS.md"
 }

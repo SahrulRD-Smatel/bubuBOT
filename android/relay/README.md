@@ -1,6 +1,6 @@
-# Coucou link relay
+# Bubu link relay
 
-A tiny, key-less Cloudflare Worker that lets *Coucou for Android* and a desktop Coucou sync over the internet, from
+A tiny, key-less Cloudflare Worker that lets *Bubu for Android* and a desktop Bubu sync over the internet, from
 different networks, with no VPN and no shared Wi-Fi. **It is separate from Louis's `relay/`** (which holds an APNs key and
 only does iPhone Live Activities) and is deployed by you, on your own Cloudflare account.
 
@@ -33,8 +33,8 @@ npx wrangler secret put ACCESS_KEY
 npx wrangler deploy
 ```
 
-`deploy` prints the URL, like `https://coucou-link.<you>.workers.dev`. Check it: `curl https://coucou-link.<you>.workers.dev/`
-answers `Coucou link relay`. Use the `wss://` form of that URL and the access key in the computer's settings (a later stage).
+`deploy` prints the URL, like `https://bubu-link.<you>.workers.dev`. Check it: `curl https://bubu-link.<you>.workers.dev/`
+answers `Bubu link relay`. Use the `wss://` form of that URL and the access key in the computer's settings (a later stage).
 
 Wrangler itself (Cloudflare's tool, not this relay or the apps) may send anonymous usage statistics; turn that off with
 `export WRANGLER_SEND_METRICS=false` if you prefer.

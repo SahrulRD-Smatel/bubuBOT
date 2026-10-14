@@ -1,5 +1,5 @@
 // Announces this computer on the local network while the phone link is on, so the phone finds it by itself when
-// its address changes (another Wi-Fi, a hotspot). mDNS / DNS-SD, service type `_coucou._tcp`, protocol: docs/ANDROID_LINK.md.
+// its address changes (another Wi-Fi, a hotspot). mDNS / DNS-SD, service type `_bubu._tcp`, protocol: docs/ANDROID_LINK.md.
 //
 // What is announced: the computer's name (the instance name), the port, and a TXT record with the protocol version and a
 // short fingerprint id (the first 16 hex characters of the certificate's SHA-256, which is public by nature: anyone who
@@ -12,8 +12,8 @@
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
-/// The DNS-SD service type. The phone browses for `_coucou._tcp`.
-pub const SERVICE_TYPE: &str = "_coucou._tcp.local.";
+/// The DNS-SD service type. The phone browses for `_bubu._tcp`.
+pub const SERVICE_TYPE: &str = "_bubu._tcp.local.";
 /// How many hex characters of the certificate fingerprint go into the TXT record.
 pub const FP_ID_LEN: usize = 16;
 /// The protocol version in the TXT record (docs/ANDROID_LINK.md stays at v=1).
@@ -34,7 +34,7 @@ pub fn txt(fingerprint: &str) -> Option<Vec<(String, String)>> {
     Some(vec![("v".to_string(), TXT_VERSION.to_string()), ("fp".to_string(), id)])
 }
 
-/// A DNS host label from the computer's name: ASCII letters, digits and hyphens, at most 63, "coucou" if nothing is left.
+/// A DNS host label from the computer's name: ASCII letters, digits and hyphens, at most 63, "Bubu" if nothing is left.
 pub fn host_label(name: &str) -> String {
     let mut label: String = name
         .chars()
@@ -45,7 +45,7 @@ pub fn host_label(name: &str) -> String {
         .take(63)
         .collect();
     if label.is_empty() {
-        label = "coucou".to_string();
+        label = "Bubu".to_string();
     }
     label
 }
@@ -63,7 +63,7 @@ pub fn advert(name: &str, port: u16, fingerprint: &str) -> Option<Advert> {
     let instance: String = name.trim().chars().take(48).collect();
     let instance = instance.trim().to_string();
     Some(Advert {
-        instance: if instance.is_empty() { "Coucou".to_string() } else { instance },
+        instance: if instance.is_empty() { "Bubu".to_string() } else { instance },
         host: format!("{}.local.", host_label(name)),
         port,
         txt: txt(fingerprint)?,
@@ -206,7 +206,7 @@ pub mod tests {
         // not even inputs. Check the output anyway, as the rule is what matters.
         let ad = advert("Rhytam-PC", 47821, FP).unwrap();
         let everything = format!("{:?}", ad).to_lowercase();
-        for secret in [TOKEN.to_lowercase(), "coucou://".to_string(), "token".to_string(), "password".to_string()] {
+        for secret in [TOKEN.to_lowercase(), "bubu://".to_string(), "token".to_string(), "password".to_string()] {
             assert!(!everything.contains(&secret), "announcement contains {secret}");
         }
         // The full certificate fingerprint is not in it either, only the short id.
@@ -221,9 +221,9 @@ pub mod tests {
         assert_eq!(ad.instance, "Rhytam's PC");
         assert_eq!(ad.host, "Rhytam-s-PC.local.");
         assert_eq!(ad.port, 47821);
-        assert_eq!(host_label("***"), "coucou");
+        assert_eq!(host_label("***"), "Bubu");
         assert_eq!(host_label(&"a".repeat(100)).len(), 63);
-        assert_eq!(advert("   ", 1, FP).unwrap().instance, "Coucou");
+        assert_eq!(advert("   ", 1, FP).unwrap().instance, "Bubu");
     }
 
     #[test]

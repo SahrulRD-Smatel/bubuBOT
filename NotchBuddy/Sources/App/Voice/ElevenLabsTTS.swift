@@ -3,12 +3,12 @@ import Foundation
 
 // MARK: - ElevenLabsTTS
 //
-// Optional voice for Coucou's answers (Settings → Voice → ElevenLabs), with the user's
+// Optional voice for Bubu's answers (Settings → Voice → ElevenLabs), with the user's
 // own API key stored in the Keychain ("elevenlabs-api-key"). Network only to
-// api.elevenlabs.io, only while Coucou speaks.
+// api.elevenlabs.io, only while Bubu speaks.
 //
 // No voice ID is hard-coded: ElevenLabs' old default voices expire on 31 Dec 2026 and
-// newer accounts don't have them. Coucou lists the voices of the user's account and
+// newer accounts don't have them. Bubu lists the voices of the user's account and
 // picks the first English one of the chosen gender (female by default), then caches it.
 
 @MainActor
@@ -84,7 +84,7 @@ final class ElevenLabsTTS {
         func isYoung(_ v: [String: Any]) -> Bool { (labels(v)["age"] ?? "").lowercased().contains("young") }
         let ofGender = voices.filter { labels($0)["gender"]?.lowercased() == gender }
         let english = ofGender.filter(isEnglish)
-        // Male: a young voice first, it sounds closer to Coucou than a deep narrator.
+        // Male: a young voice first, it sounds closer to Bubu than a deep narrator.
         let young = gender == "male" ? english.first(where: isYoung) : nil
         let v = young ?? english.first ?? ofGender.first ?? voices.first
         guard let v, let id = v["voice_id"] as? String else { return nil }

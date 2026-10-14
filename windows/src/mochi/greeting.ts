@@ -1,4 +1,4 @@
-// The launch "coucou" (greeting v2) — port of GreetingCanvasView.swift.
+// The launch "bubu" (greeting v2) — port of GreetingCanvasView.swift.
 // Mochi drops into the island, bounces, slides to the side and waves hello with
 // a quick little hand, then comes back and settles in the compact island.
 // Everything is laid out in the same 640×150 reference space as on macOS.

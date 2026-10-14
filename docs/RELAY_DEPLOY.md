@@ -8,7 +8,7 @@ connect *out* to a relay on the internet that passes encrypted messages between 
 (wire details: `docs/RELAY_LINK.md`, reasoning and threats: `android/RELAY_PLAN.md`, `android/RELAY_THREAT_CHECK.md`).
 
 You need: a free Cloudflare account, Node 22 or newer on the computer, this repository, and a phone with a debug build of
-Coucou for Android (`cd android && ./gradlew assembleDebug`, then `adb install -r app/build/outputs/apk/debug/app-debug.apk`).
+Bubu for Android (`cd android && ./gradlew assembleDebug`, then `adb install -r app/build/outputs/apk/debug/app-debug.apk`).
 
 ## 1. Deploy the relay
 
@@ -30,15 +30,15 @@ Store it on the relay as a secret (this prompts for the value; it is never writt
 
 ```
 npx wrangler secret put ACCESS_KEY      # paste the key when asked
-npx wrangler deploy                     # prints https://coucou-link.<your-name>.workers.dev
-curl https://coucou-link.<your-name>.workers.dev/     # must print: Coucou link relay
+npx wrangler deploy                     # prints https://bubu-link.<your-name>.workers.dev
+curl https://bubu-link.<your-name>.workers.dev/     # must print: Bubu link relay
 ```
 
 Notes:
 
 - If `deploy` complains about the `[[ratelimits]]` block, delete that block from `android/relay/wrangler.toml` and deploy again:
   the relay works without it (it only limits new connections per address).
-- In the Cloudflare dashboard, open the Worker `coucou-link` and check that **Observability / Logs are off**. The relay logs
+- In the Cloudflare dashboard, open the Worker `bubu-link` and check that **Observability / Logs are off**. The relay logs
   nothing and has nothing worth logging, but this is the one place a setting could differ from the file.
 - `wrangler.toml` contains no secret. Never add the access key to it, to `.dev.vars`, or to any file you commit.
 
@@ -46,7 +46,7 @@ Notes:
 
 1. Settings > **Android phone**. Turn **Phone link** on.
 2. In the block **Away from home Wi-Fi**:
-   - **Relay address**: `wss://coucou-link.<your-name>.workers.dev` (it must start with `wss://`), press **Save address**.
+   - **Relay address**: `wss://bubu-link.<your-name>.workers.dev` (it must start with `wss://`), press **Save address**.
    - **Relay access key**: paste the key from step 1, press **Save key**. The field empties; the key is kept in the system keystore
      and is never shown again.
    - Turn **Away from home Wi-Fi** on.
@@ -60,10 +60,10 @@ If you change the address or the key later, press **Show pairing code** again an
 ## 3. Pair the phone (the real test: mobile data, not Wi-Fi)
 
 1. On the phone, **turn Wi-Fi off** (mobile data only) and make sure the data connection works.
-2. Open Coucou for Android, scan the code on the computer's screen (the camera does not need a network). The confirmation names
+2. Open Bubu for Android, scan the code on the computer's screen (the camera does not need a network). The confirmation names
    the computer **and the relay's host**: check that it is yours, then pair.
 3. Within a few seconds Home should show the computer as connected, and Settings > **Away from home Wi-Fi** should say
-   **Connected through your relay (coucou-link...)**. The computer's block says **The phone is connected through the relay.**
+   **Connected through your relay (bubu-link...)**. The computer's block says **The phone is connected through the relay.**
 
 If it does not connect, go to section 6 before anything else.
 
@@ -73,7 +73,7 @@ Tick each line and note anything odd. "Expect" is what should happen.
 
 | # | Do | Expect |
 |---|---|---|
-| 1 | `curl` the relay address | `Coucou link relay` |
+| 1 | `curl` the relay address | `Bubu link relay` |
 | 2 | Computer: relay on | `Connected to the relay, waiting for the phone.` |
 | 3 | Phone on mobile data: scan, pair | Connected, card says **through your relay** |
 | 4 | Start an agent on the computer | Its session appears on the phone |
@@ -87,7 +87,7 @@ Tick each line and note anything odd. "Expect" is what should happen.
 | 12 | Make a new access key, `npx wrangler secret put ACCESS_KEY`, paste it in the computer's **Relay access key**, Save | New connections with the old key are refused. A phone that is connected **follows the new key by itself** (it is sent inside the encrypted channel); a phone that was offline needs a new scan |
 | 13 | `npx wrangler tail` while an agent works | Connections only, **no readable content** (there is none to show) |
 | 14 | Phone on mobile data, screen off, not moving, **30 minutes** | Does an approval still arrive? (Doze and the carrier decide; this is the one result I cannot predict) |
-| 15 | Overnight battery: before, `adb shell dumpsys batterystats --reset`; after, `adb shell dumpsys batterystats --charged com.coucou.android` | Note the percentage used and tell me |
+| 15 | Overnight battery: before, `adb shell dumpsys batterystats --reset`; after, `adb shell dumpsys batterystats --charged com.bubu.android` | Note the percentage used and tell me |
 
 ## 5. Rotating, losing a phone, switching off
 

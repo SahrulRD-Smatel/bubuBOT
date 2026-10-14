@@ -3,12 +3,12 @@ import AVFoundation
 
 // MARK: - VoiceSpeaker
 //
-// Gives Coucou a voice, sentence by sentence:
+// Gives Bubu a voice, sentence by sentence:
 //   • macOS voices (AVSpeechSynthesizer), best installed voice for the language;
 //   • ElevenLabs (Settings → Voice, the user's own API key), female or male.
 //     Each queued sentence starts downloading right away, so the next one is usually
 //     ready when the previous one ends. Any ElevenLabs failure falls back to the Mac
-//     voice for that sentence: Coucou never goes silent.
+//     voice for that sentence: Bubu never goes silent.
 // onDidFinish fires ~150 ms after the queue drains. All methods: @MainActor.
 @MainActor
 final class VoiceSpeaker: NSObject, AVSpeechSynthesizerDelegate, AVAudioPlayerDelegate, @unchecked Sendable {
@@ -59,7 +59,7 @@ final class VoiceSpeaker: NSObject, AVSpeechSynthesizerDelegate, AVAudioPlayerDe
     func stop() { stopPlayback() }
 
     /// What the mic gate uses: what is actually playing or about to play, never a flag
-    /// alone, so a missed callback cannot leave Coucou deaf.
+    /// alone, so a missed callback cannot leave Bubu deaf.
     var isBusy: Bool {
         synth.isSpeaking || (player?.isPlaying ?? false) || waitingForAudio || !queue.isEmpty
     }
@@ -188,7 +188,7 @@ final class VoiceSpeaker: NSObject, AVSpeechSynthesizerDelegate, AVAudioPlayerDe
         }
     }
 
-    /// "Ava (Premium)" — shown in Settings so it is clear which voice Coucou uses.
+    /// "Ava (Premium)" — shown in Settings so it is clear which voice Bubu uses.
     static func macVoiceName(for locale: Locale, gender: String) -> String {
         guard let v = bestVoice(for: locale, gender: gender) else { return "—" }
         switch v.quality {

@@ -3,7 +3,7 @@ import SwiftUI
 import Combine
 
 // MARK: - DemoEngine
-// Scripted ~60 s tour of Coucou for App Store review.
+// Scripted ~60 s tour of Bubu for App Store review.
 // Zero network calls, nothing written to disk or Keychain.
 
 @MainActor

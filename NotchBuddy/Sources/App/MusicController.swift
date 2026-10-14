@@ -17,7 +17,7 @@ final class MusicController: ObservableObject {
 
     private var notifTokens: [Any] = []
     private var cancellables = Set<AnyCancellable>()
-    private let queue = DispatchQueue(label: "fr.louisraille.coucou.music")
+    private let queue = DispatchQueue(label: "com.bubu.desktop.music")
 
     private var isPillActive: Bool {
         AppState.shared.activeIntegrations.contains("integration_music")
@@ -54,7 +54,7 @@ final class MusicController: ObservableObject {
             Task { @MainActor [weak self] in
                 guard let self else { return }
                 guard self.isPillActive,
-                      UserDefaults.standard.bool(forKey: "coucou.musicAutomationGranted") else { return }
+                      UserDefaults.standard.bool(forKey: "bubu.musicAutomationGranted") else { return }
                 self.fetchAndApply()
             }
         }
@@ -79,7 +79,7 @@ final class MusicController: ObservableObject {
                 guard let self else { return }
                 if integrations.contains("integration_music") {
                     if self.isMusicRunning(),
-                       UserDefaults.standard.bool(forKey: "coucou.musicAutomationGranted") {
+                       UserDefaults.standard.bool(forKey: "bubu.musicAutomationGranted") {
                         self.fetchAndApply()
                     }
                 } else {
@@ -327,7 +327,7 @@ final class MusicController: ObservableObject {
                     if code == -1743 {
                         Task { @MainActor in
                             AppState.shared.musicAutomationDenied = true
-                            UserDefaults.standard.set(false, forKey: "coucou.musicAutomationGranted")
+                            UserDefaults.standard.set(false, forKey: "bubu.musicAutomationGranted")
                         }
                         cont.resume(returning: .denied)
                     } else {
@@ -336,7 +336,7 @@ final class MusicController: ObservableObject {
                     return
                 }
                 Task { @MainActor in
-                    UserDefaults.standard.set(true, forKey: "coucou.musicAutomationGranted")
+                    UserDefaults.standard.set(true, forKey: "bubu.musicAutomationGranted")
                     AppState.shared.musicAutomationDenied = false
                 }
                 // Extract values on this queue before resuming (avoids NSAppleEventDescriptor Sendable issues)

@@ -112,6 +112,28 @@
    "ru": "Активность",
    "id": "Aktivitas"
   },
+  "Add coins in Settings → Integrations": {
+   "zh-Hans": "在“设置 → 集成”中添加币种",
+   "hi": "सेटिंग्स → इंटीग्रेशन में कॉइन जोड़ें",
+   "es": "Añade monedas en Ajustes → Integraciones",
+   "ar": "أضف عملات في الإعدادات ← التكاملات",
+   "fr": "Ajoute des cryptos dans Réglages → Intégrations",
+   "bn": "সেটিংস → ইন্টিগ্রেশনে কয়েন যোগ করুন",
+   "pt-BR": "Adicione moedas em Ajustes → Integrações",
+   "ru": "Добавьте монеты в Настройки → Интеграции",
+   "id": "Tambahkan koin di Pengaturan → Integrasi"
+  },
+  "Add exchange": {
+   "zh-Hans": "添加交易所",
+   "hi": "एक्सचेंज जोड़ें",
+   "es": "Agregar exchange",
+   "ar": "إضافة منصة",
+   "fr": "Ajouter une plateforme",
+   "bn": "এক্সচেঞ্জ যোগ করুন",
+   "pt-BR": "Adicionar exchange",
+   "ru": "Добавить биржу",
+   "id": "Tambah bursa"
+  },
   "Add your Anthropic API key in Settings → Chat first.": {
    "zh-Hans": "请先在设置 → 聊天中添加你的 Anthropic API 密钥。",
    "hi": "पहले सेटिंग्स → चैट में अपनी Anthropic API कुंजी जोड़ो।",
@@ -134,16 +156,16 @@
    "ru": "Реклама",
    "id": "Iklan"
   },
-  "After «OK Coucou», what you say goes to Claude with your Anthropic API key, with what Coucou reads to answer (your pills, your services' data, a contact's address). It acts and searches the web. Never audio.": {
-   "zh-Hans": "说「OK Coucou」后，你说的话会用你的 Anthropic API 密钥发送给 Claude，同时发送 Coucou 为回答而读取的内容（你的药丸、你的服务数据、联系人地址）。它会执行操作并进行网页搜索。从不发送音频。",
-   "hi": "«OK Coucou» के बाद तुम जो कहते हो वह तुम्हारी Anthropic API कुंजी से Claude को जाता है, साथ में वह जो Coucou जवाब देने के लिए पढ़ता है (तुम्हारी पिल्स, तुम्हारी सेवाओं का डेटा, किसी संपर्क का पता)। वह काम करता है और वेब पर खोजता है। ऑडियो कभी नहीं।",
-   "es": "Tras «OK Coucou», lo que dices va a Claude con tu clave de API de Anthropic, junto con lo que Coucou lee para responder (tus píldoras, los datos de tus servicios, la dirección de un contacto). Actúa y busca en la web. Nunca el audio.",
-   "ar": "بعد «OK Coucou»، يُرسل ما تقوله إلى Claude بمفتاح Anthropic API الخاص بك، مع ما يقرؤه Coucou للإجابة (حبوبك، بيانات خدماتك، عنوان جهة اتصال). ينفّذ ويبحث على الويب. لا يُرسل الصوت أبدًا.",
-   "fr": "Après « OK Coucou », ce que tu dis part chez Claude avec ta clé API Anthropic, avec ce que Coucou lit pour répondre (tes pilules, les données de tes services, l'adresse d'un contact). Il agit et cherche sur le web. Jamais l'audio.",
-   "bn": "«OK Coucou»-এর পরে তুমি যা বলো তা তোমার Anthropic API কী দিয়ে Claude-এর কাছে যায়, সঙ্গে Coucou উত্তর দিতে যা পড়ে (তোমার পিল, তোমার সার্ভিসের ডেটা, কোনো কন্টাক্টের ঠিকানা)। সে কাজ করে আর ওয়েবে খোঁজে। অডিও কখনো নয়।",
-   "pt-BR": "Depois de «OK Coucou», o que você diz vai para o Claude com sua chave de API da Anthropic, junto com o que o Coucou lê para responder (suas pílulas, os dados dos seus serviços, o endereço de um contato). Ele age e pesquisa na web. Nunca o áudio.",
-   "ru": "После «OK Coucou» сказанное уходит в Claude по твоему ключу Anthropic API вместе с тем, что Coucou читает для ответа (твои пилюли, данные твоих сервисов, адрес контакта). Он действует и ищет в интернете. Звук — никогда.",
-   "id": "Setelah «OK Coucou», ucapanmu dikirim ke Claude dengan kunci API Anthropic-mu, beserta apa yang dibaca Coucou untuk menjawab (pil-mu, data layananmu, alamat kontak). Ia bertindak dan mencari di web. Tidak pernah audio."
+  "After « OK Bubu », what you say goes to Claude with your Anthropic API key, with what Bubu reads to answer (your pills, your services' data, a contact's address). It acts and searches the web. Never audio.": {
+   "zh-Hans": "说「OK Bubu」后，你说的话会用你的 Anthropic API 密钥发送给 Claude，同时发送 Bubu 为回答而读取的内容（你的药丸、你的服务数据、联系人地址）。它会执行操作并进行网页搜索。从不发送音频。",
+   "hi": "« OK Bubu » के बाद तुम जो कहते हो वह तुम्हारी Anthropic API कुंजी से Claude को जाता है, साथ में वह जो Bubu जवाब देने के लिए पढ़ता है (तुम्हारी पिल्स, तुम्हारी सेवाओं का डेटा, किसी संपर्क का पता)। वह काम करता है और वेब पर खोजता है। ऑडियो कभी नहीं।",
+   "es": "Tras « OK Bubu », lo que dices va a Claude con tu clave de API de Anthropic, junto con lo que Bubu lee para responder (tus píldoras, los datos de tus servicios, la dirección de un contacto). Actúa y busca en la web. Nunca el audio.",
+   "ar": "بعد « OK Bubu »، يُرسل ما تقوله إلى Claude بمفتاح Anthropic API الخاص بك، مع ما يقرؤه Bubu للإجابة (حبوبك، بيانات خدماتك، عنوان جهة اتصال). ينفّذ ويبحث على الويب. لا يُرسل الصوت أبدًا.",
+   "fr": "Après « OK Bubu », ce que tu dis part chez Claude avec ta clé API Anthropic, avec ce que Bubu lit pour répondre (tes pilules, les données de tes services, l'adresse d'un contact). Il agit et cherche sur le web. Jamais l'audio.",
+   "bn": "« OK Bubu »-এর পরে তুমি যা বলো তা তোমার Anthropic API কী দিয়ে Claude-এর কাছে যায়, সঙ্গে Bubu উত্তর দিতে যা পড়ে (তোমার পিল, তোমার সার্ভিসের ডেটা, কোনো কন্টাক্টের ঠিকানা)। সে কাজ করে আর ওয়েবে খোঁজে। অডিও কখনো নয়।",
+   "pt-BR": "Depois de « OK Bubu », o que você diz vai para o Claude com sua chave de API da Anthropic, junto com o que o Bubu lê para responder (suas pílulas, os dados dos seus serviços, o endereço de um contato). Ele age e pesquisa na web. Nunca o áudio.",
+   "ru": "После « OK Bubu » сказанное уходит в Claude по твоему ключу Anthropic API вместе с тем, что Bubu читает для ответа (твои пилюли, данные твоих сервисов, адрес контакта). Он действует и ищет в интернете. Звук — никогда.",
+   "id": "Setelah « OK Bubu », ucapanmu dikirim ke Claude dengan kunci API Anthropic-mu, beserta apa yang dibaca Bubu untuk menjawab (pil-mu, data layananmu, alamat kontak). Ia bertindak dan mencari di web. Tidak pernah audio."
   },
   "Agent": {
    "zh-Hans": "代理",
@@ -167,6 +189,17 @@
    "ru": "Агенты",
    "id": "Agen"
   },
+  "Alert me when a coin moves {0} %": {
+   "zh-Hans": "币价变动 {0} % 时提醒我",
+   "hi": "कोई कॉइन {0} % हिले तो सूचित करें",
+   "es": "Avisarme cuando una moneda se mueva un {0} %",
+   "ar": "نبّهني عندما تتحرك عملة بنسبة {0} %",
+   "fr": "M’alerter quand une crypto bouge de {0} %",
+   "bn": "কোনো কয়েন {0} % ওঠানামা করলে জানাও",
+   "pt-BR": "Avisar quando uma moeda variar {0} %",
+   "ru": "Сообщать, если монета изменится на {0} %",
+   "id": "Beri tahu saat koin bergerak {0} %"
+  },
   "Allow": {
    "zh-Hans": "允许",
    "hi": "अनुमति दें",
@@ -178,27 +211,27 @@
    "ru": "Разрешить",
    "id": "Izinkan"
   },
-  "Allow Coucou to control Music": {
-   "zh-Hans": "允许 Coucou 控制音乐",
-   "hi": "Coucou को Music नियंत्रित करने दें",
-   "es": "Permitir que Coucou controle Music",
-   "ar": "السماح لـ Coucou بالتحكم في الموسيقى",
-   "fr": "Autoriser Coucou à contrôler Music",
-   "bn": "Coucou-কে Music নিয়ন্ত্রণ করতে দিন",
-   "pt-BR": "Permitir que o Coucou controle o Music",
-   "ru": "Разрешить Coucou управлять Music",
-   "id": "Izinkan Coucou mengontrol Music"
+  "Allow Bubu to control Music": {
+   "zh-Hans": "允许 Bubu 控制音乐",
+   "hi": "Bubu को Music नियंत्रित करने दें",
+   "es": "Permitir que Bubu controle Music",
+   "ar": "السماح لـ Bubu بالتحكم في الموسيقى",
+   "fr": "Autoriser Bubu à contrôler Music",
+   "bn": "Bubu-কে Music নিয়ন্ত্রণ করতে দিন",
+   "pt-BR": "Permitir que o Bubu controle o Music",
+   "ru": "Разрешить Bubu управлять Music",
+   "id": "Izinkan Bubu mengontrol Music"
   },
-  "Allow Coucou to control Spotify": {
-   "zh-Hans": "允许 Coucou 控制 Spotify",
-   "hi": "Coucou को Spotify नियंत्रित करने दें",
-   "es": "Permitir que Coucou controle Spotify",
-   "ar": "السماح لـ Coucou بالتحكم في Spotify",
-   "fr": "Autoriser Coucou à contrôler Spotify",
-   "bn": "Coucou-কে Spotify নিয়ন্ত্রণ করতে দিন",
-   "pt-BR": "Permitir que o Coucou controle o Spotify",
-   "ru": "Разрешить Coucou управлять Spotify",
-   "id": "Izinkan Coucou mengontrol Spotify"
+  "Allow Bubu to control Spotify": {
+   "zh-Hans": "允许 Bubu 控制 Spotify",
+   "hi": "Bubu को Spotify नियंत्रित करने दें",
+   "es": "Permitir que Bubu controle Spotify",
+   "ar": "السماح لـ Bubu بالتحكم في Spotify",
+   "fr": "Autoriser Bubu à contrôler Spotify",
+   "bn": "Bubu-কে Spotify নিয়ন্ত্রণ করতে দিন",
+   "pt-BR": "Permitir que o Bubu controle o Spotify",
+   "ru": "Разрешить Bubu управлять Spotify",
+   "id": "Izinkan Bubu mengontrol Spotify"
   },
   "Already active": {
    "zh-Hans": "已激活",
@@ -233,16 +266,16 @@
    "ru": "Плагин Amp",
    "id": "Plugin Amp"
   },
-  "An instruction sent from the iPhone uses the model open in chat. The system prompt and conversation history apply. Instructions sent when Coucou is not running are queued and executed on next launch.": {
-   "zh-Hans": "从 iPhone 发送的指令使用聊天中当前打开的模型。系统提示和对话历史适用。Coucou 未运行时发送的指令将排队，并在下次启动时执行。",
-   "hi": "iPhone से भेजा गया निर्देश चैट में वर्तमान में खुले मॉडल का उपयोग करता है। सिस्टम प्रॉम्प्ट और बातचीत का इतिहास लागू होता है। Coucou चल नहीं रहे होने पर भेजे गए निर्देश कतार में रखे जाते हैं और अगली बार चालू होने पर चलाए जाते हैं।",
-   "es": "Una instrucción enviada desde el iPhone usa el modelo abierto actualmente en el chat. Se aplican el prompt de sistema y el historial de conversación. Las instrucciones enviadas mientras Coucou no está en ejecución se ponen en cola y se ejecutan en el siguiente inicio.",
-   "ar": "التعليمات المُرسَلة من iPhone تستخدم النموذج المفتوح حاليًا في الدردشة. يُطبَّق موجه النظام وتاريخ المحادثة. التعليمات المُرسَلة أثناء توقف Coucou تُضاف إلى قائمة الانتظار وتُنفَّذ عند التشغيل التالي.",
-   "fr": "Une instruction envoyée depuis l'iPhone utilise le modèle ouvert dans le chat. Le prompt système et l'historique de conversation s'appliquent. Les instructions envoyées quand Coucou ne tourne pas sont mises en file d'attente et exécutées au prochain démarrage.",
-   "bn": "iPhone থেকে পাঠানো নির্দেশনা চ্যাটে বর্তমানে খোলা মডেল ব্যবহার করে। সিস্টেম প্রম্পট এবং কথোপকথনের ইতিহাস প্রযোজ্য। Coucou চলছে না থাকলে পাঠানো নির্দেশনাগুলো কিউতে রাখা হয় এবং পরবর্তী চালুতে চালানো হয়।",
-   "pt-BR": "Uma instrução enviada pelo iPhone usa o modelo aberto no momento no chat. O prompt de sistema e o histórico de conversa se aplicam. Instruções enviadas enquanto o Coucou não está em execução ficam na fila e são executadas no próximo início.",
-   "ru": "Инструкция, отправленная с iPhone, использует модель, открытую в чате. Системный промпт и история разговора применяются. Инструкции, отправленные пока Coucou не запущен, ставятся в очередь и выполняются при следующем запуске.",
-   "id": "Instruksi yang dikirim dari iPhone menggunakan model yang sedang terbuka di chat. Prompt sistem dan riwayat percakapan berlaku. Instruksi yang dikirim saat Coucou tidak berjalan dimasukkan ke antrean dan dijalankan saat peluncuran berikutnya."
+  "An instruction sent from the iPhone uses the model open in chat. The system prompt and conversation history apply. Instructions sent when Bubu is not running are queued and executed on next launch.": {
+   "zh-Hans": "从 iPhone 发送的指令使用聊天中当前打开的模型。系统提示和对话历史适用。Bubu 未运行时发送的指令将排队，并在下次启动时执行。",
+   "hi": "iPhone से भेजा गया निर्देश चैट में वर्तमान में खुले मॉडल का उपयोग करता है। सिस्टम प्रॉम्प्ट और बातचीत का इतिहास लागू होता है। Bubu चल नहीं रहे होने पर भेजे गए निर्देश कतार में रखे जाते हैं और अगली बार चालू होने पर चलाए जाते हैं।",
+   "es": "Una instrucción enviada desde el iPhone usa el modelo abierto actualmente en el chat. Se aplican el prompt de sistema y el historial de conversación. Las instrucciones enviadas mientras Bubu no está en ejecución se ponen en cola y se ejecutan en el siguiente inicio.",
+   "ar": "التعليمات المُرسَلة من iPhone تستخدم النموذج المفتوح حاليًا في الدردشة. يُطبَّق موجه النظام وتاريخ المحادثة. التعليمات المُرسَلة أثناء توقف Bubu تُضاف إلى قائمة الانتظار وتُنفَّذ عند التشغيل التالي.",
+   "fr": "Une instruction envoyée depuis l'iPhone utilise le modèle ouvert dans le chat. Le prompt système et l'historique de conversation s'appliquent. Les instructions envoyées quand Bubu ne tourne pas sont mises en file d'attente et exécutées au prochain démarrage.",
+   "bn": "iPhone থেকে পাঠানো নির্দেশনা চ্যাটে বর্তমানে খোলা মডেল ব্যবহার করে। সিস্টেম প্রম্পট এবং কথোপকথনের ইতিহাস প্রযোজ্য। Bubu চলছে না থাকলে পাঠানো নির্দেশনাগুলো কিউতে রাখা হয় এবং পরবর্তী চালুতে চালানো হয়।",
+   "pt-BR": "Uma instrução enviada pelo iPhone usa o modelo aberto no momento no chat. O prompt de sistema e o histórico de conversa se aplicam. Instruções enviadas enquanto o Bubu não está em execução ficam na fila e são executadas no próximo início.",
+   "ru": "Инструкция, отправленная с iPhone, использует модель, открытую в чате. Системный промпт и история разговора применяются. Инструкции, отправленные пока Bubu не запущен, ставятся в очередь и выполняются при следующем запуске.",
+   "id": "Instruksi yang dikirim dari iPhone menggunakan model yang sedang terbuka di chat. Prompt sistem dan riwayat percakapan berlaku. Instruksi yang dikirim saat Bubu tidak berjalan dimasukkan ke antrean dan dijalankan saat peluncuran berikutnya."
   },
   "Anthropic API": {
    "zh-Hans": "Anthropic API",
@@ -277,16 +310,16 @@
    "ru": "Применится при следующем запуске",
    "id": "Berlaku saat peluncuran berikutnya"
   },
-  "Approval requests appear in the notch. If Coucou is not running, Hermes falls back to its own prompt.": {
-   "zh-Hans": "审批请求显示在刘海中。若 Coucou 未运行，Hermes 将回退到其自己的提示。",
-   "hi": "नॉच में अनुमोदन अनुरोध दिखाए जाते हैं। यदि Coucou नहीं चल रहा तो Hermes अपने प्रॉम्प्ट पर वापस जाता है।",
-   "es": "Las solicitudes de aprobación aparecen en el notch. Si Coucou no está en ejecución, Hermes usa su propio prompt.",
-   "ar": "تظهر طلبات الموافقة في الشريط. إذا لم تكن Coucou تعمل، يعود Hermes إلى طرفيته الخاصة.",
-   "fr": "Les demandes d'approbation s'affichent dans le notch. Si Coucou ne tourne pas, Hermes utilise son propre prompt.",
-   "bn": "নচে অনুমোদন অনুরোধ দেখানো হয়। Coucou না চললে Hermes তার নিজের প্রম্পটে ফলব্যাক করে।",
-   "pt-BR": "Solicitações de aprovação aparecem no notch. Se Coucou não estiver em execução, Hermes usa seu próprio prompt.",
-   "ru": "Запросы подтверждения отображаются в notch. Если Coucou не запущен, Hermes использует собственный prompt.",
-   "id": "Permintaan persetujuan muncul di notch. Jika Coucou tidak berjalan, Hermes menggunakan promptnya sendiri."
+  "Approval requests appear in the notch. If Bubu is not running, Hermes falls back to its own prompt.": {
+   "zh-Hans": "审批请求显示在刘海中。若 Bubu 未运行，Hermes 将回退到其自己的提示。",
+   "hi": "नॉच में अनुमोदन अनुरोध दिखाए जाते हैं। यदि Bubu नहीं चल रहा तो Hermes अपने प्रॉम्प्ट पर वापस जाता है।",
+   "es": "Las solicitudes de aprobación aparecen en el notch. Si Bubu no está en ejecución, Hermes usa su propio prompt.",
+   "ar": "تظهر طلبات الموافقة في الشريط. إذا لم تكن Bubu تعمل، يعود Hermes إلى طرفيته الخاصة.",
+   "fr": "Les demandes d'approbation s'affichent dans le notch. Si Bubu ne tourne pas, Hermes utilise son propre prompt.",
+   "bn": "নচে অনুমোদন অনুরোধ দেখানো হয়। Bubu না চললে Hermes তার নিজের প্রম্পটে ফলব্যাক করে।",
+   "pt-BR": "Solicitações de aprovação aparecem no notch. Se Bubu não estiver em execução, Hermes usa seu próprio prompt.",
+   "ru": "Запросы подтверждения отображаются в notch. Если Bubu не запущен, Hermes использует собственный prompt.",
+   "id": "Permintaan persetujuan muncul di notch. Jika Bubu tidak berjalan, Hermes menggunakan promptnya sendiri."
   },
   "Approval requests are handled by Hermes (terminal or gateway).": {
    "zh-Hans": "审批请求由 Hermes 处理（终端或网关）。",
@@ -376,6 +409,17 @@
    "ru": "Автозакрытие · {seconds} с",
    "id": "Tutup otomatis · {seconds}dt"
   },
+  "Automatic": {
+   "zh-Hans": "自动",
+   "hi": "स्वचालित",
+   "es": "Automático",
+   "ar": "تلقائي",
+   "fr": "Automatique",
+   "bn": "স্বয়ংক্রিয়",
+   "pt-BR": "Automático",
+   "ru": "Автоматически",
+   "id": "Otomatis"
+  },
   "Automatic (your Mac’s dictation language)": {
    "zh-Hans": "自动（Mac 听写语言）",
    "hi": "स्वचालित (Mac की डिक्टेशन भाषा)",
@@ -408,6 +452,39 @@
    "pt-BR": "Comportamento",
    "ru": "Поведение",
    "id": "Perilaku"
+  },
+  "Bubu answers in": {
+   "zh-Hans": "Bubu 回答语言",
+   "hi": "Bubu जवाब देता है",
+   "es": "Bubu responde en",
+   "ar": "Bubu يجيب بـ",
+   "fr": "Bubu répond en",
+   "bn": "Bubu উত্তর দেয়",
+   "pt-BR": "Bubu responde em",
+   "ru": "Bubu отвечает на",
+   "id": "Bubu menjawab dalam"
+  },
+  "Bubu reads back results in the spoken language, using a synthesized voice. 100% on-device.": {
+   "zh-Hans": "Bubu 用语音语言朗读结果。完全在设备上处理。",
+   "hi": "Bubu बोली जाने वाली भाषा में परिणाम पढ़ता है। सब कुछ डिवाइस पर।",
+   "es": "Bubu lee los resultados en el idioma hablado con una voz sintetizada. Todo en el dispositivo.",
+   "ar": "يقرأ كوكو النتائج باللغة المنطوقة باستخدام صوت مُركَّب. كل شيء يتم على الجهاز.",
+   "fr": "Bubu lit les résultats dans la langue parlée. Tout se passe sur l'appareil.",
+   "bn": "Bubu কথ্য ভাষায় ফলাফল পড়ে। সবকিছু ডিভাইসেই হয়।",
+   "pt-BR": "Bubu lê os resultados no idioma falado. Tudo no dispositivo.",
+   "ru": "Bubu зачитывает результаты на языке команды. Всё на устройстве.",
+   "id": "Bubu membaca hasil dalam bahasa yang diucapkan. Semuanya di perangkat."
+  },
+  "Bubu responds aloud": {
+   "zh-Hans": "Bubu 大声回应",
+   "hi": "Bubu ज़ोर से जवाब देता है",
+   "es": "Bubu responde en voz alta",
+   "ar": "كوكو يرد بصوت عالٍ",
+   "fr": "Bubu répond à voix haute",
+   "bn": "Bubu জোরে জবাব দেয়",
+   "pt-BR": "Bubu responde em voz alta",
+   "ru": "Bubu отвечает вслух",
+   "id": "Bubu merespons dengan suara"
   },
   "Busiest day": {
    "zh-Hans": "最忙的一天",
@@ -486,16 +563,16 @@
    "ru": "Чат — другие провайдеры",
    "id": "Chat — penyedia lain"
   },
-  "Choose the tools you use. Coucou only shows what you declare here.": {
-   "zh-Hans": "选择你使用的工具。Coucou 只显示你在这里声明的内容。",
-   "hi": "वे टूल चुनें जो आप उपयोग करते हैं। Coucou केवल वही दिखाता है जो आप यहाँ घोषित करते हैं।",
-   "es": "Elige las herramientas que usas. Coucou solo muestra lo que declares aquí.",
-   "ar": "اختر الأدوات التي تستخدمها. يعرض Coucou فقط ما تُعلنه هنا.",
-   "fr": "Choisis les outils que tu utilises. Coucou n'affiche que ce que tu déclares ici.",
-   "bn": "আপনি যে টুলগুলো ব্যবহার করেন তা বেছে নিন। Coucou শুধুমাত্র আপনার ঘোষণা করা জিনিস দেখায়।",
-   "pt-BR": "Escolha as ferramentas que você usa. O Coucou mostra apenas o que você declarar aqui.",
-   "ru": "Выбери инструменты, которые ты используешь. Coucou показывает только то, что ты здесь объявишь.",
-   "id": "Pilih alat yang Anda gunakan. Coucou hanya menampilkan yang Anda deklarasikan di sini."
+  "Choose the tools you use. Bubu only shows what you declare here.": {
+   "zh-Hans": "选择你使用的工具。Bubu 只显示你在这里声明的内容。",
+   "hi": "वे टूल चुनें जो आप उपयोग करते हैं। Bubu केवल वही दिखाता है जो आप यहाँ घोषित करते हैं।",
+   "es": "Elige las herramientas que usas. Bubu solo muestra lo que declares aquí.",
+   "ar": "اختر الأدوات التي تستخدمها. يعرض Bubu فقط ما تُعلنه هنا.",
+   "fr": "Choisis les outils que tu utilises. Bubu n'affiche que ce que tu déclares ici.",
+   "bn": "আপনি যে টুলগুলো ব্যবহার করেন তা বেছে নিন। Bubu শুধুমাত্র আপনার ঘোষণা করা জিনিস দেখায়।",
+   "pt-BR": "Escolha as ferramentas que você usa. O Bubu mostra apenas o que você declarar aqui.",
+   "ru": "Выбери инструменты, которые ты используешь. Bubu показывает только то, что ты здесь объявишь.",
+   "id": "Pilih alat yang Anda gunakan. Bubu hanya menampilkan yang Anda deklarasikan di sini."
   },
   "City": {
    "zh-Hans": "城市",
@@ -552,16 +629,16 @@
    "ru": "Claude Code спрашивает",
    "id": "Claude Code bertanya"
   },
-  "Claude as Coucou's brain": {
-   "zh-Hans": "由 Claude 担任 Coucou 的大脑",
-   "hi": "Coucou का दिमाग: Claude",
-   "es": "Claude como cerebro de Coucou",
-   "ar": "Claude عقل Coucou",
-   "fr": "Claude comme cerveau de Coucou",
-   "bn": "Coucou-র মস্তিষ্ক: Claude",
-   "pt-BR": "Claude como cérebro do Coucou",
-   "ru": "Claude — мозг Coucou",
-   "id": "Claude sebagai otak Coucou"
+  "Claude as Bubu's brain": {
+   "zh-Hans": "由 Claude 担任 Bubu 的大脑",
+   "hi": "Bubu का दिमाग: Claude",
+   "es": "Claude como cerebro de Bubu",
+   "ar": "Claude عقل Bubu",
+   "fr": "Claude comme cerveau de Bubu",
+   "bn": "Bubu-র মস্তিষ্ক: Claude",
+   "pt-BR": "Claude como cérebro do Bubu",
+   "ru": "Claude — мозг Bubu",
+   "id": "Claude sebagai otak Bubu"
   },
   "Claude is reading {name}…": {
    "zh-Hans": "Claude 正在读取 {name}…",
@@ -661,6 +738,17 @@
    "pt-BR": "Hooks do Codex",
    "ru": "Хуки Codex",
    "id": "Hooks Codex"
+  },
+  "Coins (BTC, ETH, SOL…)": {
+   "zh-Hans": "币种（BTC, ETH, SOL…）",
+   "hi": "कॉइन (BTC, ETH, SOL…)",
+   "es": "Monedas (BTC, ETH, SOL…)",
+   "ar": "العملات (BTC, ETH, SOL…)",
+   "fr": "Cryptos (BTC, ETH, SOL…)",
+   "bn": "কয়েন (BTC, ETH, SOL…)",
+   "pt-BR": "Moedas (BTC, ETH, SOL…)",
+   "ru": "Монеты (BTC, ETH, SOL…)",
+   "id": "Koin (BTC, ETH, SOL…)"
   },
   "Color": {
    "zh-Hans": "颜色",
@@ -805,38 +893,16 @@
    "ru": "Скопировать",
    "id": "Salin"
   },
-  "Coucou answers in": {
-   "zh-Hans": "Coucou 回答语言",
-   "hi": "Coucou जवाब देता है",
-   "es": "Coucou responde en",
-   "ar": "Coucou يجيب بـ",
-   "fr": "Coucou répond en",
-   "bn": "Coucou উত্তর দেয়",
-   "pt-BR": "Coucou responde em",
-   "ru": "Coucou отвечает на",
-   "id": "Coucou menjawab dalam"
-  },
-  "Coucou reads back results in the spoken language, using a synthesized voice. 100% on-device.": {
-   "zh-Hans": "Coucou 用语音语言朗读结果。完全在设备上处理。",
-   "hi": "Coucou बोली जाने वाली भाषा में परिणाम पढ़ता है। सब कुछ डिवाइस पर।",
-   "es": "Coucou lee los resultados en el idioma hablado con una voz sintetizada. Todo en el dispositivo.",
-   "ar": "يقرأ كوكو النتائج باللغة المنطوقة باستخدام صوت مُركَّب. كل شيء يتم على الجهاز.",
-   "fr": "Coucou lit les résultats dans la langue parlée. Tout se passe sur l'appareil.",
-   "bn": "Coucou কথ্য ভাষায় ফলাফল পড়ে। সবকিছু ডিভাইসেই হয়।",
-   "pt-BR": "Coucou lê os resultados no idioma falado. Tudo no dispositivo.",
-   "ru": "Coucou зачитывает результаты на языке команды. Всё на устройстве.",
-   "id": "Coucou membaca hasil dalam bahasa yang diucapkan. Semuanya di perangkat."
-  },
-  "Coucou responds aloud": {
-   "zh-Hans": "Coucou 大声回应",
-   "hi": "Coucou ज़ोर से जवाब देता है",
-   "es": "Coucou responde en voz alta",
-   "ar": "كوكو يرد بصوت عالٍ",
-   "fr": "Coucou répond à voix haute",
-   "bn": "Coucou জোরে জবাব দেয়",
-   "pt-BR": "Coucou responde em voz alta",
-   "ru": "Coucou отвечает вслух",
-   "id": "Coucou merespons dengan suara"
+  "Currency": {
+   "zh-Hans": "货币",
+   "hi": "मुद्रा",
+   "es": "Moneda",
+   "ar": "العملة",
+   "fr": "Monnaie",
+   "bn": "মুদ্রা",
+   "pt-BR": "Moeda",
+   "ru": "Валюта",
+   "id": "Mata uang"
   },
   "Custom…": {
    "zh-Hans": "自定义…",
@@ -1047,6 +1113,17 @@
    "ru": "Включить голосовые команды",
    "id": "Aktifkan perintah suara"
   },
+  "Exchange": {
+   "zh-Hans": "交易所",
+   "hi": "एक्सचेंज",
+   "es": "Plataforma",
+   "ar": "المنصة",
+   "fr": "Plateforme",
+   "bn": "এক্সচেঞ্জ",
+   "pt-BR": "Corretora",
+   "ru": "Биржа",
+   "id": "Bursa"
+  },
   "Explore all features without an API key or Claude Code. Nothing is written to disk.": {
    "zh-Hans": "无需 API 密钥或 Claude Code，探索所有功能。不会写入任何内容到磁盘。",
    "hi": "API कुंजी या Claude Code के बिना सभी सुविधाएँ एक्सप्लोर करें। डिस्क पर कुछ नहीं लिखा जाता।",
@@ -1223,16 +1300,16 @@
    "ru": "Перейти на вкладку по номеру",
    "id": "Pindah ke tab berdasarkan nomor"
   },
-  "Goes through the Coucou relay to Apple's push service. Only the agent name and state are sent: no project name, command, or path.": {
-   "zh-Hans": "通过 Coucou 中继传至 Apple 推送服务。仅发送 Agent 的名称和状态：不含项目名称、命令或路径。",
-   "hi": "Coucou रिले के माध्यम से Apple के पुश सर्विस से जाता है। केवल एजेंट का नाम और स्थिति भेजी जाती है: कोई प्रोजेक्ट नाम, कमांड या पाथ नहीं।",
-   "es": "Pasa por el relay de Coucou al servicio push de Apple. Solo se envían el nombre y el estado del agente: sin nombre de proyecto, comando ni ruta.",
-   "ar": "يمر عبر ريلاي Coucou إلى خدمة Apple للإشعارات. يُرسَل فقط اسم الوكيل وحالته: لا اسم مشروع ولا أمر ولا مسار.",
-   "fr": "Passe par le relais Coucou vers le service push d'Apple. Seuls le nom et l'état de l'agent sont envoyés : aucun nom de projet, commande ou chemin.",
-   "bn": "Apple-এর পুশ সার্ভিসে Coucou রিলের মাধ্যমে যায়। শুধুমাত্র এজেন্টের নাম এবং অবস্থা পাঠানো হয়: কোনো প্রজেক্ট নাম, কমান্ড বা পাথ নয়।",
-   "pt-BR": "Passa pelo relay do Coucou para o serviço push da Apple. Apenas o nome e o estado do agente são enviados: sem nome de projeto, comando ou caminho.",
-   "ru": "Проходит через ретранслятор Coucou к сервису push Apple. Отправляются только имя и состояние агента: без имени проекта, команды или пути.",
-   "id": "Melewati relay Coucou ke layanan push Apple. Hanya nama dan status agen yang dikirim: tanpa nama proyek, perintah, atau jalur."
+  "Goes through the Bubu relay to Apple's push service. Only the agent name and state are sent: no project name, command, or path.": {
+   "zh-Hans": "通过 Bubu 中继传至 Apple 推送服务。仅发送 Agent 的名称和状态：不含项目名称、命令或路径。",
+   "hi": "Bubu रिले के माध्यम से Apple के पुश सर्विस से जाता है। केवल एजेंट का नाम और स्थिति भेजी जाती है: कोई प्रोजेक्ट नाम, कमांड या पाथ नहीं।",
+   "es": "Pasa por el relay de Bubu al servicio push de Apple. Solo se envían el nombre y el estado del agente: sin nombre de proyecto, comando ni ruta.",
+   "ar": "يمر عبر ريلاي Bubu إلى خدمة Apple للإشعارات. يُرسَل فقط اسم الوكيل وحالته: لا اسم مشروع ولا أمر ولا مسار.",
+   "fr": "Passe par le relais Bubu vers le service push d'Apple. Seuls le nom et l'état de l'agent sont envoyés : aucun nom de projet, commande ou chemin.",
+   "bn": "Apple-এর পুশ সার্ভিসে Bubu রিলের মাধ্যমে যায়। শুধুমাত্র এজেন্টের নাম এবং অবস্থা পাঠানো হয়: কোনো প্রজেক্ট নাম, কমান্ড বা পাথ নয়।",
+   "pt-BR": "Passa pelo relay do Bubu para o serviço push da Apple. Apenas o nome e o estado do agente são enviados: sem nome de projeto, comando ou caminho.",
+   "ru": "Проходит через ретранслятор Bubu к сервису push Apple. Отправляются только имя и состояние агента: без имени проекта, команды или пути.",
+   "id": "Melewati relay Bubu ke layanan push Apple. Hanya nama dan status agen yang dikirim: tanpa nama proyek, perintah, atau jalur."
   },
   "Google AI": {
    "zh-Hans": "Google AI",
@@ -1410,6 +1487,17 @@
    "ru": "Наведение открывает остров; он сворачивается вскоре после того, как указатель уходит. Щёлкните внутри, чтобы он остался открытым.",
    "id": "Mengarahkan kursor ke pulau akan membukanya; pulau menutup lagi sesaat setelah kursor pergi. Klik di dalamnya agar tetap terbuka."
   },
+  "Inbox": {
+   "zh-Hans": "收件箱",
+   "hi": "इनबॉक्स",
+   "es": "Bandeja de entrada",
+   "ar": "البريد الوارد",
+   "fr": "Boîte de réception",
+   "bn": "ইনবক্স",
+   "pt-BR": "Caixa de entrada",
+   "ru": "Входящие",
+   "id": "Kotak masuk"
+  },
   "Install": {
    "zh-Hans": "安装",
    "hi": "इंस्टॉल करें",
@@ -1421,16 +1509,16 @@
    "ru": "Установить",
    "id": "Pasang"
   },
-  "Install Coucou hooks in ~/.claude?": {
-   "zh-Hans": "是否将 Coucou Hooks 安装到 ~/.claude？",
-   "hi": "~/.claude में Coucou हुक इंस्टॉल करें?",
-   "es": "¿Instalar los hooks de Coucou en ~/.claude?",
-   "ar": "هل تريد تثبيت خطافات Coucou في ~/.claude؟",
-   "fr": "Installer les hooks Coucou dans ~/.claude ?",
-   "bn": "~/.claude-এ Coucou হুক ইনস্টল করবেন?",
-   "pt-BR": "Instalar os hooks do Coucou em ~/.claude?",
-   "ru": "Установить хуки Coucou в ~/.claude?",
-   "id": "Pasang hooks Coucou di ~/.claude?"
+  "Install Bubu hooks in ~/.claude?": {
+   "zh-Hans": "是否将 Bubu Hooks 安装到 ~/.claude？",
+   "hi": "~/.claude में Bubu हुक इंस्टॉल करें?",
+   "es": "¿Instalar los hooks de Bubu en ~/.claude?",
+   "ar": "هل تريد تثبيت خطافات Bubu في ~/.claude؟",
+   "fr": "Installer les hooks Bubu dans ~/.claude ?",
+   "bn": "~/.claude-এ Bubu হুক ইনস্টল করবেন?",
+   "pt-BR": "Instalar os hooks do Bubu em ~/.claude?",
+   "ru": "Установить хуки Bubu в ~/.claude?",
+   "id": "Pasang hooks Bubu di ~/.claude?"
   },
   "Install hooks": {
    "zh-Hans": "安装 Hooks",
@@ -1696,6 +1784,17 @@
    "ru": "Голос Mac",
    "id": "Suara Mac"
   },
+  "Mail is closed": {
+   "zh-Hans": "“邮件”未打开",
+   "hi": "Mail बंद है",
+   "es": "Mail está cerrado",
+   "ar": "تطبيق Mail مغلق",
+   "fr": "Mail est fermé",
+   "bn": "Mail বন্ধ আছে",
+   "pt-BR": "O Mail está fechado",
+   "ru": "Почта закрыта",
+   "id": "Mail ditutup"
+  },
   "Mail not available.": {
    "zh-Hans": "邮件不可用。",
    "hi": "मेल उपलब्ध नहीं है।",
@@ -1739,6 +1838,17 @@
    "pt-BR": "Homem",
    "ru": "Мужской",
    "id": "Pria"
+  },
+  "Mark as read": {
+   "zh-Hans": "标为已读",
+   "hi": "पढ़ा हुआ चिह्नित करें",
+   "es": "Marcar como leído",
+   "ar": "وضع علامة كمقروءة",
+   "fr": "Marquer comme lu",
+   "bn": "পঠিত হিসেবে চিহ্নিত করুন",
+   "pt-BR": "Marcar como lido",
+   "ru": "Отметить как прочитанное",
+   "id": "Tandai sudah dibaca"
   },
   "Microphone unavailable": {
    "zh-Hans": "麦克风不可用",
@@ -1982,6 +2092,17 @@
    "ru": "Нет подробностей об ошибке.",
    "id": "Tidak ada detail kesalahan yang tersedia."
   },
+  "No messages": {
+   "zh-Hans": "没有邮件",
+   "hi": "कोई संदेश नहीं",
+   "es": "No hay mensajes",
+   "ar": "لا توجد رسائل",
+   "fr": "Aucun message",
+   "bn": "কোনো বার্তা নেই",
+   "pt-BR": "Nenhuma mensagem",
+   "ru": "Нет сообщений",
+   "id": "Tidak ada pesan"
+  },
   "No models yet — download one in {name} first.": {
    "zh-Hans": "暂无模型 — 请先在 {name} 中下载一个。",
    "hi": "अभी कोई मॉडल नहीं — पहले {name} में एक डाउनलोड करें।",
@@ -2069,6 +2190,17 @@
    "pt-BR": "Não instalado",
    "ru": "Не установлено",
    "id": "Belum terpasang"
+  },
+  "Not on this exchange: {0}": {
+   "zh-Hans": "此交易所没有：{0}",
+   "hi": "इस एक्सचेंज पर नहीं: {0}",
+   "es": "No está en esta plataforma: {0}",
+   "ar": "غير مدرجة في هذه المنصة: {0}",
+   "fr": "Absente de cette plateforme : {0}",
+   "bn": "এই এক্সচেঞ্জে নেই: {0}",
+   "pt-BR": "Não está nesta corretora: {0}",
+   "ru": "Нет на этой бирже: {0}",
+   "id": "Tidak ada di bursa ini: {0}"
   },
   "Not playing": {
    "zh-Hans": "未播放",
@@ -2257,6 +2389,17 @@
    "ru": "Открыть Универсальный доступ",
    "id": "Buka Aksesibilitas"
   },
+  "Open Bubu": {
+   "zh-Hans": "打开 Bubu",
+   "hi": "Bubu खोलें",
+   "es": "Abrir Bubu",
+   "ar": "فتح Bubu",
+   "fr": "Ouvrir Bubu",
+   "bn": "Bubu খুলুন",
+   "pt-BR": "Abrir Bubu",
+   "ru": "Открыть Bubu",
+   "id": "Buka Bubu"
+  },
   "Open Codex": {
    "zh-Hans": "打开 Codex",
    "hi": "Codex खोलें",
@@ -2268,17 +2411,6 @@
    "ru": "Открыть Codex",
    "id": "Buka Codex"
   },
-  "Open Coucou": {
-   "zh-Hans": "打开 Coucou",
-   "hi": "Coucou खोलें",
-   "es": "Abrir Coucou",
-   "ar": "فتح Coucou",
-   "fr": "Ouvrir Coucou",
-   "bn": "Coucou খুলুন",
-   "pt-BR": "Abrir Coucou",
-   "ru": "Открыть Coucou",
-   "id": "Buka Coucou"
-  },
   "Open Cursor": {
    "zh-Hans": "打开 Cursor",
    "hi": "Cursor खोलें",
@@ -2289,6 +2421,17 @@
    "pt-BR": "Abrir Cursor",
    "ru": "Открыть Cursor",
    "id": "Buka Cursor"
+  },
+  "Open Mail": {
+   "zh-Hans": "打开“邮件”",
+   "hi": "Mail खोलें",
+   "es": "Abrir Mail",
+   "ar": "فتح Mail",
+   "fr": "Ouvrir Mail",
+   "bn": "Mail খুলুন",
+   "pt-BR": "Abrir o Mail",
+   "ru": "Открыть Почту",
+   "id": "Buka Mail"
   },
   "Open Music": {
    "zh-Hans": "打开 Music",
@@ -2344,6 +2487,17 @@
    "pt-BR": "Abrir chat",
    "ru": "Открыть чат",
    "id": "Buka chat"
+  },
+  "Open in Mail": {
+   "zh-Hans": "在“邮件”中打开",
+   "hi": "Mail में खोलें",
+   "es": "Abrir en Mail",
+   "ar": "فتح في Mail",
+   "fr": "Ouvrir dans Mail",
+   "bn": "Mail-এ খুলুন",
+   "pt-BR": "Abrir no Mail",
+   "ru": "Открыть в Почте",
+   "id": "Buka di Mail"
   },
   "Open in n8n": {
    "zh-Hans": "在 n8n 中打开",
@@ -2664,6 +2818,17 @@
    "ru": "Проекты",
    "id": "Proyek"
   },
+  "Public prices from the exchange: no account, no key. Read every minute, only while the pill is on.": {
+   "zh-Hans": "来自交易所的公开行情：无需账户和密钥。仅在启用该胶囊时每分钟读取一次。",
+   "hi": "एक्सचेंज की सार्वजनिक कीमतें: न खाता, न कुंजी। पिल चालू होने पर ही हर मिनट पढ़ी जाती हैं।",
+   "es": "Precios públicos de la plataforma: sin cuenta ni clave. Se leen cada minuto, solo con la píldora activa.",
+   "ar": "أسعار عامة من المنصة: بلا حساب ولا مفتاح. تُقرأ كل دقيقة، فقط حين تكون الحبة مفعّلة.",
+   "fr": "Cours publics de la plateforme : ni compte ni clé. Lus chaque minute, seulement quand la pilule est active.",
+   "bn": "এক্সচেঞ্জের পাবলিক দাম: কোনো অ্যাকাউন্ট বা কী লাগে না। পিলটি চালু থাকলেই শুধু প্রতি মিনিটে পড়া হয়।",
+   "pt-BR": "Preços públicos da corretora: sem conta nem chave. Lidos a cada minuto, só com a pílula ativa.",
+   "ru": "Публичные цены биржи: без аккаунта и ключа. Обновляются раз в минуту, только когда пилюля включена.",
+   "id": "Harga publik dari bursa: tanpa akun, tanpa kunci. Dibaca tiap menit, hanya saat pil aktif."
+  },
   "Quit": {
    "zh-Hans": "退出",
    "hi": "छोड़ें",
@@ -2807,6 +2972,17 @@
    "ru": "Повторять один",
    "id": "Ulangi satu"
   },
+  "Reply": {
+   "zh-Hans": "回复",
+   "hi": "जवाब दें",
+   "es": "Responder",
+   "ar": "رد",
+   "fr": "Répondre",
+   "bn": "উত্তর দিন",
+   "pt-BR": "Responder",
+   "ru": "Ответить",
+   "id": "Balas"
+  },
   "Reply in terminal": {
    "zh-Hans": "在终端回复",
    "hi": "टर्मिनल में उत्तर दें",
@@ -2862,16 +3038,16 @@
    "ru": "Сброс…",
    "id": "Mereset…"
   },
-  "Restart Coucou": {
-   "zh-Hans": "重启 Coucou",
-   "hi": "Coucou को पुनः आरंभ करें",
-   "es": "Reiniciar Coucou",
-   "ar": "إعادة تشغيل Coucou",
-   "fr": "Redémarrer Coucou",
-   "bn": "Coucou পুনরায় শুরু করুন",
-   "pt-BR": "Reiniciar Coucou",
-   "ru": "Перезапустить Coucou",
-   "id": "Mulai ulang Coucou"
+  "Restart Bubu": {
+   "zh-Hans": "重启 Bubu",
+   "hi": "Bubu को पुनः आरंभ करें",
+   "es": "Reiniciar Bubu",
+   "ar": "إعادة تشغيل Bubu",
+   "fr": "Redémarrer Bubu",
+   "bn": "Bubu পুনরায় শুরু করুন",
+   "pt-BR": "Reiniciar Bubu",
+   "ru": "Перезапустить Bubu",
+   "id": "Mulai ulang Bubu"
   },
   "Retry": {
    "zh-Hans": "重试",
@@ -3049,16 +3225,16 @@
    "ru": "Отправка…",
    "id": "Mengirim…"
   },
-  "Sends your sessions to your private iCloud for the Coucou app on iPhone. Project names, commands, and questions are encrypted with your iCloud keys. Disabling removes data from iCloud.": {
-   "zh-Hans": "将你的会话发送到私有 iCloud，供 Coucou iPhone 应用使用。项目名称、命令和问题使用你的 iCloud 密钥加密。关闭后将从 iCloud 中删除。",
-   "hi": "Coucou iPhone ऐप के लिए आपके सेशन आपके प्राइवेट iCloud में भेजता है। प्रोजेक्ट नाम, कमांड और सवाल आपकी iCloud कुंजियों से एन्क्रिप्ट किए जाते हैं। बंद करने पर iCloud से हटा दिए जाते हैं।",
-   "es": "Envía tus sesiones a tu iCloud privado para la app Coucou de iPhone. Los nombres de proyecto, comandos y preguntas se cifran con tus claves de iCloud. Desactivarlo las elimina de iCloud.",
-   "ar": "يُرسل جلساتك إلى iCloud الخاص بك لتطبيق Coucou على iPhone. تُشفَّر أسماء المشاريع والأوامر والأسئلة بمفاتيح iCloud الخاصة بك. إيقاف التشغيل يحذفها من iCloud.",
-   "fr": "Envoie tes sessions sur ton iCloud privé pour l'app Coucou sur iPhone. Les noms de projets, commandes et questions sont chiffrés avec tes clés iCloud. Désactiver supprime les données d'iCloud.",
-   "bn": "Coucou iPhone অ্যাপের জন্য আপনার সেশনগুলো আপনার প্রাইভেট iCloud-এ পাঠায়। প্রজেক্টের নাম, কমান্ড এবং প্রশ্নগুলো আপনার iCloud কী দিয়ে এনক্রিপ্ট করা হয়। বন্ধ করলে iCloud থেকে মুছে যাবে।",
-   "pt-BR": "Envia suas sessões para seu iCloud privado para o app Coucou no iPhone. Nomes de projetos, comandos e perguntas são criptografados com suas chaves do iCloud. Desativar remove-os do iCloud.",
-   "ru": "Отправляет твои сессии в личный iCloud для приложения Coucou на iPhone. Имена проектов, команды и вопросы шифруются твоими ключами iCloud. Отключение удаляет их из iCloud.",
-   "id": "Mengirim sesi Anda ke iCloud pribadi Anda untuk aplikasi Coucou iPhone. Nama proyek, perintah, dan pertanyaan dienkripsi dengan kunci iCloud Anda. Mematikannya menghapusnya dari iCloud."
+  "Sends your sessions to your private iCloud for the Bubu app on iPhone. Project names, commands, and questions are encrypted with your iCloud keys. Disabling removes data from iCloud.": {
+   "zh-Hans": "将你的会话发送到私有 iCloud，供 Bubu iPhone 应用使用。项目名称、命令和问题使用你的 iCloud 密钥加密。关闭后将从 iCloud 中删除。",
+   "hi": "Bubu iPhone ऐप के लिए आपके सेशन आपके प्राइवेट iCloud में भेजता है। प्रोजेक्ट नाम, कमांड और सवाल आपकी iCloud कुंजियों से एन्क्रिप्ट किए जाते हैं। बंद करने पर iCloud से हटा दिए जाते हैं।",
+   "es": "Envía tus sesiones a tu iCloud privado para la app Bubu de iPhone. Los nombres de proyecto, comandos y preguntas se cifran con tus claves de iCloud. Desactivarlo las elimina de iCloud.",
+   "ar": "يُرسل جلساتك إلى iCloud الخاص بك لتطبيق Bubu على iPhone. تُشفَّر أسماء المشاريع والأوامر والأسئلة بمفاتيح iCloud الخاصة بك. إيقاف التشغيل يحذفها من iCloud.",
+   "fr": "Envoie tes sessions sur ton iCloud privé pour l'app Bubu sur iPhone. Les noms de projets, commandes et questions sont chiffrés avec tes clés iCloud. Désactiver supprime les données d'iCloud.",
+   "bn": "Bubu iPhone অ্যাপের জন্য আপনার সেশনগুলো আপনার প্রাইভেট iCloud-এ পাঠায়। প্রজেক্টের নাম, কমান্ড এবং প্রশ্নগুলো আপনার iCloud কী দিয়ে এনক্রিপ্ট করা হয়। বন্ধ করলে iCloud থেকে মুছে যাবে।",
+   "pt-BR": "Envia suas sessões para seu iCloud privado para o app Bubu no iPhone. Nomes de projetos, comandos e perguntas são criptografados com suas chaves do iCloud. Desativar remove-os do iCloud.",
+   "ru": "Отправляет твои сессии в личный iCloud для приложения Bubu на iPhone. Имена проектов, команды и вопросы шифруются твоими ключами iCloud. Отключение удаляет их из iCloud.",
+   "id": "Mengirim sesi Anda ke iCloud pribadi Anda untuk aplikasi Bubu iPhone. Nama proyek, perintah, dan pertanyaan dienkripsi dengan kunci iCloud Anda. Mematikannya menghapusnya dari iCloud."
   },
   "Session finished": {
    "zh-Hans": "会话已结束",
@@ -3071,16 +3247,16 @@
    "ru": "Сессия завершена",
    "id": "Sesi selesai"
   },
-  "Settings — Coucou": {
-   "zh-Hans": "设置 — Coucou",
-   "hi": "सेटिंग्स — Coucou",
-   "es": "Ajustes — Coucou",
-   "ar": "الإعدادات — Coucou",
-   "fr": "Réglages — Coucou",
-   "bn": "সেটিংস — Coucou",
-   "pt-BR": "Configurações — Coucou",
-   "ru": "Настройки — Coucou",
-   "id": "Pengaturan — Coucou"
+  "Settings — Bubu": {
+   "zh-Hans": "设置 — Bubu",
+   "hi": "सेटिंग्स — Bubu",
+   "es": "Ajustes — Bubu",
+   "ar": "الإعدادات — Bubu",
+   "fr": "Réglages — Bubu",
+   "bn": "সেটিংস — Bubu",
+   "pt-BR": "Configurações — Bubu",
+   "ru": "Настройки — Bubu",
+   "id": "Pengaturan — Bubu"
   },
   "Settings…": {
    "zh-Hans": "设置…",
@@ -3181,16 +3357,16 @@
    "ru": "Показывать мои сессии агента на iPhone",
    "id": "Tampilkan sesi agen saya di iPhone saya"
   },
-  "Shows your Claude plan usage (5-hour and weekly limits) in the notch header. Coucou adds a status line relay in ~/.claude/settings.json. If you already have a status line, it keeps working as before. Pro and Max plans only.": {
-   "zh-Hans": "在刘海标头中显示你的 Claude 计划用量（5 小时及每周限额）。Coucou 会在 ~/.claude/settings.json 中添加一条状态栏中继。如果你已有状态栏，它将照常运行。仅限 Pro 和 Max 计划。",
-   "hi": "नॉच हेडर में आपके Claude प्लान का उपयोग (5 घंटे और साप्ताहिक सीमाएं) दिखाता है। Coucou ~/.claude/settings.json में एक स्टेटस लाइन रिले जोड़ता है। अगर आपके पास पहले से स्टेटस लाइन है, तो वह पहले की तरह काम करती रहेगी। केवल Pro और Max प्लान के लिए।",
-   "es": "Muestra el uso de tu plan Claude (límites de 5 horas y semanales) en el encabezado del notch. Coucou añade una línea de estado relay en ~/.claude/settings.json. Si ya tienes una línea de estado, seguirá funcionando como antes. Solo planes Pro y Max.",
-   "ar": "يعرض استخدام خطة Claude (الحدود الخمس ساعات والأسبوعية) في ترويسة الشريط العلوي. تضيف Coucou سطر حالة مُرحِّلاً إلى ~/.claude/settings.json. إن كان لديك سطر حالة بالفعل، يستمر في العمل كالمعتاد. للخططَين Pro وMax فقط.",
-   "fr": "Affiche ton utilisation du forfait Claude (limites de 5 heures et hebdomadaire) dans l'en-tête de l'encoche. Coucou ajoute un relais de ligne de statut dans ~/.claude/settings.json. Si tu as déjà une ligne de statut, elle continue de fonctionner comme avant. Forfaits Pro et Max uniquement.",
-   "bn": "নচ হেডারে আপনার Claude প্ল্যানের ব্যবহার (৫ ঘণ্টা ও সাপ্তাহিক সীমা) দেখায়। Coucou ~/.claude/settings.json-এ একটি স্ট্যাটাস লাইন রিলে যোগ করে। আপনার কাছে ইতিমধ্যে স্ট্যাটাস লাইন থাকলে তা আগের মতোই কাজ করবে। শুধুমাত্র Pro এবং Max প্ল্যানের জন্য।",
-   "pt-BR": "Mostra o uso do seu plano Claude (limites de 5 horas e semanais) no cabeçalho do notch. O Coucou adiciona um relay de linha de status ao ~/.claude/settings.json. Se você já tiver uma linha de status, ela continua funcionando normalmente. Apenas planos Pro e Max.",
-   "ru": "Показывает использование плана Claude (лимиты на 5 часов и на неделю) в шапке нотча. Coucou добавляет ретранслятор строки статуса в ~/.claude/settings.json. Если строка статуса уже есть, она продолжит работать как прежде. Только для планов Pro и Max.",
-   "id": "Menampilkan penggunaan paket Claude (batas 5 jam dan mingguan) di header notch. Coucou menambahkan relay baris status ke ~/.claude/settings.json. Jika Anda sudah memiliki baris status, tetap berjalan seperti sebelumnya. Hanya untuk paket Pro dan Max."
+  "Shows your Claude plan usage (5-hour and weekly limits) in the notch header. Bubu adds a status line relay in ~/.claude/settings.json. If you already have a status line, it keeps working as before. Pro and Max plans only.": {
+   "zh-Hans": "在刘海标头中显示你的 Claude 计划用量（5 小时及每周限额）。Bubu 会在 ~/.claude/settings.json 中添加一条状态栏中继。如果你已有状态栏，它将照常运行。仅限 Pro 和 Max 计划。",
+   "hi": "नॉच हेडर में आपके Claude प्लान का उपयोग (5 घंटे और साप्ताहिक सीमाएं) दिखाता है। Bubu ~/.claude/settings.json में एक स्टेटस लाइन रिले जोड़ता है। अगर आपके पास पहले से स्टेटस लाइन है, तो वह पहले की तरह काम करती रहेगी। केवल Pro और Max प्लान के लिए।",
+   "es": "Muestra el uso de tu plan Claude (límites de 5 horas y semanales) en el encabezado del notch. Bubu añade una línea de estado relay en ~/.claude/settings.json. Si ya tienes una línea de estado, seguirá funcionando como antes. Solo planes Pro y Max.",
+   "ar": "يعرض استخدام خطة Claude (الحدود الخمس ساعات والأسبوعية) في ترويسة الشريط العلوي. تضيف Bubu سطر حالة مُرحِّلاً إلى ~/.claude/settings.json. إن كان لديك سطر حالة بالفعل، يستمر في العمل كالمعتاد. للخططَين Pro وMax فقط.",
+   "fr": "Affiche ton utilisation du forfait Claude (limites de 5 heures et hebdomadaire) dans l'en-tête de l'encoche. Bubu ajoute un relais de ligne de statut dans ~/.claude/settings.json. Si tu as déjà une ligne de statut, elle continue de fonctionner comme avant. Forfaits Pro et Max uniquement.",
+   "bn": "নচ হেডারে আপনার Claude প্ল্যানের ব্যবহার (৫ ঘণ্টা ও সাপ্তাহিক সীমা) দেখায়। Bubu ~/.claude/settings.json-এ একটি স্ট্যাটাস লাইন রিলে যোগ করে। আপনার কাছে ইতিমধ্যে স্ট্যাটাস লাইন থাকলে তা আগের মতোই কাজ করবে। শুধুমাত্র Pro এবং Max প্ল্যানের জন্য।",
+   "pt-BR": "Mostra o uso do seu plano Claude (limites de 5 horas e semanais) no cabeçalho do notch. O Bubu adiciona um relay de linha de status ao ~/.claude/settings.json. Se você já tiver uma linha de status, ela continua funcionando normalmente. Apenas planos Pro e Max.",
+   "ru": "Показывает использование плана Claude (лимиты на 5 часов и на неделю) в шапке нотча. Bubu добавляет ретранслятор строки статуса в ~/.claude/settings.json. Если строка статуса уже есть, она продолжит работать как прежде. Только для планов Pro и Max.",
+   "id": "Menampilkan penggunaan paket Claude (batas 5 jam dan mingguan) di header notch. Bubu menambahkan relay baris status ke ~/.claude/settings.json. Jika Anda sudah memiliki baris status, tetap berjalan seperti sebelumnya. Hanya untuk paket Pro dan Max."
   },
   "Shuffle off": {
    "zh-Hans": "随机播放：关",
@@ -3357,16 +3533,16 @@
    "ru": "ВРЕМЯ КОДИНГА",
    "id": "WAKTU PEMROGRAMAN"
   },
-  "Talk to Coucou": {
-   "zh-Hans": "与 Coucou 对话",
-   "hi": "Coucou से बात करें",
-   "es": "Hablar con Coucou",
-   "ar": "التحدث إلى Coucou",
-   "fr": "Parler à Coucou",
-   "bn": "Coucou-এর সাথে কথা বলুন",
-   "pt-BR": "Falar com Coucou",
-   "ru": "Говорить с Coucou",
-   "id": "Bicara ke Coucou"
+  "Talk to Bubu": {
+   "zh-Hans": "与 Bubu 对话",
+   "hi": "Bubu से बात करें",
+   "es": "Hablar con Bubu",
+   "ar": "التحدث إلى Bubu",
+   "fr": "Parler à Bubu",
+   "bn": "Bubu-এর সাথে কথা বলুন",
+   "pt-BR": "Falar com Bubu",
+   "ru": "Говорить с Bubu",
+   "id": "Bicara ke Bubu"
   },
   "Tasks": {
    "zh-Hans": "任务",
@@ -3689,12 +3865,12 @@
   },
   "Weekly recap": {
    "zh-Hans": "每周回顾",
-   "hi": "साप्ताहिक रिकैप",
+   "hi": "साप्ताहिक सारांश",
    "es": "Resumen semanal",
-   "ar": "الملخص الأسبوعي",
+   "ar": "ملخص أسبوعي",
    "fr": "Récap de la semaine",
-   "bn": "সাপ্তাহিক রিক্যাপ",
-   "pt-BR": "Resumo semanal",
+   "bn": "সাপ্তাহিক সারসংক্ষেপ",
+   "pt-BR": "Recapitulação semanal",
    "ru": "Итоги недели",
    "id": "Rekap mingguan"
   },
@@ -3709,16 +3885,16 @@
    "ru": "Что вы хотите с ним сделать?",
    "id": "Apa yang ingin Anda lakukan dengannya?"
   },
-  "When enabled, Coucou listens for the wake word « OK Coucou ». Speech recognition runs entirely on-device — no audio or transcript leaves your Mac.": {
-   "zh-Hans": "启用后，Coucou 会监听唤醒词« OK Coucou »。语音识别完全在设备上运行—任何音频或文字记录都不会离开您的 Mac。",
-   "hi": "सक्षम होने पर, Coucou वेक शब्द « OK Coucou » सुनता है। वाक् पहचान पूरी तरह डिवाइस पर चलती है — कोई ऑडियो या ट्रांसक्रिप्ट आपके Mac को नहीं छोड़ता।",
-   "es": "Cuando está activado, Coucou escucha la palabra de activación « OK Coucou ». El reconocimiento de voz se ejecuta completamente en el dispositivo — ningún audio ni transcripción sale de tu Mac.",
-   "ar": "عند التفعيل، يستمع Coucou لكلمة التنشيط « OK Coucou ». يعمل التعرف على الكلام بالكامل على الجهاز — لا يغادر أي صوت أو نص جهاز Mac.",
-   "fr": "Quand cette option est activée, Coucou écoute le mot de réveil « OK Coucou ». La reconnaissance vocale se fait entièrement sur l’appareil — aucun audio ni transcription ne quitte votre Mac.",
-   "bn": "সক্ষম হলে, Coucou ওয়েক ওয়ার্ড « OK Coucou » শোনে। ভাষণ স্বীকৃতি সম্পূর্ণ ডিভাইসে চলে — কোনো অডিও বা ট্রান্সক্রিপ্ট আপনার Mac ছেড়ে যায় না।",
-   "pt-BR": "Quando ativado, o Coucou escuta a palavra de ativação « OK Coucou ». O reconhecimento de fala é executado inteiramente no dispositivo — nenhum áudio ou transcrição sai do seu Mac.",
-   "ru": "Когда включено, Coucou слушает слово активации « OK Coucou ». Распознавание речи работает полностью на устройстве — никакие аудиозаписи или транскрипции не покидают ваш Mac.",
-   "id": "Saat diaktifkan, Coucou mendengarkan kata pengaktif « OK Coucou ». Pengenalan ucapan berjalan sepenuhnya di perangkat — tidak ada audio atau transkrip yang meninggalkan Mac Anda."
+  "When enabled, Bubu listens for the wake word « OK Bubu ». Speech recognition runs entirely on-device — no audio or transcript leaves your Mac.": {
+   "zh-Hans": "启用后，Bubu 会监听唤醒词« OK Bubu »。语音识别完全在设备上运行—任何音频或文字记录都不会离开您的 Mac。",
+   "hi": "सक्षम होने पर, Bubu वेक शब्द « OK Bubu » सुनता है। वाक् पहचान पूरी तरह डिवाइस पर चलती है — कोई ऑडियो या ट्रांसक्रिप्ट आपके Mac को नहीं छोड़ता।",
+   "es": "Cuando está activado, Bubu escucha la palabra de activación « OK Bubu ». El reconocimiento de voz se ejecuta completamente en el dispositivo — ningún audio ni transcripción sale de tu Mac.",
+   "ar": "عند التفعيل، يستمع Bubu لكلمة التنشيط « OK Bubu ». يعمل التعرف على الكلام بالكامل على الجهاز — لا يغادر أي صوت أو نص جهاز Mac.",
+   "fr": "Quand cette option est activée, Bubu écoute le mot de réveil « OK Bubu ». La reconnaissance vocale se fait entièrement sur l’appareil — aucun audio ni transcription ne quitte votre Mac.",
+   "bn": "সক্ষম হলে, Bubu ওয়েক ওয়ার্ড « OK Bubu » শোনে। ভাষণ স্বীকৃতি সম্পূর্ণ ডিভাইসে চলে — কোনো অডিও বা ট্রান্সক্রিপ্ট আপনার Mac ছেড়ে যায় না।",
+   "pt-BR": "Quando ativado, o Bubu escuta a palavra de ativação « OK Bubu ». O reconhecimento de fala é executado inteiramente no dispositivo — nenhum áudio ou transcrição sai do seu Mac.",
+   "ru": "Когда включено, Bubu слушает слово активации « OK Bubu ». Распознавание речи работает полностью на устройстве — никакие аудиозаписи или транскрипции не покидают ваш Mac.",
+   "id": "Saat diaktifkan, Bubu mendengarkan kata pengaktif « OK Bubu ». Pengenalan ucapan berjalan sepenuhnya di perangkat — tidak ada audio atau transkrip yang meninggalkan Mac Anda."
   },
   "Which pill do you want to add?": {
    "zh-Hans": "要添加哪个胶囊？",
@@ -3808,16 +3984,16 @@
    "ru": "Записывает",
    "id": "Menulis"
   },
-  "Writes:\n• ~/.claude/coucou/nb-hook\n• ~/.claude/settings.json (backup created first)": {
-   "zh-Hans": "将写入：\n• ~/.claude/coucou/nb-hook\n• ~/.claude/settings.json（先创建备份）",
-   "hi": "लिखेगा:\n• ~/.claude/coucou/nb-hook\n• ~/.claude/settings.json (पहले बैकअप बनाया जाएगा)",
-   "es": "Escribirá:\n• ~/.claude/coucou/nb-hook\n• ~/.claude/settings.json (se crea una copia de seguridad primero)",
-   "ar": "سيكتب:\n• ~/.claude/coucou/nb-hook\n• ~/.claude/settings.json (يُنشئ نسخة احتياطية أولاً)",
-   "fr": "Écrira :\n• ~/.claude/coucou/nb-hook\n• ~/.claude/settings.json (sauvegarde créée d'abord)",
-   "bn": "লিখবে:\n• ~/.claude/coucou/nb-hook\n• ~/.claude/settings.json (আগে ব্যাকআপ তৈরি হবে)",
-   "pt-BR": "Vai escrever:\n• ~/.claude/coucou/nb-hook\n• ~/.claude/settings.json (backup criado antes)",
-   "ru": "Запишет:\n• ~/.claude/coucou/nb-hook\n• ~/.claude/settings.json (резервная копия создаётся сначала)",
-   "id": "Akan menulis:\n• ~/.claude/coucou/nb-hook\n• ~/.claude/settings.json (backup dibuat terlebih dahulu)"
+  "Writes:\n• ~/.claude/bubu/nb-hook\n• ~/.claude/settings.json (backup created first)": {
+   "zh-Hans": "将写入：\n• ~/.claude/bubu/nb-hook\n• ~/.claude/settings.json（先创建备份）",
+   "hi": "लिखेगा:\n• ~/.claude/bubu/nb-hook\n• ~/.claude/settings.json (पहले बैकअप बनाया जाएगा)",
+   "es": "Escribirá:\n• ~/.claude/bubu/nb-hook\n• ~/.claude/settings.json (se crea una copia de seguridad primero)",
+   "ar": "سيكتب:\n• ~/.claude/bubu/nb-hook\n• ~/.claude/settings.json (يُنشئ نسخة احتياطية أولاً)",
+   "fr": "Écrira :\n• ~/.claude/bubu/nb-hook\n• ~/.claude/settings.json (sauvegarde créée d'abord)",
+   "bn": "লিখবে:\n• ~/.claude/bubu/nb-hook\n• ~/.claude/settings.json (আগে ব্যাকআপ তৈরি হবে)",
+   "pt-BR": "Vai escrever:\n• ~/.claude/bubu/nb-hook\n• ~/.claude/settings.json (backup criado antes)",
+   "ru": "Запишет:\n• ~/.claude/bubu/nb-hook\n• ~/.claude/settings.json (резервная копия создаётся сначала)",
+   "id": "Akan menulis:\n• ~/.claude/bubu/nb-hook\n• ~/.claude/settings.json (backup dibuat terlebih dahulu)"
   },
   "You speak": {
    "zh-Hans": "你说的语言",
@@ -3940,6 +4116,17 @@
    "ru": "требует разрешения",
    "id": "butuh izin"
   },
+  "now": {
+   "zh-Hans": "刚刚",
+   "hi": "अभी",
+   "es": "ahora",
+   "ar": "الآن",
+   "fr": "à l’instant",
+   "bn": "এখন",
+   "pt-BR": "agora",
+   "ru": "сейчас",
+   "id": "baru saja"
+  },
   "presses this → island opens": {
    "zh-Hans": "按此键 → 岛打开",
    "hi": "दबाने पर → द्वीप खुलता है",
@@ -4039,6 +4226,17 @@
    "ru": "своих: {0}",
    "id": "{0} kustom"
   },
+  "{0} did not answer": {
+   "zh-Hans": "{0} 未响应",
+   "hi": "{0} ने जवाब नहीं दिया",
+   "es": "{0} no respondió",
+   "ar": "لم يستجب {0}",
+   "fr": "{0} n’a pas répondu",
+   "bn": "{0} সাড়া দেয়নি",
+   "pt-BR": "{0} não respondeu",
+   "ru": "{0} не отвечает",
+   "id": "{0} tidak merespons"
+  },
   "{0} removed": {
    "zh-Hans": "已移除 {0}",
    "hi": "{0} हटाया गया",
@@ -4049,6 +4247,17 @@
    "pt-BR": "{0} removido",
    "ru": "{0} удалено",
    "id": "{0} dihapus"
+  },
+  "{0} unread": {
+   "zh-Hans": "{0} 封未读",
+   "hi": "{0} अपठित",
+   "es": "{0} sin leer",
+   "ar": "{0} غير مقروءة",
+   "fr": "{0} non lus",
+   "bn": "{0} অপঠিত",
+   "pt-BR": "{0} não lidos",
+   "ru": "Непрочитанных: {0}",
+   "id": "{0} belum dibaca"
   },
   "{0} — open Spotify": {
    "zh-Hans": "{0} — 打开 Spotify",
@@ -4116,27 +4325,27 @@
    "ru": "{n} мин назад",
    "id": "{n} menit lalu"
   },
-  "« OK Coucou » — voice wake word": {
-   "zh-Hans": "« OK Coucou » — 语音唤醒词",
-   "hi": "« OK Coucou » — वॉइस वेक वर्ड",
-   "es": "« OK Coucou » — palabra de activación de voz",
-   "ar": "« OK Coucou » — كلمة التنشيط الصوتية",
-   "fr": "« OK Coucou » — commande vocale mains libres",
-   "bn": "« OK Coucou » — ভয়েস ওয়েক ওয়ার্ড",
-   "pt-BR": "« OK Coucou » — palavra de ativação de voz",
-   "ru": "« OK Coucou » — голосовая активация",
-   "id": "« OK Coucou » — kata pengaktif suara"
+  "« OK Bubu » — voice wake word": {
+   "zh-Hans": "« OK Bubu » — 语音唤醒词",
+   "hi": "« OK Bubu » — वॉइस वेक वर्ड",
+   "es": "« OK Bubu » — palabra de activación de voz",
+   "ar": "« OK Bubu » — كلمة التنشيط الصوتية",
+   "fr": "« OK Bubu » — commande vocale mains libres",
+   "bn": "« OK Bubu » — ভয়েস ওয়েক ওয়ার্ড",
+   "pt-BR": "« OK Bubu » — palavra de ativação de voz",
+   "ru": "« OK Bubu » — голосовая активация",
+   "id": "« OK Bubu » — kata pengaktif suara"
   },
-  "✓ Amp plugin installed in ~/.config/amp/plugins/coucou.ts": {
-   "zh-Hans": "✓ Amp 插件已安装至 ~/.config/amp/plugins/coucou.ts",
-   "hi": "✓ ~/.config/amp/plugins/coucou.ts में Amp प्लगइन इंस्टॉल हुआ",
-   "es": "✓ Plugin de Amp instalado en ~/.config/amp/plugins/coucou.ts",
-   "ar": "✓ ملحق Amp مثبَّت في ~/.config/amp/plugins/coucou.ts",
-   "fr": "✓ Plugin Amp installé dans ~/.config/amp/plugins/coucou.ts",
-   "bn": "✓ ~/.config/amp/plugins/coucou.ts-এ Amp প্লাগইন ইনস্টল হয়েছে",
-   "pt-BR": "✓ Plugin do Amp instalado em ~/.config/amp/plugins/coucou.ts",
-   "ru": "✓ Плагин Amp установлен в ~/.config/amp/plugins/coucou.ts",
-   "id": "✓ Plugin Amp terpasang di ~/.config/amp/plugins/coucou.ts"
+  "✓ Amp plugin installed in ~/.config/amp/plugins/bubu.ts": {
+   "zh-Hans": "✓ Amp 插件已安装至 ~/.config/amp/plugins/bubu.ts",
+   "hi": "✓ ~/.config/amp/plugins/bubu.ts में Amp प्लगइन इंस्टॉल हुआ",
+   "es": "✓ Plugin de Amp instalado en ~/.config/amp/plugins/bubu.ts",
+   "ar": "✓ ملحق Amp مثبَّت في ~/.config/amp/plugins/bubu.ts",
+   "fr": "✓ Plugin Amp installé dans ~/.config/amp/plugins/bubu.ts",
+   "bn": "✓ ~/.config/amp/plugins/bubu.ts-এ Amp প্লাগইন ইনস্টল হয়েছে",
+   "pt-BR": "✓ Plugin do Amp instalado em ~/.config/amp/plugins/bubu.ts",
+   "ru": "✓ Плагин Amp установлен в ~/.config/amp/plugins/bubu.ts",
+   "id": "✓ Plugin Amp terpasang di ~/.config/amp/plugins/bubu.ts"
   },
   "✓ Amp plugin removed.": {
    "zh-Hans": "✓ Amp 插件已移除。",
@@ -4235,16 +4444,16 @@
     "other": "✓ Connected · {count} models"
    }
   },
-  "✓ Copilot CLI hooks installed in ~/.copilot/hooks/coucou.json": {
-   "zh-Hans": "✓ Copilot CLI Hooks 已安装至 ~/.copilot/hooks/coucou.json",
-   "hi": "✓ ~/.copilot/hooks/coucou.json में Copilot CLI हुक इंस्टॉल हुए",
-   "es": "✓ Hooks de Copilot CLI instalados en ~/.copilot/hooks/coucou.json",
-   "ar": "✓ خطافات Copilot CLI مثبَّتة في ~/.copilot/hooks/coucou.json",
-   "fr": "✓ Hooks Copilot CLI installés dans ~/.copilot/hooks/coucou.json",
-   "bn": "✓ ~/.copilot/hooks/coucou.json-এ Copilot CLI হুক ইনস্টল হয়েছে",
-   "pt-BR": "✓ Hooks do Copilot CLI instalados em ~/.copilot/hooks/coucou.json",
-   "ru": "✓ Хуки Copilot CLI установлены в ~/.copilot/hooks/coucou.json",
-   "id": "✓ Hooks Copilot CLI terpasang di ~/.copilot/hooks/coucou.json"
+  "✓ Copilot CLI hooks installed in ~/.copilot/hooks/bubu.json": {
+   "zh-Hans": "✓ Copilot CLI Hooks 已安装至 ~/.copilot/hooks/bubu.json",
+   "hi": "✓ ~/.copilot/hooks/bubu.json में Copilot CLI हुक इंस्टॉल हुए",
+   "es": "✓ Hooks de Copilot CLI instalados en ~/.copilot/hooks/bubu.json",
+   "ar": "✓ خطافات Copilot CLI مثبَّتة في ~/.copilot/hooks/bubu.json",
+   "fr": "✓ Hooks Copilot CLI installés dans ~/.copilot/hooks/bubu.json",
+   "bn": "✓ ~/.copilot/hooks/bubu.json-এ Copilot CLI হুক ইনস্টল হয়েছে",
+   "pt-BR": "✓ Hooks do Copilot CLI instalados em ~/.copilot/hooks/bubu.json",
+   "ru": "✓ Хуки Copilot CLI установлены в ~/.copilot/hooks/bubu.json",
+   "id": "✓ Hooks Copilot CLI terpasang di ~/.copilot/hooks/bubu.json"
   },
   "✓ Copilot CLI hooks removed.": {
    "zh-Hans": "✓ Copilot CLI Hooks 已移除。",
@@ -4301,16 +4510,16 @@
    "ru": "✓ Плагин Hermes установлен",
    "id": "✓ Plugin Hermes terpasang"
   },
-  "✓ Hermes plugin installed in ~/.hermes/plugins/coucou/": {
-   "zh-Hans": "✓ Hermes 插件已安装至 ~/.hermes/plugins/coucou/",
-   "hi": "✓ Hermes प्लगइन ~/.hermes/plugins/coucou/ में इंस्टॉल हुआ",
-   "es": "✓ Plugin de Hermes instalado en ~/.hermes/plugins/coucou/",
-   "ar": "✓ ملحق Hermes مثبَّت في ~/.hermes/plugins/coucou/",
-   "fr": "✓ Plugin Hermes installé dans ~/.hermes/plugins/coucou/",
-   "bn": "✓ Hermes প্লাগইন ~/.hermes/plugins/coucou/-এ ইনস্টল হয়েছে",
-   "pt-BR": "✓ Plugin do Hermes instalado em ~/.hermes/plugins/coucou/",
-   "ru": "✓ Плагин Hermes установлен в ~/.hermes/plugins/coucou/",
-   "id": "✓ Plugin Hermes terpasang di ~/.hermes/plugins/coucou/"
+  "✓ Hermes plugin installed in ~/.hermes/plugins/bubu/": {
+   "zh-Hans": "✓ Hermes 插件已安装至 ~/.hermes/plugins/bubu/",
+   "hi": "✓ Hermes प्लगइन ~/.hermes/plugins/bubu/ में इंस्टॉल हुआ",
+   "es": "✓ Plugin de Hermes instalado en ~/.hermes/plugins/bubu/",
+   "ar": "✓ ملحق Hermes مثبَّت في ~/.hermes/plugins/bubu/",
+   "fr": "✓ Plugin Hermes installé dans ~/.hermes/plugins/bubu/",
+   "bn": "✓ Hermes প্লাগইন ~/.hermes/plugins/bubu/-এ ইনস্টল হয়েছে",
+   "pt-BR": "✓ Plugin do Hermes instalado em ~/.hermes/plugins/bubu/",
+   "ru": "✓ Плагин Hermes установлен в ~/.hermes/plugins/bubu/",
+   "id": "✓ Plugin Hermes terpasang di ~/.hermes/plugins/bubu/"
   },
   "✓ Hooks installed in ~/.claude/settings.json": {
    "zh-Hans": "✓ Hooks 已安装至 ~/.claude/settings.json",
@@ -4400,16 +4609,16 @@
    "ru": "✓ Ключ OpenAI сохранён.",
    "id": "✓ Kunci OpenAI tersimpan."
   },
-  "✓ OpenCode plugin installed in ~/.config/opencode/plugins/coucou.js": {
-   "zh-Hans": "✓ OpenCode 插件已安装至 ~/.config/opencode/plugins/coucou.js",
-   "hi": "✓ ~/.config/opencode/plugins/coucou.js में OpenCode प्लगइन इंस्टॉल हुआ",
-   "es": "✓ Plugin de OpenCode instalado en ~/.config/opencode/plugins/coucou.js",
-   "ar": "✓ ملحق OpenCode مثبَّت في ~/.config/opencode/plugins/coucou.js",
-   "fr": "✓ Plugin OpenCode installé dans ~/.config/opencode/plugins/coucou.js",
-   "bn": "✓ ~/.config/opencode/plugins/coucou.js-এ OpenCode প্লাগইন ইনস্টল হয়েছে",
-   "pt-BR": "✓ Plugin do OpenCode instalado em ~/.config/opencode/plugins/coucou.js",
-   "ru": "✓ Плагин OpenCode установлен в ~/.config/opencode/plugins/coucou.js",
-   "id": "✓ Plugin OpenCode terpasang di ~/.config/opencode/plugins/coucou.js"
+  "✓ OpenCode plugin installed in ~/.config/opencode/plugins/bubu.js": {
+   "zh-Hans": "✓ OpenCode 插件已安装至 ~/.config/opencode/plugins/bubu.js",
+   "hi": "✓ ~/.config/opencode/plugins/bubu.js में OpenCode प्लगइन इंस्टॉल हुआ",
+   "es": "✓ Plugin de OpenCode instalado en ~/.config/opencode/plugins/bubu.js",
+   "ar": "✓ ملحق OpenCode مثبَّت في ~/.config/opencode/plugins/bubu.js",
+   "fr": "✓ Plugin OpenCode installé dans ~/.config/opencode/plugins/bubu.js",
+   "bn": "✓ ~/.config/opencode/plugins/bubu.js-এ OpenCode প্লাগইন ইনস্টল হয়েছে",
+   "pt-BR": "✓ Plugin do OpenCode instalado em ~/.config/opencode/plugins/bubu.js",
+   "ru": "✓ Плагин OpenCode установлен в ~/.config/opencode/plugins/bubu.js",
+   "id": "✓ Plugin OpenCode terpasang di ~/.config/opencode/plugins/bubu.js"
   },
   "✓ OpenCode plugin removed.": {
    "zh-Hans": "✓ OpenCode 插件已移除。",

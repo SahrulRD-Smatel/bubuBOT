@@ -52,7 +52,7 @@ export async function startRelay(options: { port?: number; host?: string; access
 
   const server = createServer((req, res) => {
     if (req.url === "/" && req.method === "GET") {
-      res.writeHead(200, { "content-type": "text/plain" }).end("Coucou link relay");
+      res.writeHead(200, { "content-type": "text/plain" }).end("Bubu link relay");
     } else {
       res.writeHead(req.url === "/" ? 405 : 404).end();
     }
@@ -141,5 +141,5 @@ export async function startRelay(options: { port?: number; host?: string; access
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const relay = await startRelay({ port: Number(process.env.PORT ?? 8787), host: process.env.HOST ?? "0.0.0.0", accessKey: process.env.ACCESS_KEY, connectsPerMinute: 30 });
   if (!process.env.ACCESS_KEY) process.stderr.write("ACCESS_KEY is not set: every room request will be refused (fail closed)\n");
-  process.stdout.write(`Coucou link relay (Node) listening on port ${relay.port}\n`);
+  process.stdout.write(`Bubu link relay (Node) listening on port ${relay.port}\n`);
 }

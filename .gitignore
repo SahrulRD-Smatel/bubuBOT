@@ -21,7 +21,7 @@ DerivedData/
 _prive/
 
 # AI Agent Configs (Antigravity/Claude Code)
-.agents/skills/sync-from-coucou/
+.agents/skills/sync-from-bubu/
 AGENTS.md
 
 # .NET Core

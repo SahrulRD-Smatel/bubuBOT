@@ -1,18 +1,19 @@
 import SwiftUI
 import WidgetKit
 
-// bubu widgets: Solo, Team and List on the Home Screen, plus the Lock
+// Bubu widgets: Solo, Team and List on the Home Screen, plus the Lock
 // Screen accessories. They show the sessions the iPhone app last saved to the
 // App Group; the app reloads them whenever a session changes.
 
 @main
-struct bubuWidgetBundle: WidgetBundle {
+struct BubuWidgetBundle: WidgetBundle {
     var body: some Widget {
         SoloWidget()
         TeamWidget()
         ListWidget()
         LockScreenWidget()
         MochiLiveActivity()
+        BubuControl()
     }
 }
 
@@ -21,6 +22,8 @@ struct bubuWidgetBundle: WidgetBundle {
 struct SessionsEntry: TimelineEntry {
     let date: Date
     let sessions: [SharedSession]   // most urgent first
+    /// Changes every minute so idle Mochi look around (MochiPose).
+    var tick: Int = 0
 }
 
 struct SessionsProvider: TimelineProvider {
@@ -34,8 +37,16 @@ struct SessionsProvider: TimelineProvider {
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<SessionsEntry>) -> Void) {
-        // No polling: the app calls WidgetCenter.reloadAllTimelines() on every change.
-        completion(Timeline(entries: [SessionsEntry(date: .now, sessions: SharedSessions.load())], policy: .never))
+        // The sessions come from the app, which calls reloadAllTimelines() on
+        // every change. The entries only give idle Mochi a new pose each
+        // minute for an hour; no network, nothing read again.
+        let sessions = SharedSessions.load()
+        let start = Date.now
+        let base = Int(start.timeIntervalSince1970 / 60)
+        let entries = (0..<60).map { minute in
+            SessionsEntry(date: start.addingTimeInterval(Double(minute) * 60), sessions: sessions, tick: base + minute)
+        }
+        completion(Timeline(entries: entries, policy: .atEnd))
     }
 }
 
@@ -43,7 +54,7 @@ struct SessionsProvider: TimelineProvider {
 
 struct SoloWidget: Widget {
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: "bubuSolo", provider: SessionsProvider()) { entry in
+        StaticConfiguration(kind: "BubuSolo", provider: SessionsProvider()) { entry in
             SoloView(session: entry.sessions.first)
         }
         .configurationDisplayName("Solo")
@@ -54,8 +65,8 @@ struct SoloWidget: Widget {
 
 struct TeamWidget: Widget {
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: "bubuTeam", provider: SessionsProvider()) { entry in
-            TeamView(sessions: Array(entry.sessions.prefix(4)))
+        AppIntentConfiguration(kind: "BubuTeam", intent: TeamConfiguration.self, provider: TeamProvider()) { entry in
+            TeamView(sessions: entry.sessions, picks: entry.picks, tick: entry.tick)
         }
         .configurationDisplayName("Team")
         .description("Up to four agents at a glance.")
@@ -65,7 +76,7 @@ struct TeamWidget: Widget {
 
 struct ListWidget: Widget {
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: "bubuList", provider: SessionsProvider()) { entry in
+        StaticConfiguration(kind: "BubuList", provider: SessionsProvider()) { entry in
             ListView(sessions: Array(entry.sessions.prefix(4)))
         }
         .configurationDisplayName("List")
@@ -76,10 +87,10 @@ struct ListWidget: Widget {
 
 struct LockScreenWidget: Widget {
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: "bubuLock", provider: SessionsProvider()) { entry in
+        StaticConfiguration(kind: "BubuLock", provider: SessionsProvider()) { entry in
             LockScreenView(sessions: entry.sessions)
         }
-        .configurationDisplayName("bubu")
+        .configurationDisplayName("Bubu")
         .description("Mochi on your Lock Screen.")
         .supportedFamilies([.accessoryCircular, .accessoryRectangular, .accessoryInline])
     }
@@ -96,6 +107,8 @@ extension SharedSession {
         case .question: .cyan
         case .error: .red
         case .done: .green
+        case .warning: .orange
+        case .info: Color(red: 0.4, green: 0.7, blue: 1)
         case .working, .idle: .white.opacity(0.7)
         }
     }
@@ -117,8 +130,12 @@ struct SoloView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            MochiStill(state: session?.botState ?? .sleeping)
-                .frame(width: 56, height: 56)
+            ZStack {
+                WidgetMochi(state: session?.botState ?? .sleeping)
+                    .id(session?.state ?? "sleeping")
+                    .transition(.mochiSwap)
+            }
+            .frame(width: 56, height: 56)
             Spacer(minLength: 0)
             if let session {
                 Text(session.title)
@@ -129,8 +146,10 @@ struct SoloView: View {
                     .lineLimit(2)
                     .opacity(0.85)
                 HStack(spacing: 4) {
-                    Text(session.statusText).foregroundStyle(session.toneColor)
-                    Text("Â·")
+                    Text(session.statusText)
+                        .foregroundStyle(session.toneColor)
+                        .contentTransition(.interpolate)
+                    Text("·")
                     Text(session.updatedAt, style: .relative)
                 }
                 .font(.caption2)
@@ -152,6 +171,9 @@ struct SoloView: View {
 
 struct TeamView: View {
     let sessions: [SharedSession]
+    /// The Mochi picked for each spot in the widget's settings, nil = automatic.
+    var picks: [String?] = [nil, nil, nil, nil]
+    var tick: Int = 0
 
     var body: some View {
         Grid(horizontalSpacing: 8, verticalSpacing: 8) {
@@ -161,17 +183,105 @@ struct TeamView: View {
         .containerBackground(for: .widget) { Color(white: 0.08) }
     }
 
-    @ViewBuilder private func tile(_ index: Int) -> some View {
-        if sessions.indices.contains(index) {
-            let session = sessions[index]
-            MochiStill(state: session.botState)
-                .padding(8)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.mochiTile(hex: session.color), in: RoundedRectangle(cornerRadius: 16))
-        } else {
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color.white.opacity(0.06))
+    /// The picked Mochi in their spots, then the most urgent ones from the
+    /// Mac, then the team's regulars, so the four spots are always taken.
+    private var team: [SharedSession] {
+        let chosen = Set(picks.compactMap { $0 })
+        var automatic = sessions.filter { !chosen.contains($0.id) }
+        for id in Self.regulars where !chosen.contains(id) && !automatic.contains(where: { $0.id == id }) {
+            if let filler = SharedSession.regular(id: id) { automatic.append(filler) }
         }
+        var queue = automatic[...]
+        return (0..<4).compactMap { spot -> SharedSession? in
+            if spot < picks.count, let id = picks[spot] {
+                return sessions.first { $0.id == id } ?? SharedSession.regular(id: id)
+            }
+            return queue.popFirst()
+        }
+    }
+
+    /// Who fills the free spots, in this order.
+    static let regulars = ["integration_github", "integration_stripe", "integration_vercel", "integration_resend",
+                           "integration_calcom", "integration_n8n", "integration_notion", "agent_codex"]
+
+    @ViewBuilder private func tile(_ index: Int) -> some View {
+        let team = team
+        if team.indices.contains(index) {
+            let member = team[index]
+            // A tap opens that Mochi in the app.
+            Link(destination: SharedSession.url(for: member.id)) {
+                TeamTile(session: member, tick: tick)
+            }
+        } else {
+            EmptyTeamTile(tick: tick, slot: index)
+        }
+    }
+}
+
+/// One Mochi of the team: his face, his name, and a dot for his state.
+struct TeamTile: View {
+    let session: SharedSession
+    var tick: Int = 0
+
+    /// Calm Mochi look around; one who needs you keeps his state's face.
+    private var pose: MochiPose {
+        switch session.tone {
+        case .idle, .done, .working, .info, .warning: MochiPose.idle(id: session.id, tick: tick)
+        default: .neutral
+        }
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // In his own color, like the little Mochi in the Mac's notch.
+            ZStack {
+                WidgetMochi(state: session.botState, bodyHex: session.color, pose: pose)
+                    .id(session.state)
+                    .transition(.mochiSwap)
+            }
+            .padding(.horizontal, 4)
+            .padding(.top, 2)
+            Text(session.agent)
+                .font(.system(size: 9, weight: .semibold))
+                .foregroundStyle(.white.opacity(0.85))
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .padding(.horizontal, 4)
+                .offset(y: -6)
+            Spacer(minLength: 0)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background { TileBackground(color: Color(white: 0.14)).clipShape(RoundedRectangle(cornerRadius: 16)) }
+        .overlay(alignment: .topTrailing) {
+            if session.tone != .idle {
+                Circle()
+                    .fill(session.toneColor)
+                    .frame(width: 8, height: 8)
+                    .overlay(Circle().strokeBorder(Color.black.opacity(0.35), lineWidth: 1))
+                    .padding(6)
+            }
+        }
+        .overlay {
+            // Waiting on you: the whole tile is outlined, like the notch.
+            if session.isWaitingForYou {
+                RoundedRectangle(cornerRadius: 16).strokeBorder(session.toneColor, lineWidth: 2)
+            }
+        }
+    }
+}
+
+/// A free spot: Mochi asleep, faded, instead of an empty square.
+struct EmptyTeamTile: View {
+    var tick: Int = 0
+    var slot: Int = 0
+
+    var body: some View {
+        WidgetMochi(state: .sleeping, showBadge: false,
+                   pose: MochiPose(tilt: (tick + slot) % 2 == 0 ? -0.06 : 0.06))
+            .padding(14)
+            .opacity(0.18)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background { TileBackground(color: Color.white.opacity(0.05)).clipShape(RoundedRectangle(cornerRadius: 16)) }
     }
 }
 
@@ -182,17 +292,17 @@ struct ListView: View {
         VStack(alignment: .leading, spacing: 6) {
             if sessions.isEmpty {
                 HStack(spacing: 10) {
-                    MochiStill(state: .sleeping).frame(width: 34, height: 34)
+                    WidgetMochi(state: .sleeping).frame(width: 34, height: 34)
                     Text("All quiet: no agent session").font(.subheadline).opacity(0.7)
                 }
                 .frame(maxHeight: .infinity)
             }
             ForEach(sessions) { session in
                 HStack(spacing: 8) {
-                    MochiStill(state: session.botState)
+                    WidgetMochi(state: session.botState)
                         .padding(2)
                         .frame(width: 24, height: 24)
-                        .background(Color.mochiTile(hex: session.color), in: RoundedRectangle(cornerRadius: 7))
+                        .background { TileBackground(color: Color.mochiTile(hex: session.color)).clipShape(RoundedRectangle(cornerRadius: 7)) }
                     Text(session.title)
                         .font(.subheadline.weight(.semibold))
                         .lineLimit(1)
@@ -205,6 +315,7 @@ struct ListView: View {
                         .font(.caption.weight(session.isWaitingForYou ? .semibold : .regular))
                         .foregroundStyle(session.toneColor)
                         .lineLimit(1)
+                        .contentTransition(.interpolate)
                 }
             }
             Spacer(minLength: 0)
@@ -218,32 +329,49 @@ struct LockScreenView: View {
     @Environment(\.widgetFamily) private var family
     let sessions: [SharedSession]
 
+    /// Steps done of the lead session while it works, for the ring and the bar.
+    private var progress: Double? {
+        guard let lead = sessions.first, lead.isWorking, lead.stepCount > 0 else { return nil }
+        return Double(min(lead.stepIndex + 1, lead.stepCount)) / Double(lead.stepCount)
+    }
+
     var body: some View {
         switch family {
         case .accessoryCircular:
+            // The Lock Screen keeps only brightness: Mochi drawn like in the
+            // tinted Home Screen, so his face shows.
             ZStack {
                 AccessoryWidgetBackground()
-                MochiStill(state: sessions.leadState).padding(6)
+                if let progress {
+                    Gauge(value: progress) { EmptyView() }
+                        .gaugeStyle(.accessoryCircularCapacity)
+                }
+                WidgetMochi(state: sessions.leadState, showBadge: false).padding(progress == nil ? 7 : 10)
             }
+            .widgetURL(sessions.first.map { SharedSession.url(for: $0.id) })
             .containerBackground(for: .widget) { Color.clear }
         case .accessoryRectangular:
             HStack(spacing: 6) {
-                MochiStill(state: sessions.leadState).frame(width: 30, height: 30)
-                VStack(alignment: .leading, spacing: 0) {
+                WidgetMochi(state: sessions.leadState, showBadge: false).frame(width: 32, height: 32)
+                VStack(alignment: .leading, spacing: 1) {
                     Text(sessions.summary ?? "All quiet")
                         .font(.headline)
                         .lineLimit(1)
                     if let lead = sessions.first {
-                        Text("\(lead.title) Â· \(lead.statusText)")
+                        Text("\(lead.title) · \(lead.statusText)")
                             .font(.caption)
-                            .lineLimit(2)
+                            .lineLimit(progress == nil ? 2 : 1)
+                    }
+                    if let progress {
+                        ProgressView(value: progress).tint(.white)
                     }
                 }
                 Spacer(minLength: 0)
             }
+            .widgetURL(sessions.first.map { SharedSession.url(for: $0.id) })
             .containerBackground(for: .widget) { Color.clear }
         default:
-            Text(sessions.summary.map { "bubu Â· \($0)" } ?? "bubu Â· all quiet")
+            Text(sessions.summary.map { "Bubu · \($0)" } ?? "Bubu · all quiet")
                 .containerBackground(for: .widget) { Color.clear }
         }
     }
@@ -252,18 +380,71 @@ struct LockScreenView: View {
 // MARK: - Samples (widget gallery)
 
 extension SharedSession {
+    /// A calm Mochi from the catalog, for a free spot of the Team widget.
+    static func regular(id: String) -> SharedSession? {
+        guard let pill = PillCatalog.definition(for: id) else { return nil }
+        return SharedSession(id: pill.id, title: pill.name, agent: pill.name, color: pill.color,
+                             state: "idle", statusText: "idle", tone: .idle, urgency: 5,
+                             stepIndex: 0, stepCount: 0, currentStep: "", updatedAt: .distantPast)
+    }
+
     static let samples: [SharedSession] = [
         SharedSession(id: "integration_claude", title: "bubu", agent: "VS Code", color: "#4A86E8",
                       state: "approval", statusText: "waiting for your OK", tone: .waiting, urgency: 0,
                       stepIndex: 2, stepCount: 7, currentStep: "npm run test", updatedAt: .now),
         SharedSession(id: "agent_codex", title: "site-perso", agent: "Codex", color: "#D9663A",
-                      state: "working", statusText: "working Â· 3/7", tone: .working, urgency: 3,
+                      state: "working", statusText: "working · 3/7", tone: .working, urgency: 3,
                       stepIndex: 2, stepCount: 7, currentStep: "Edit index.html", updatedAt: .now),
         SharedSession(id: "agent_gemini", title: "api-factures", agent: "Gemini CLI", color: "#4CA63A",
-                      state: "finished", statusText: "âœ“ done", tone: .done, urgency: 4,
+                      state: "finished", statusText: "✓ done", tone: .done, urgency: 4,
                       stepIndex: 4, stepCount: 4, currentStep: "", updatedAt: .now),
         SharedSession(id: "agent_cursor", title: "notes", agent: "Cursor", color: "#4FA37E",
                       state: "sleeping", statusText: "asleep", tone: .idle, urgency: 5,
                       stepIndex: 0, stepCount: 0, currentStep: "", updatedAt: .now),
     ]
+}
+
+// MARK: - Tinted Home Screen
+
+/// Mochi in a widget. In the tinted (and clear) Home Screen styles iOS keeps
+/// only each pixel's opacity, so a white Mochi with black eyes turns into a
+/// blank shape; on the Lock Screen it keeps only brightness. There he is drawn
+/// as a white shape with his eyes cut out, which reads in both.
+struct WidgetMochi: View {
+    @Environment(\.widgetRenderingMode) private var renderingMode
+    var state: BotState = .idle
+    var bodyHex: String = "#FFFFFF"
+    var showBadge: Bool = true
+    var pose: MochiPose = .neutral
+
+    var body: some View {
+        if renderingMode == .fullColor {
+            MochiStill(state: state, bodyHex: bodyHex, showBadge: showBadge, pose: pose)
+        } else {
+            // White where Mochi is bright, see-through where he is dark (his
+            // eyes). The Lock Screen shows brightness, so the mask is filled
+            // with white rather than left black.
+            Color.white
+                .mask {
+                    MochiStill(state: state, bodyHex: "#FFFFFF", showBadge: showBadge, pose: pose)
+                        .luminanceToAlpha()
+                }
+                .widgetAccentable()
+        }
+    }
+}
+
+/// A tile behind a Mochi: its color normally, a faint wash when tinted so it
+/// doesn't become a solid block that hides him.
+struct TileBackground: View {
+    @Environment(\.widgetRenderingMode) private var renderingMode
+    let color: Color
+
+    var body: some View {
+        if renderingMode == .fullColor {
+            color
+        } else {
+            Color.white.opacity(0.12)
+        }
+    }
 }

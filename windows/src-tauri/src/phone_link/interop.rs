@@ -116,7 +116,7 @@ fn interop_server() {
     let runtime = tokio::runtime::Builder::new_current_thread().enable_all().build().unwrap();
     runtime.block_on(async {
         let identity = pairing::load_or_create_identity(&MemStore::default()).unwrap();
-        let token = std::env::var("COUCOU_INTEROP_TOKEN").unwrap_or_else(|_| "interop-token-0123456789abcdef".into());
+        let token = std::env::var("BUBU_INTEROP_TOKEN").unwrap_or_else(|_| "interop-token-0123456789abcdef".into());
         let hub = Hub::new(Arc::new(Printing));
         let fake = Arc::new(FakeChat { on: AtomicBool::new(false) });
         let switches = Arc::new(Switches { details: AtomicBool::new(false), diffs: AtomicBool::new(false), usage: AtomicBool::new(false), services: std::sync::Mutex::new(Vec::new()) });

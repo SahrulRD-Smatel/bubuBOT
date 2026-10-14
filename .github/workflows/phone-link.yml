@@ -44,7 +44,7 @@ jobs:
       - run: npm ci
       - run: npx tsc --noEmit
       - run: npm test
-      - run: cargo build --release -p coucou-hook
+      - run: cargo build --release -p bubu-hook
       - run: cargo test --workspace --locked
 
   interop:
@@ -68,7 +68,7 @@ jobs:
       - name: Rust tests (Linux)
         working-directory: windows
         run: |
-          cargo build --release -p coucou-hook
+          cargo build --release -p bubu-hook
           cargo test --workspace --locked
       - uses: actions/setup-java@v6
         with: { distribution: temurin, java-version: '17' }
@@ -76,7 +76,7 @@ jobs:
       - name: Kotlin client against the Rust desktop
         working-directory: android
         env:
-          COUCOU_RUST_INTEROP: '1'
+          BUBU_RUST_INTEROP: '1'
         run: ./gradlew testDebugUnitTest --tests '*RustDesktopInteropTest' --console=plain
 
   relay:
@@ -127,7 +127,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v5
       - name: The hook binary the Tauri build expects (a cold cache does not have it)
         working-directory: windows
-        run: cargo build --release -p coucou-hook
+        run: cargo build --release -p bubu-hook
       - name: End to end through the Worker (workerd)
         env: { WRANGLER_SEND_METRICS: "false" }
         run: android/relay/tools/e2e.sh worker
@@ -154,7 +154,7 @@ jobs:
         run: npm ci
       - name: Tests, debug build, lint
         env:
-          COUCOU_NODE_RELAY: '1'
+          BUBU_NODE_RELAY: '1'
         run: ./gradlew test assembleDebug lint --console=plain
       - name: No ads, billing or analytics (condition of the author's permission)
         run: "! grep -rEi 'admob|play-services|billingclient|firebase|crashlytics|com.google.android.gms|mlkit' app/build.gradle.kts"

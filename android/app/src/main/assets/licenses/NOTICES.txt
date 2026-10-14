@@ -1,14 +1,14 @@
-COUCOU FOR ANDROID: LICENCES AND NOTICES
+BUBU FOR ANDROID: LICENCES AND NOTICES
 
-Coucou for Android, by Rhytam Biswas, is part of Coucou by Louis Raillé (https://github.com/Louis-CFM/coucou). It is free, has no ads and no analytics.
+Bubu for Android, by Sahrul Ramadhani (https://github.com/SahrulRamadhani/bubu). It is free, has no ads and no analytics.
 
-1. The code of Coucou
+1. The code of Bubu
 
-The source code of Coucou is Copyright (c) 2026 Louis Raillé and is released under the MIT License. The full text is below ("MIT License").
+The source code of Bubu is Copyright (c) 2026 Sahrul Ramadhani and is released under the MIT License. The full text is below ("MIT License").
 
 2. The name, the character, the icon and the sounds
 
-The names "Coucou" and "Mochi", the Mochi character (its design, look, expressions and animations), the app icon and the sounds are Copyright (c) 2026 Louis Raillé. All rights reserved. They are NOT covered by the MIT License (see LICENSE-ASSETS.md in https://github.com/Louis-CFM/coucou). They are used in this app with the written permission of Louis Raillé, for this Android app only, and may not be reused elsewhere without his permission.
+The names "Bubu" and "Mochi", the Mochi character (its design, look, expressions and animations), the app icon and the sounds are Copyright (c) 2026 Louis Raillé. All rights reserved. They are NOT covered by the MIT License (see LICENSE-ASSETS.md in https://github.com/SahrulRamadhani/bubu). They are used in this app with the written permission of Louis Raillé, for this Android app only, and may not be reused elsewhere without his permission.
 
 3. ZXing
 

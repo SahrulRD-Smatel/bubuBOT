@@ -456,13 +456,13 @@ final class VoiceActionRunner {
     private var mailFile: URL?
     private var mailAttachmentAsked = false
 
-    /// True while Coucou waits for a file to be dropped on the notch.
+    /// True while Bubu waits for a file to be dropped on the notch.
     var isWaitingForAttachment: Bool {
         if case .mailStep(.attachment)? = pendingQuestion?.kind { return true }
         return false
     }
 
-    /// The answer Coucou waits for is free text (who, subject, what the mail says, what to
+    /// The answer Bubu waits for is free text (who, subject, what the mail says, what to
     /// look up): the mic gives more time to pause and think before the turn ends.
     var expectsLongAnswer: Bool {
         switch pendingQuestion?.kind {
@@ -472,7 +472,7 @@ final class VoiceActionRunner {
         }
     }
 
-    /// True while Coucou waits for any answer of the voice email (who, subject, text, file).
+    /// True while Bubu waits for any answer of the voice email (who, subject, text, file).
     var isMailInProgress: Bool {
         if case .mailStep? = pendingQuestion?.kind { return true }
         return false
@@ -489,7 +489,7 @@ final class VoiceActionRunner {
         return await continueMail()
     }
 
-    /// A file dropped on the notch while Coucou asked for an attachment.
+    /// A file dropped on the notch while Bubu asked for an attachment.
     func attachDroppedFile(_ url: URL) async -> VoiceActionResult {
         pendingQuestion = nil
         mailFile = url

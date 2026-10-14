@@ -189,11 +189,11 @@ test("a session carries its last steps, its final line, its folder name and its 
   State.appendStep(CLAUDE, makeDiffStep("src/app.ts", 3, 1, 7));
   const task = State.tasks.find((t) => t.id === CLAUDE);
   task.finalLine = "All done";
-  task.sessionCwd = "/home/me/private/coucou";
+  task.sessionCwd = "/home/me/private/bubu";
   const claude = linkSnapshot().sessions.find((s) => s.pillId === CLAUDE);
   assert.deepEqual(claude.steps.slice(-2), ["Reading the project", "src/app.ts"], "a diff step is its file name");
   assert.equal(claude.finalLine, "All done");
-  assert.equal(claude.project, "coucou", "the folder's name, not the path");
+  assert.equal(claude.project, "bubu", "the folder's name, not the path");
   assert.equal(claude.color, task.color);
   assert.ok(!JSON.stringify(claude).includes("private"));
 });

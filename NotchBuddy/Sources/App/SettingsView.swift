@@ -165,7 +165,7 @@ struct SettingsView: View {
                             .resizable()
                             .frame(width: 32, height: 32)
                         VStack(alignment: .leading, spacing: 1) {
-                            Text("Coucou")
+                            Text("Bubu")
                                 .font(.system(size: 13, weight: .semibold))
                             Text(appVersion)
                                 .font(.system(size: 11))
@@ -453,7 +453,7 @@ struct SettingsView: View {
                     UserDefaults.standard.synchronize()
                 }
                 HStack(spacing: 8) {
-                    Button(String(localized: "Restart Coucou")) {
+                    Button(String(localized: "Restart Bubu")) {
                         let appPath = Bundle.main.bundleURL.path
                         let pid = ProcessInfo.processInfo.processIdentifier
                         let task = Process()
@@ -514,7 +514,7 @@ struct SettingsView: View {
     @ViewBuilder private var activePillsSection: some View {
         GroupBox {
             VStack(alignment: .leading, spacing: 10) {
-                Text("Choose the tools you use. Coucou only shows what you declare here.")
+                Text("Choose the tools you use. Bubu only shows what you declare here.")
                     .font(.system(size: 11))
                     .foregroundColor(.secondary)
 
@@ -568,7 +568,7 @@ struct SettingsView: View {
                     #endif
                 }
                 #if APPSTORE
-                Text("~/.claude/coucou/nb-hook")
+                Text("~/.claude/bubu/nb-hook")
                     .font(.system(size: 11, design: .monospaced))
                     .foregroundColor(.secondary)
                 HStack(spacing: 10) {
@@ -721,7 +721,7 @@ struct SettingsView: View {
             VStack(alignment: .leading, spacing: 10) {
                 Text(copilotHooksInstalled
                      ? String(localized: "hooks.copilot.installed")
-                     : "~/.copilot/hooks/coucou.json")
+                     : "~/.copilot/hooks/bubu.json")
                     .font(.system(size: 11, design: .monospaced))
                     .foregroundColor(.secondary)
                 HStack(spacing: 10) {
@@ -787,7 +787,7 @@ struct SettingsView: View {
             VStack(alignment: .leading, spacing: 10) {
                 Text(openCodePluginInstalled
                      ? String(localized: "plugin.opencode.installed")
-                     : "~/.config/opencode/plugins/coucou.js")
+                     : "~/.config/opencode/plugins/bubu.js")
                     .font(.system(size: 11, design: .monospaced))
                     .foregroundColor(.secondary)
                 HStack(spacing: 10) {
@@ -820,7 +820,7 @@ struct SettingsView: View {
             VStack(alignment: .leading, spacing: 10) {
                 Text(ampPluginInstalled
                      ? String(localized: "plugin.amp.installed")
-                     : "~/.config/amp/plugins/coucou.ts")
+                     : "~/.config/amp/plugins/bubu.ts")
                     .font(.system(size: 11, design: .monospaced))
                     .foregroundColor(.secondary)
                 HStack(spacing: 10) {
@@ -853,7 +853,7 @@ struct SettingsView: View {
             VStack(alignment: .leading, spacing: 10) {
                 Text(hermesPluginInstalled
                      ? String(localized: "plugin.hermes.installed")
-                     : "~/.hermes/plugins/coucou/__init__.py")
+                     : "~/.hermes/plugins/bubu/__init__.py")
                     .font(.system(size: 11, design: .monospaced))
                     .foregroundColor(.secondary)
                 HStack(spacing: 10) {
@@ -988,7 +988,7 @@ struct SettingsView: View {
                     }
                 }
                 Divider()
-                Text("Shows your Codex plan usage (weekly limit and free resets left) in the notch header. Coucou asks the Codex CLI (codex app-server) when the pill shows; nothing is installed. Codex must be signed in with ChatGPT.")
+                Text("Shows your Codex plan usage (weekly limit and free resets left) in the notch header. Bubu asks the Codex CLI (codex app-server) when the pill shows; nothing is installed. Codex must be signed in with ChatGPT.")
                     .font(.system(size: 11))
                     .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -1362,15 +1362,15 @@ struct SettingsView: View {
 
     private func speakVoiceSample() {
         let en = voiceLanguage != "fr"
-        VoiceSpeaker.shared.speak(en ? "Hi, I'm Coucou. Say OK Coucou whenever you need me."
-                                     : "Salut, c'est Coucou. Dis OK Coucou quand tu as besoin de moi.",
+        VoiceSpeaker.shared.speak(en ? "Hi, I'm Bubu. Say OK Bubu whenever you need me."
+                                     : "Salut, c'est Bubu. Dis OK Bubu quand tu as besoin de moi.",
                                   locale: Locale(identifier: en ? "en-US" : "fr-FR"))
     }
 
     @ViewBuilder private var voiceSection: some View {
-        // Claude is Coucou's brain: no model, language or feature switches any more,
-        // only the wake word, the Anthropic key it needs, and Coucou's voice.
-        GroupBox(String(localized: "«\u{202F}OK Coucou\u{202F}» — voice wake word")) {
+        // Claude is Bubu's brain: no model, language or feature switches any more,
+        // only the wake word, the Anthropic key it needs, and Bubu's voice.
+        GroupBox(String(localized: "«\u{202F}OK Bubu\u{202F}» — voice wake word")) {
             VStack(alignment: .leading, spacing: 10) {
                 Toggle(String(localized: "Enable voice command"), isOn: $voiceEngine.isEnabled)
                     .disabled(!voicePermissionsGranted && !voiceEngine.isEnabled)
@@ -1450,7 +1450,7 @@ struct SettingsView: View {
                     .pickerStyle(.segmented)
                     .frame(maxWidth: 180)
                     .onChange(of: voiceLanguage) { _, _ in
-                        // Chosen by hand: Coucou no longer offers to switch.
+                        // Chosen by hand: Bubu no longer offers to switch.
                         VoiceSettings.languageOfferDone = true
                         ElevenLabsTTS.shared.reset()
                     }
@@ -1745,7 +1745,7 @@ struct SettingsView: View {
             pendingGeminiJSON = try HookServer.shared.previewGeminiHooks(install: install)
             showGeminiDiff = true
             statusMessage = String(localized: "hooks.review-json")
-        } catch let e as NSError where e.domain == "CoucouNoop" {
+        } catch let e as NSError where e.domain == "BubuNoop" {
             statusMessage = e.localizedDescription
         } catch {
             statusMessage = "❌ \(error.localizedDescription)"
@@ -1772,7 +1772,7 @@ struct SettingsView: View {
             pendingAgyJSON = try HookServer.shared.previewAgyHooks(install: install)
             showAgyDiff = true
             statusMessage = String(localized: "hooks.review-json")
-        } catch let e as NSError where e.domain == "CoucouNoop" {
+        } catch let e as NSError where e.domain == "BubuNoop" {
             statusMessage = e.localizedDescription
         } catch {
             statusMessage = "❌ \(error.localizedDescription)"
@@ -1799,7 +1799,7 @@ struct SettingsView: View {
             pendingCodexJSON = try HookServer.shared.previewCodexHooks(install: install)
             showCodexDiff = true
             statusMessage = String(localized: "hooks.review-json")
-        } catch let e as NSError where e.domain == "CoucouNoop" {
+        } catch let e as NSError where e.domain == "BubuNoop" {
             statusMessage = e.localizedDescription
         } catch {
             statusMessage = "❌ \(error.localizedDescription)"
@@ -1826,7 +1826,7 @@ struct SettingsView: View {
             pendingCopilotJSON = try HookServer.shared.previewCopilotHooks(install: install)
             showCopilotDiff = true
             statusMessage = String(localized: "hooks.review-json")
-        } catch let e as NSError where e.domain == "CoucouNoop" {
+        } catch let e as NSError where e.domain == "BubuNoop" {
             statusMessage = e.localizedDescription
         } catch {
             statusMessage = "❌ \(error.localizedDescription)"
@@ -1853,7 +1853,7 @@ struct SettingsView: View {
             pendingMuseJSON = try HookServer.shared.previewMuseHooks(install: install)
             showMuseDiff = true
             statusMessage = String(localized: "hooks.review-json")
-        } catch let e as NSError where e.domain == "CoucouNoop" {
+        } catch let e as NSError where e.domain == "BubuNoop" {
             statusMessage = e.localizedDescription
         } catch {
             statusMessage = "❌ \(error.localizedDescription)"
@@ -1880,7 +1880,7 @@ struct SettingsView: View {
             pendingOpenCodeContent = try HookServer.shared.previewOpenCodePlugin(install: install)
             showOpenCodeDiff = true
             statusMessage = String(localized: "plugin.review-content")
-        } catch let e as NSError where e.domain == "CoucouNoop" {
+        } catch let e as NSError where e.domain == "BubuNoop" {
             statusMessage = e.localizedDescription
         } catch {
             statusMessage = "❌ \(error.localizedDescription)"
@@ -1911,7 +1911,7 @@ struct SettingsView: View {
             pendingAmpContent = try HookServer.shared.previewAmpPlugin(install: install)
             showAmpDiff = true
             statusMessage = String(localized: "plugin.review-content")
-        } catch let e as NSError where e.domain == "CoucouNoop" {
+        } catch let e as NSError where e.domain == "BubuNoop" {
             statusMessage = e.localizedDescription
         } catch {
             statusMessage = "❌ \(error.localizedDescription)"
@@ -1942,7 +1942,7 @@ struct SettingsView: View {
             pendingHermesPluginContent = try HookServer.shared.previewHermesPlugin(install: install)
             showHermesPluginDiff = true
             statusMessage = String(localized: "plugin.review-content")
-        } catch let e as NSError where e.domain == "CoucouNoop" {
+        } catch let e as NSError where e.domain == "BubuNoop" {
             statusMessage = e.localizedDescription
         } catch {
             statusMessage = "❌ \(error.localizedDescription)"

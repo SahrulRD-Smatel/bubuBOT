@@ -8,7 +8,7 @@ import Foundation
 enum TurnEndPolicy {
     static let baseSilence:     TimeInterval = 1.6
     static let extendedSilence: TimeInterval = 2.6
-    /// Answers Coucou asked for in free text (who, subject, what the mail says, what to
+    /// Answers Bubu asked for in free text (who, subject, what the mail says, what to
     /// look up): room to think, a 2–3 s pause doesn't cut me off.
     static let answerSilence:   TimeInterval = 3.2
     static let maxTurnTime:     TimeInterval = 15.0

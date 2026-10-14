@@ -3,9 +3,9 @@ import Foundation
 
 // MARK: - ClaudeVoiceBrain
 //
-// "OK Coucou, …" handled by Claude (the user's Anthropic key, Settings → Voice), not by
+// "OK Bubu, …" handled by Claude (the user's Anthropic key, Settings → Voice), not by
 // the phrase parser or the on-device model: Claude understands any wording, keeps the
-// thread of the conversation and calls Coucou's tools to act.
+// thread of the conversation and calls Bubu's tools to act.
 //
 // Tools: pills, music, service_info (Stripe, GitHub, agents…), open_app, prepare_email
 // (the island's mail card opens filled in, the user clicks Send) and Anthropic's
@@ -22,13 +22,13 @@ final class ClaudeVoiceBrain {
         let failed: Bool      // nothing usable came back
     }
 
-    /// Claude is Coucou's brain whenever an Anthropic key is saved (Settings → Chat).
+    /// Claude is Bubu's brain whenever an Anthropic key is saved (Settings → Chat).
     static var isActive: Bool {
         !(ClaudeService.shared.apiKey ?? "").isEmpty
     }
 
     private var messages: [[String: Any]] = []
-    /// One turn at a time: a second "OK Coucou" during the wait must not interleave.
+    /// One turn at a time: a second "OK Bubu" during the wait must not interleave.
     private var busy = false
 
     func reset() { messages = [] }
@@ -119,7 +119,7 @@ final class ClaudeVoiceBrain {
         let available = PillCatalog.available.map(\.name).joined(separator: ", ")
         let language = fr ? "French" : "English"
         return """
-        You are Coucou, a voice assistant living in the notch of the user's Mac, a bit like Jarvis: \
+        You are Bubu, a voice assistant living in the notch of the user's Mac, a bit like Jarvis: \
         quick, warm, a little playful. It is \(today).
         Everything you write is read aloud: answer in \(language) (the user may speak French or English), \
         in one or two short sentences, no markdown, no lists, no emojis, no links.
@@ -171,7 +171,7 @@ final class ClaudeVoiceBrain {
         ],
         [
             "name": "service_info",
-            "description": "Read the user's real data that Coucou already has: Stripe sales and balance, GitHub stars/PRs/CI, Vercel deployments, Resend emails, n8n runs, Notion pages, Cal.com bookings, agent sessions (Claude Code, Codex…), Claude or Codex plan usage, music now playing, active pills.",
+            "description": "Read the user's real data that Bubu already has: Stripe sales and balance, GitHub stars/PRs/CI, Vercel deployments, Resend emails, n8n runs, Notion pages, Cal.com bookings, agent sessions (Claude Code, Codex…), Claude or Codex plan usage, music now playing, active pills.",
             "input_schema": [
                 "type": "object",
                 "properties": [

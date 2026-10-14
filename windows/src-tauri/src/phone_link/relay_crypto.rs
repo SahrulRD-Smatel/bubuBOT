@@ -15,7 +15,7 @@
 
 use ring::{aead, hkdf, hmac};
 
-pub const LABEL: &str = "coucou-relay/v1";
+pub const LABEL: &str = "bubu-relay/v1";
 pub const VER: u8 = 1;
 pub const T_INIT: u8 = 1;
 pub const T_ACCEPT: u8 = 2;
@@ -144,7 +144,7 @@ pub fn k_join(k: &PairingKey) -> Secret32 {
     derive32(k, &[], "join")
 }
 
-/// The join proof for the `coucou.join.<…>` sub-protocol.
+/// The join proof for the `bubu.join.<…>` sub-protocol.
 pub fn join_proof(k: &PairingKey) -> String {
     base64url_encode(k_join(k).as_bytes())
 }

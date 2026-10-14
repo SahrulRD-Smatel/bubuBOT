@@ -12,7 +12,7 @@ enum TranscriptOrigin: String {
     case context = "context"  // ConversationContext resolved a relative follow-up
     case brain   = "brain"    // VoiceBrain (FoundationModels) resolved the intent
     case multi   = "multi"    // IntentParser.parseMultiAction split it into several actions
-    case answer  = "answer"   // answer to a question Coucou asked ("laquelle j'enlève ?")
+    case answer  = "answer"   // answer to a question Bubu asked ("laquelle j'enlève ?")
     case ignored = "ignored"  // short noise during a conversation, dropped silently
     case end     = "end"      // conversation end phrase ("merci", "stop"…)
 }

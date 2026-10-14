@@ -1,6 +1,6 @@
 # Android link (protocol v1)
 
-How *Coucou for Android* talks to a desktop Coucou. The iPhone uses iCloud (CloudKit) and Apple
+How *Bubu for Android* talks to a desktop Bubu. The iPhone uses iCloud (CloudKit) and Apple
 push, neither of which exists on Android, so the Android app connects to the desktop directly over
 the local network.
 
@@ -21,7 +21,7 @@ The Mac app is left to its author.
 The desktop shows a QR code (and a copyable link) containing:
 
 ```
-coucou://pair?v=1&host=192.168.1.20&port=47821&fp=<sha256 hex of the TLS certificate>&token=<secret>&name=<desktop name>
+bubu://pair?v=1&host=192.168.1.20&port=47821&fp=<sha256 hex of the TLS certificate>&token=<secret>&name=<desktop name>
 ```
 
 - `token` is 16 to 128 characters of `[A-Za-z0-9_-]`, random, created per pairing. It is the shared
@@ -29,7 +29,7 @@ coucou://pair?v=1&host=192.168.1.20&port=47821&fp=<sha256 hex of the TLS certifi
   with a key from the Android Keystore.
 - The app can read the QR code itself ("Scan QR code" on the pairing card; CameraX for the preview, zxing-core to
   decode, no Play services). Scanning the QR with the phone's own camera app also opens the link in the app (the
-  app registers the `coucou://pair` scheme). Either way the app names the computer and asks the user to confirm
+  app registers the `bubu://pair` scheme). Either way the app names the computer and asks the user to confirm
   before it pairs; the link can also be pasted. The camera is used only on the scan screen and nothing is stored or sent.
 - Unpairing on either side deletes the token. The desktop should accept one token per phone and let
   the user revoke it.
@@ -273,7 +273,7 @@ new router). So the computer can also announce itself on the local network, and 
 an addition: **v=1 is unchanged, the saved address stays the first thing tried, and an old phone or an old computer
 simply keeps using the saved address.**
 
-- **Announcement** (computer): while the phone link is on, DNS-SD over multicast DNS, service type `_coucou._tcp`,
+- **Announcement** (computer): while the phone link is on, DNS-SD over multicast DNS, service type `_bubu._tcp`,
   instance name = the computer's name, the real port, IPv4 address. Off means silent: when the switch is turned off, the
   link stops or the app quits, the announcement is withdrawn and nothing runs.
 - **TXT record**: `v=1` and `fp=<first 16 lowercase hex characters of the certificate's SHA-256>`. Nothing else. Never the
@@ -291,10 +291,10 @@ simply keeps using the saved address.**
      that copied the short id) is dropped and never saved. When the paired fingerprint is announced twice, the first that
      passes wins.
   5. The stored host and port are replaced; the token and the pinned fingerprint are untouched. The link reconnects.
-- If nothing is found, the phone says so calmly (same Wi-Fi? computer awake and Coucou running? firewall? hotspots and guest
+- If nothing is found, the phone says so calmly (same Wi-Fi? computer awake and Bubu running? firewall? hotspots and guest
   networks can block devices from finding each other, "client isolation") and offers to pair again or to type the address.
 - Limits, honestly: multicast does not cross routers or VPNs; some access points block it between clients; a firewall that
-  blocks UDP 5353 on the private profile hides the computer (the Windows prompt "allow Coucou on private networks" covers
+  blocks UDP 5353 on the private profile hides the computer (the Windows prompt "allow Bubu on private networks" covers
   it); two computers with the same certificate do not exist (each has its own).
 
 ## Behaviour rules (same as the other ports)
@@ -341,11 +341,11 @@ simply keeps using the saved address.**
 - `android/tools/dev-desktop.mjs` pretends to be a desktop (needs `node` and `openssl`). With `--fake-chat` it offers
   `chat` with a fake provider (no key, no cost): `/error`, `/auth`, `/slow`, `/long` and `/rewrite` trigger the odd cases.
 - `DevDesktopInteropTest` runs the Android client against it.
-- `cargo test -p coucou phone_link` also tests the announcement (what is published and when, that no secret can be in it); the real multicast needs a real network and is not in the tests.
-- `cargo test -p coucou phone_link` tests the real server (wrong token, fingerprint mismatch, oversize
+- `cargo test -p bubu phone_link` also tests the announcement (what is published and when, that no secret can be in it); the real multicast needs a real network and is not in the tests.
+- `cargo test -p bubu phone_link` tests the real server (wrong token, fingerprint mismatch, oversize
   line, late decision, answered-at-the-desk, pairing again, local-network filter...).
 - `RustDesktopInteropTest` runs the Android client against the real Rust server
-  (`COUCOU_RUST_INTEROP=1`, needs cargo; the `Phone link` workflow does it).
+  (`BUBU_RUST_INTEROP=1`, needs cargo; the `Phone link` workflow does it).
 
 ## Through a relay (optional capability `relay`)
 

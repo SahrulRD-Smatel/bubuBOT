@@ -150,7 +150,7 @@ impl Client {
         socket.bind(format!("{source}:0").parse().unwrap()).map_err(|e| e.to_string())?;
         let tcp = socket.connect(std::net::SocketAddr::from(([127, 0, 0, 1], port))).await.map_err(|e| e.to_string())?;
         let tls = TlsConnector::from(Arc::new(config))
-            .connect(ServerName::try_from("coucou").unwrap(), tcp)
+            .connect(ServerName::try_from("Bubu").unwrap(), tcp)
             .await
             .map_err(|e| e.to_string())?;
         let (r, w) = tokio::io::split(tls);
@@ -1046,7 +1046,7 @@ mod details_tests {
             step_count: 3,
             steps: vec!["Read · a.rs".into(), "Edit · a.rs".into()],
             final_line: Some("Fixed the bug".into()),
-            project: Some("/home/me/secret-folder/coucou".into()),
+            project: Some("/home/me/secret-folder/Bubu".into()),
             color: Some("#2DD4BF".into()),
             ..Default::default()
         }
@@ -1079,7 +1079,7 @@ mod details_tests {
             let s = &sessions["sessions"][0];
             assert_eq!(s["steps"], json!(["Read · a.rs", "Edit · a.rs"]));
             assert_eq!(s["finalLine"], "Fixed the bug");
-            assert_eq!(s["project"], "coucou", "the folder name, never the path");
+            assert_eq!(s["project"], "Bubu", "the folder name, never the path");
             assert_eq!(s["color"], "#2DD4BF");
             assert!(!sessions.to_string().contains("secret-folder"));
         });
@@ -1095,7 +1095,7 @@ mod details_tests {
             let mut keys: Vec<&str> = s.keys().map(String::as_str).collect();
             keys.sort_unstable();
             assert_eq!(keys, ["agent", "pillId", "state", "statusText", "stepCount", "stepIndex", "updatedAt"]);
-            assert!(!sessions.to_string().contains("coucou") && !sessions.to_string().contains("Fixed the bug"));
+            assert!(!sessions.to_string().contains("Bubu") && !sessions.to_string().contains("Fixed the bug"));
         });
     }
 

@@ -11,7 +11,7 @@ options:
 # same for a Developer ID build with its provisioning profile
 # (scripts/cloud-test-build.sh); a Developer ID profile only allows the
 # Production CloudKit environment, so the iPhone joins it with the
-# CoucouPhoneProduction scheme. Release also compiles PHONE_LINK (the sync
+# BubuPhoneProduction scheme. Release also compiles PHONE_LINK (the sync
 # stays off until turned on in Settings); Debug stays unsigned without it.
 configs:
   Debug: debug
@@ -44,7 +44,7 @@ settings:
       DEVELOPMENT_TEAM: 256AUJ9555
       OTHER_CODE_SIGN_FLAGS: "--timestamp"
       CODE_SIGN_INJECT_BASE_ENTITLEMENTS: NO
-      CODE_SIGN_ENTITLEMENTS: Resources/Coucou.entitlements
+      CODE_SIGN_ENTITLEMENTS: Resources/Bubu.entitlements
     ReleaseCloud:
       CODE_SIGNING_REQUIRED: YES
       CODE_SIGNING_ALLOWED: YES
@@ -62,10 +62,10 @@ schemes:
       config: Debug
     archive:
       config: Release
-  CoucouAppStore:
+  BubuAppStore:
     build:
       targets:
-        CoucouAppStore: all
+        BubuAppStore: all
     run:
       config: Debug
     archive:
@@ -78,28 +78,28 @@ schemes:
       config: DebugCloud
     archive:
       config: Release
-  CoucouAppStoreCloud:
+  BubuAppStoreCloud:
     build:
       targets:
-        CoucouAppStore: all
+        BubuAppStore: all
     run:
       config: DebugCloud
     archive:
       config: Release
-  CoucouPhone:
+  BubuPhone:
     build:
       targets:
-        CoucouPhone: all
+        BubuPhone: all
     run:
       config: Debug
     archive:
       config: Release
   # Same iPhone app on the Production CloudKit environment, to talk to the
   # Developer ID build (scripts/cloud-test-build.sh), which can only use Production.
-  CoucouPhoneProduction:
+  BubuPhoneProduction:
     build:
       targets:
-        CoucouPhone: all
+        BubuPhone: all
     run:
       config: DebugCloud
     archive:
@@ -126,8 +126,8 @@ targets:
     info:
       path: Resources/Info.plist
       properties:
-        CFBundleName: Coucou
-        CFBundleDisplayName: Coucou
+        CFBundleName: Bubu
+        CFBundleDisplayName: Bubu
         CFBundleIdentifier: fr.louisraille.NotchBuddy
         CFBundleVersion: "15"
         CFBundleShortVersionString: "0.3.0"
@@ -136,10 +136,10 @@ targets:
         NSHighResolutionCapable: YES
         NSSupportsAutomaticGraphicsSwitching: YES
         NSAppleEventsUsageDescription: "Pour sauter au terminal, envoyer des mails et piloter Musique et Spotify."
-        NSMicrophoneUsageDescription: "Coucou uses the microphone when you dictate a message in the chat."
-        NSSpeechRecognitionUsageDescription: "Coucou turns your voice into the text of a chat message."
+        NSMicrophoneUsageDescription: "Bubu uses the microphone when you dictate a message in the chat."
+        NSSpeechRecognitionUsageDescription: "Bubu turns your voice into the text of a chat message."
         NSAccessibilityUsageDescription: "Pour lire le titre de la fenêtre active et l'attacher comme contexte."
-        NSContactsUsageDescription: "Coucou looks up an email address when you ask it, by voice, to prepare an email."
+        NSContactsUsageDescription: "Bubu looks up an email address when you ask it, by voice, to prepare an email."
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true
         CFBundleLocalizations:
@@ -156,14 +156,14 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: fr.louisraille.NotchBuddy
-        PRODUCT_NAME: Coucou
+        PRODUCT_NAME: Bubu
         INFOPLIST_FILE: Resources/Info.plist
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         MACOSX_DEPLOYMENT_TARGET: "15.0"
         ENABLE_SANDBOX: NO
       configs:
         DebugCloud:
-          CODE_SIGN_ENTITLEMENTS: Resources/CoucouCloud.entitlements
+          CODE_SIGN_ENTITLEMENTS: Resources/BubuCloud.entitlements
           SWIFT_ACTIVE_COMPILATION_CONDITIONS: "DEBUG PHONE_LINK"
           # The build run every day from Xcode: optimized like Release, so Mochi's
           # drawing costs what it costs for users (unoptimized Swift was ~2× the CPU).
@@ -171,22 +171,22 @@ targets:
         # The distributed build carries the iPhone sync (off until the user
         # turns it on in Settings), so it needs iCloud and its Developer ID profile.
         Release:
-          CODE_SIGN_ENTITLEMENTS: Resources/CoucouReleaseCloud.entitlements
+          CODE_SIGN_ENTITLEMENTS: Resources/BubuReleaseCloud.entitlements
           SWIFT_ACTIVE_COMPILATION_CONDITIONS: PHONE_LINK
-          PROVISIONING_PROFILE_SPECIFIER: "Coucou Developer ID"
+          PROVISIONING_PROFILE_SPECIFIER: "Bubu Developer ID"
         ReleaseCloud:
-          CODE_SIGN_ENTITLEMENTS: Resources/CoucouReleaseCloud.entitlements
+          CODE_SIGN_ENTITLEMENTS: Resources/BubuReleaseCloud.entitlements
           SWIFT_ACTIVE_COMPILATION_CONDITIONS: PHONE_LINK
-          PROVISIONING_PROFILE_SPECIFIER: "Coucou Developer ID"
+          PROVISIONING_PROFILE_SPECIFIER: "Bubu Developer ID"
     postBuildScripts:
       - name: "Write Git Hash to Info.plist"
         script: |
           HASH=$(git -C "${SRCROOT}/.." rev-parse --short HEAD 2>/dev/null || echo "unknown")
-          /usr/libexec/PlistBuddy -c "Set :CoucouGitHash ${HASH}" "${TARGET_BUILD_DIR}/${INFOPLIST_PATH}" 2>/dev/null \
-            || /usr/libexec/PlistBuddy -c "Add :CoucouGitHash string ${HASH}" "${TARGET_BUILD_DIR}/${INFOPLIST_PATH}"
+          /usr/libexec/PlistBuddy -c "Set :BubuGitHash ${HASH}" "${TARGET_BUILD_DIR}/${INFOPLIST_PATH}" 2>/dev/null \
+            || /usr/libexec/PlistBuddy -c "Add :BubuGitHash string ${HASH}" "${TARGET_BUILD_DIR}/${INFOPLIST_PATH}"
         showEnvVars: false
 
-  CoucouAppStore:
+  BubuAppStore:
     type: application
     platform: macOS
     sources:
@@ -206,9 +206,9 @@ targets:
     info:
       path: Resources/InfoAppStore.plist
       properties:
-        CFBundleName: Coucou
-        CFBundleDisplayName: Coucou
-        CFBundleIdentifier: fr.louisraille.Coucou
+        CFBundleName: Bubu
+        CFBundleDisplayName: Bubu
+        CFBundleIdentifier: com.bubu.desktop
         CFBundleVersion: "6"
         CFBundleShortVersionString: "1.1"
         CFBundlePackageType: APPL
@@ -232,40 +232,40 @@ targets:
           - zh-Hans
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: fr.louisraille.Coucou
-        PRODUCT_NAME: Coucou
+        PRODUCT_BUNDLE_IDENTIFIER: com.bubu.desktop
+        PRODUCT_NAME: Bubu
         INFOPLIST_FILE: Resources/InfoAppStore.plist
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         MACOSX_DEPLOYMENT_TARGET: "15.0"
         CODE_SIGN_STYLE: Automatic
         CODE_SIGN_IDENTITY: "Apple Development"
-        CODE_SIGN_ENTITLEMENTS: Resources/CoucouAppStore.entitlements
+        CODE_SIGN_ENTITLEMENTS: Resources/BubuAppStore.entitlements
         DEVELOPMENT_TEAM: 256AUJ9555
         SWIFT_ACTIVE_COMPILATION_CONDITIONS: APPSTORE
         CODE_SIGNING_ALLOWED: YES
       configs:
         DebugCloud:
-          CODE_SIGN_ENTITLEMENTS: Resources/CoucouAppStoreCloud.entitlements
+          CODE_SIGN_ENTITLEMENTS: Resources/BubuAppStoreCloud.entitlements
           SWIFT_ACTIVE_COMPILATION_CONDITIONS: "APPSTORE PHONE_LINK"
         # App Store archive: same iCloud entitlements; Xcode switches push to
         # production when exporting for the App Store.
         Release:
-          CODE_SIGN_ENTITLEMENTS: Resources/CoucouAppStoreCloud.entitlements
+          CODE_SIGN_ENTITLEMENTS: Resources/BubuAppStoreCloud.entitlements
           SWIFT_ACTIVE_COMPILATION_CONDITIONS: "APPSTORE PHONE_LINK"
 
   # iPhone app. Same bundle ID as the Mac App Store build, for universal purchase.
-  CoucouPhone:
+  BubuPhone:
     type: application
     platform: iOS
     deploymentTarget: "18.0"
     dependencies:
-      - target: CoucouWidgets
-      - target: CoucouNotificationContent
+      - target: BubuWidgets
+      - target: BubuNotificationContent
     sources:
       - path: Sources/Phone
         type: group
       # Shared with the Mac targets (they get it through Sources/).
-      - path: Sources/CoucouKit
+      - path: Sources/BubuKit
         type: group
       - path: PhoneAssets.xcassets
         buildPhase: resources
@@ -281,9 +281,9 @@ targets:
     info:
       path: Resources/InfoPhone.plist
       properties:
-        CFBundleName: Coucou
-        CFBundleDisplayName: Coucou
-        CFBundleIdentifier: fr.louisraille.Coucou
+        CFBundleName: Bubu
+        CFBundleDisplayName: Bubu
+        CFBundleIdentifier: com.bubu.desktop
         CFBundleVersion: "3"
         CFBundleShortVersionString: "1.0"
         CFBundlePackageType: APPL
@@ -298,38 +298,38 @@ targets:
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
         ITSAppUsesNonExemptEncryption: NO
-        NSFaceIDUsageDescription: "Coucou asks for Face ID before allowing a command from your iPhone."
-        NSMicrophoneUsageDescription: "Coucou uses the microphone when you dictate an instruction for Claude Code."
-        NSSpeechRecognitionUsageDescription: "Coucou turns your voice into the text of an instruction for Claude Code."
+        NSFaceIDUsageDescription: "Bubu asks for Face ID before allowing a command from your iPhone."
+        NSMicrophoneUsageDescription: "Bubu uses the microphone when you dictate an instruction for Claude Code."
+        NSSpeechRecognitionUsageDescription: "Bubu turns your voice into the text of an instruction for Claude Code."
         NSSupportsLiveActivities: YES
         # Lets Mochi move at 120 Hz on ProMotion screens, like the Mac's notch.
         CADisableMinimumFrameDurationOnPhone: YES
         # Steps change often while an agent works: without this, iOS holds back
         # updates once its budget is spent, and "waiting for your OK" came late.
         NSSupportsLiveActivitiesFrequentUpdates: YES
-        # coucou://session/<id>: the widgets open a session in the app.
+        # bubu://session/<id>: the widgets open a session in the app.
         CFBundleURLTypes:
-          - CFBundleURLName: fr.louisraille.Coucou
+          - CFBundleURLName: com.bubu.desktop
             CFBundleURLSchemes:
-              - coucou
+              - bubu
         # Which APNs environment the Live Activity tokens belong to (read by the Mac).
-        CoucouAPNsEnvironment: $(COUCOU_APNS_ENV)
+        BubuAPNsEnvironment: $(BUBU_APNS_ENV)
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: fr.louisraille.Coucou
-        PRODUCT_NAME: Coucou
+        PRODUCT_BUNDLE_IDENTIFIER: com.bubu.desktop
+        PRODUCT_NAME: Bubu
         INFOPLIST_FILE: Resources/InfoPhone.plist
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         # Mochi in other colors, picked in Settings (UIApplication.setAlternateIconName).
         ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES: "AppIcon-Blue AppIcon-Green AppIcon-Purple AppIcon-Pink AppIcon-Graphite"
         ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS: NO
-        COUCOU_APNS_ENV: production
+        BUBU_APNS_ENV: production
         IPHONEOS_DEPLOYMENT_TARGET: "18.0"
         TARGETED_DEVICE_FAMILY: "1"
         SUPPORTS_MACCATALYST: NO
         CODE_SIGN_STYLE: Automatic
         CODE_SIGN_IDENTITY: "Apple Development"
-        CODE_SIGN_ENTITLEMENTS: Resources/CoucouPhone.entitlements
+        CODE_SIGN_ENTITLEMENTS: Resources/BubuPhone.entitlements
         DEVELOPMENT_TEAM: 256AUJ9555
         CODE_SIGNING_REQUIRED: YES
         CODE_SIGNING_ALLOWED: YES
@@ -337,21 +337,21 @@ targets:
         OTHER_CODE_SIGN_FLAGS: ""
       configs:
         Debug:
-          COUCOU_APNS_ENV: development
+          BUBU_APNS_ENV: development
         DebugCloud:
-          CODE_SIGN_ENTITLEMENTS: Resources/CoucouPhoneProduction.entitlements
-          COUCOU_APNS_ENV: development
+          CODE_SIGN_ENTITLEMENTS: Resources/BubuPhoneProduction.entitlements
+          BUBU_APNS_ENV: development
 
   # Home Screen and Lock Screen widgets (Solo, Team, List, accessories). They
   # read the sessions the iPhone app saves to the shared App Group.
-  CoucouWidgets:
+  BubuWidgets:
     type: app-extension
     platform: iOS
     deploymentTarget: "18.0"
     sources:
       - path: Sources/Widgets
         type: group
-      - path: Sources/CoucouKit
+      - path: Sources/BubuKit
         type: group
       - path: Sources/Phone/SharedSessions.swift
       - path: Sources/Phone/MacStubs.swift
@@ -361,9 +361,9 @@ targets:
     info:
       path: Resources/InfoWidgets.plist
       properties:
-        CFBundleName: CoucouWidgets
-        CFBundleDisplayName: Coucou
-        CFBundleIdentifier: fr.louisraille.Coucou.Widgets
+        CFBundleName: BubuWidgets
+        CFBundleDisplayName: Bubu
+        CFBundleIdentifier: com.bubu.desktop.Widgets
         CFBundleVersion: "3"
         CFBundleShortVersionString: "1.0"
         CFBundlePackageType: XPC!
@@ -371,16 +371,16 @@ targets:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: fr.louisraille.Coucou.Widgets
+        PRODUCT_BUNDLE_IDENTIFIER: com.bubu.desktop.Widgets
         SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) WIDGET_EXTENSION"
-        PRODUCT_NAME: CoucouWidgets
+        PRODUCT_NAME: BubuWidgets
         INFOPLIST_FILE: Resources/InfoWidgets.plist
         IPHONEOS_DEPLOYMENT_TARGET: "18.0"
         TARGETED_DEVICE_FAMILY: "1"
         SUPPORTS_MACCATALYST: NO
         CODE_SIGN_STYLE: Automatic
         CODE_SIGN_IDENTITY: "Apple Development"
-        CODE_SIGN_ENTITLEMENTS: Resources/CoucouWidgets.entitlements
+        CODE_SIGN_ENTITLEMENTS: Resources/BubuWidgets.entitlements
         DEVELOPMENT_TEAM: 256AUJ9555
         CODE_SIGNING_REQUIRED: YES
         CODE_SIGNING_ALLOWED: YES
@@ -390,23 +390,23 @@ targets:
         APPLICATION_EXTENSION_API_ONLY: YES
 
   # The expanded approval notification: Mochi alive, with the command.
-  CoucouNotificationContent:
+  BubuNotificationContent:
     type: app-extension
     platform: iOS
     deploymentTarget: "18.0"
     sources:
       - path: Sources/NotificationContent
         type: group
-      - path: Sources/CoucouKit
+      - path: Sources/BubuKit
         type: group
       - path: Sources/Phone/MochiLive.swift
       - path: Sources/Phone/MacStubs.swift
     info:
       path: Resources/InfoNotificationContent.plist
       properties:
-        CFBundleName: CoucouNotificationContent
-        CFBundleDisplayName: Coucou
-        CFBundleIdentifier: fr.louisraille.Coucou.NotificationContent
+        CFBundleName: BubuNotificationContent
+        CFBundleDisplayName: Bubu
+        CFBundleIdentifier: com.bubu.desktop.NotificationContent
         CFBundleVersion: "3"
         CFBundleShortVersionString: "1.0"
         CFBundlePackageType: XPC!
@@ -414,13 +414,13 @@ targets:
           NSExtensionPointIdentifier: com.apple.usernotifications.content-extension
           NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).NotificationViewController
           NSExtensionAttributes:
-            UNNotificationExtensionCategory: COUCOU_APPROVAL
+            UNNotificationExtensionCategory: BUBU_APPROVAL
             UNNotificationExtensionInitialContentSizeRatio: 0.45
             UNNotificationExtensionDefaultContentHidden: true
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: fr.louisraille.Coucou.NotificationContent
-        PRODUCT_NAME: CoucouNotificationContent
+        PRODUCT_BUNDLE_IDENTIFIER: com.bubu.desktop.NotificationContent
+        PRODUCT_NAME: BubuNotificationContent
         INFOPLIST_FILE: Resources/InfoNotificationContent.plist
         IPHONEOS_DEPLOYMENT_TARGET: "18.0"
         TARGETED_DEVICE_FAMILY: "1"

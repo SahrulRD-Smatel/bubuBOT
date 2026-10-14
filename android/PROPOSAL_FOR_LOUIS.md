@@ -1,13 +1,13 @@
 # Draft message to Louis (the user sends it; nothing is opened on his repo)
 
-Subject: Coucou for Android: an optional phone link in the Windows/Linux app (your call)
+Subject: Bubu for Android: an optional phone link in the Windows/Linux app (your call)
 
 Hi Louis,
 
 The Android port you allowed needs something from the desktop app to show real sessions: today Android
 has no CloudKit or APNs, so the phone connects straight to the computer over the local network.
 I wrote that desktop side for the Windows/Linux app, as a separate module, and I'd like to know if you
-want it in Coucou. It's your app and your decision; I'll keep it on my fork if you don't.
+want it in Bubu. It's your app and your decision; I'll keep it on my fork if you don't.
 
 What it is
 - Settings gets an "Android phone" section. The switch is **off by default**. When it's on, the app

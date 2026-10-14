@@ -18,7 +18,7 @@ const fromHex = (s) => Buffer.from(s, "hex");
 const seq = (start, n) => Buffer.from(Array.from({ length: n }, (_, i) => (start + i) & 0xff));
 const b64url = (b) => Buffer.from(b).toString("base64url");
 
-const LABEL = "coucou-relay/v1";
+const LABEL = "bubu-relay/v1";
 const VER = 1;
 const T_INIT = 1, T_ACCEPT = 2, T_DATA = 3;
 const DIR = { p2h: 1, h2p: 2 }; // phone to computer ("host"), computer to phone

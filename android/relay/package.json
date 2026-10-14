@@ -1,7 +1,7 @@
 {
-  "name": "coucou-link-relay",
+  "name": "bubu-link-relay",
   "private": true,
-  "description": "Key-less WebSocket relay for the Coucou Android link (docs/RELAY_LINK.md). Deployed by the user on their own Cloudflare account.",
+  "description": "Key-less WebSocket relay for the Bubu Android link (docs/RELAY_LINK.md). Deployed by the user on their own Cloudflare account.",
   "type": "module",
   "scripts": {
     "dev": "wrangler dev",

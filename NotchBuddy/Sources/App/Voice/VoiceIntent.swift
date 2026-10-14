@@ -77,7 +77,7 @@ struct PendingVoiceQuestion {
     enum MailField: Equatable { case recipient, subject, body, attachment }
     let kind: Kind
     let text: String
-    /// True once Coucou has asked the question a second time (it never asks a third time).
+    /// True once Bubu has asked the question a second time (it never asks a third time).
     var askedAgain: Bool = false
 }
 #endif

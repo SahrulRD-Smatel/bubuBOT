@@ -17,7 +17,7 @@ async function call<T>(cmd: string, args?: Record<string, unknown>): Promise<T |
   try {
     return await invoke<T>(cmd, args);
   } catch (err) {
-    console.error(`[coucou] ${cmd} failed`, err);
+    console.error(`[bubu] ${cmd} failed`, err);
     return null;
   }
 }
@@ -234,12 +234,12 @@ export const Bridge = {
 
   openSettingsWindow: () => call<void>("open_settings_window"),
 
-  /** Writes to %LOCALAPPDATA%\Coucou\coucou.log, next to the Rust lines. */
+  /** Writes to %LOCALAPPDATA%\Bubu\bubu.log, next to the Rust lines. */
   log: (message: string) => call<void>("log_line", { message }),
 
   // ── Claude Code hooks ─────────────────────────────────────────────────────
   hooksStatus: () => call<HookStatus>("hooks_status"),
-  /** Pill ID → whether that agent's hooks reach Coucou (read-only, Mac #183). */
+  /** Pill ID → whether that agent's hooks reach Bubu (read-only, Mac #183). */
   agentHooksStatus: () => call<Record<string, boolean>>("agent_hooks_status"),
   /** Diff to show before anything is written. `install: false` previews removal. */
   hooksPreview: (install: boolean) => callOrThrow<HookPreview>("hooks_preview", { install }),
@@ -285,7 +285,7 @@ export const Bridge = {
   /** "Nobody can act on this" — Claude Code asks in the terminal right away. */
   approvalDecline: (requestId: string) => call<void>("approval_decline", { requestId }),
 
-  // ── Phone link (Coucou for Android) ───────────────────────────────────────
+  // ── Phone link (Bubu for Android) ───────────────────────────────────────
   phoneLinkStatus: () => call<PhoneLinkStatus>("phone_link_status"),
   /** Only ever from the switch in Settings. Throws with the reason if it cannot start. */
   phoneLinkSetEnabled: (enabled: boolean) => callOrThrow<PhoneLinkStatus>("phone_link_set_enabled", { enabled }),
@@ -445,7 +445,7 @@ export async function emitToWindow(label: string, event: string, payload?: unkno
   try {
     await emitTo(label, event, payload);
   } catch (err) {
-    console.error(`[coucou] emit ${event} failed`, err);
+    console.error(`[bubu] emit ${event} failed`, err);
   }
 }
 
@@ -481,7 +481,7 @@ export interface DroppedFile {
 
 export interface HookStatus {
   installed: boolean;
-  /** Coucou's status line relay (plan usage) is the status line in settings.json. */
+  /** Bubu's status line relay (plan usage) is the status line in settings.json. */
   planRelayInstalled: boolean;
   settingsPath: string;
   hookPath: string;
@@ -494,7 +494,7 @@ export interface AgentHookStatus {
   id: string;
   name: string;
   installed: boolean;
-  /** The file (or files, one per line) Coucou writes. */
+  /** The file (or files, one per line) Bubu writes. */
   path: string;
   hookReady: boolean;
   /** The island can allow or deny this agent's permission requests. */
@@ -521,7 +521,7 @@ export interface HookPreview {
 
 /** Same as `call`, but surfaces the error so the UI can show what went wrong. */
 async function callOrThrow<T>(cmd: string, args?: Record<string, unknown>): Promise<T> {
-  if (!IS_TAURI) throw new Error("not running inside Coucou");
+  if (!IS_TAURI) throw new Error("not running inside Bubu");
   return invoke<T>(cmd, args);
 }
 
@@ -585,7 +585,7 @@ export async function onDragDrop(handler: (e: DragDropPayload) => void) {
       handler({ type: "drop", paths: [] });
       return;
     }
-    webview.postMessageWithAdditionalObjects("coucou-file-drop", files);
+    webview.postMessageWithAdditionalObjects("bubu-file-drop", files);
   };
 
   window.addEventListener("dragenter", onEnter);

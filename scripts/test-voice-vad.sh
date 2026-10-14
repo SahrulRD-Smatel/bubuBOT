@@ -2,7 +2,7 @@
 # Energy VAD tests — pure struct, no AVFoundation dependency.
 set -euo pipefail
 cd "$(dirname "$0")/.."
-TEST_DIR="$(mktemp -d "${TMPDIR:-/tmp}/coucou-voice-vad.XXXXXX")"
+TEST_DIR="$(mktemp -d "${TMPDIR:-/tmp}/bubu-voice-vad.XXXXXX")"
 trap 'rm -rf "$TEST_DIR"' EXIT
 swiftc \
     NotchBuddy/Sources/App/Voice/EnergyVAD.swift \

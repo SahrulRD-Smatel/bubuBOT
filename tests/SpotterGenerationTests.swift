@@ -86,7 +86,7 @@ enum SpotterGenerationTests {
         check("20s restart: 1110 is expected error",  normal, true)
         check("20s restart: B still valid",           s2.isValid(genB2), true)
 
-        // ── Late partial from A containing "ok coucou" ───────────────────────
+        // ── Late partial from A containing "ok bubu" ───────────────────────
         //
         // After endWindow, A sends a partial with a wake phrase. Because genA is
         // stale, the callback must be dropped before wake detection.

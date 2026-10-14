@@ -4,8 +4,8 @@ Louis asked for a short screen recording of the main flow. Nothing is published:
 
 ## Before recording
 
-- Phone: Coucou for Android from the latest `android` branch, Wi-Fi on, same network as the PC, notification volume up.
-- PC: the portable `coucou.exe` (no other Coucou running), Settings > Android phone > Phone link on, phone paired.
+- Phone: Bubu for Android from the latest `android` branch, Wi-Fi on, same network as the PC, notification volume up.
+- PC: the portable `bubu.exe` (no other Bubu running), Settings > Android phone > Phone link on, phone paired.
 - Claude Code (the command-line tool, not the Desktop app) in a folder you trust, started with `claude.cmd --permission-mode default`.
 - Phone: Do Not Disturb off, "Show Mochi over other apps" on if you want the island in the video.
 - Use a test folder and a harmless command (`echo hello > demo.txt`). No real secrets on screen.
@@ -25,7 +25,7 @@ Louis asked for a short screen recording of the main flow. Nothing is published:
 The pairing, chat and approval screens are marked secure on purpose, so a screen recording of them is black. The video
 does not remove that protection. During those seconds it shows the request from the other side instead:
 
-- Record the PC screen at the same time (the terminal waiting on the permission, and Coucou's island or card on the PC).
+- Record the PC screen at the same time (the terminal waiting on the permission, and Bubu's island or card on the PC).
 - Put a caption over the black part: **"Request sent for approval"**, then **"Approved on the phone (fingerprint)"** or
   **"Denied on the phone"**. Add the captions when editing (any video editor, or the Windows Clipchamp).
 - Cut between the phone (notification, Home, Settings, About) and the PC (terminal and island), so the viewer always sees
@@ -33,6 +33,6 @@ does not remove that protection. During those seconds it shows the request from 
 
 ## How to record
 
-Wireless or USB, from the PC: `adb shell screenrecord --time-limit 180 /sdcard/coucou-demo.mp4`, then
-`adb pull /sdcard/coucou-demo.mp4`. Or use Android's own screen recorder (swipe down twice, Screen recorder).
+Wireless or USB, from the PC: `adb shell screenrecord --time-limit 180 /sdcard/bubu-demo.mp4`, then
+`adb pull /sdcard/bubu-demo.mp4`. Or use Android's own screen recorder (swipe down twice, Screen recorder).
 Trim to about 90 seconds. Check the file for notifications from other apps before sending it.

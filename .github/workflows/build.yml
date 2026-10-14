@@ -138,7 +138,7 @@ jobs:
         run: |
           xcodebuild \
             -project NotchBuddy/NotchBuddy.xcodeproj \
-            -scheme CoucouAppStore \
+            -scheme BubuAppStore \
             -configuration Debug \
             build \
             CODE_SIGNING_ALLOWED=NO \
@@ -168,7 +168,7 @@ jobs:
         run: |
           xcodebuild \
             -project NotchBuddy/NotchBuddy.xcodeproj \
-            -scheme CoucouPhone \
+            -scheme BubuPhone \
             -destination 'generic/platform=iOS' \
             build \
             CODE_SIGNING_ALLOWED=NO

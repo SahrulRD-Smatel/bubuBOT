@@ -7,7 +7,7 @@
 //   - If the island is NOT expanded → never block (collapsed island → always accept a wake).
 //   - If the island IS expanded → block only when showing approval, question, or the chat
 //     prompt (views that require focused interaction). voiceResult is NOT a blocker — a new
-//     "OK Coucou" replaces the transient result card immediately.
+//     "OK Bubu" replaces the transient result card immediately.
 //
 // The function is intentionally free of any AppKit / ObservableObject dependency so that it
 // can be compiled and unit-tested without a full app context.

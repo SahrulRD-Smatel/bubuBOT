@@ -1,13 +1,13 @@
 [package]
-name = "coucou"
-description = "Coucou for Windows and Linux — Mochi lives at the top of your screen"
-authors = ["Louis Raille"]
+name = "bubu"
+description = "Bubu for Windows and Linux — Mochi lives at the top of your screen"
+authors = ["Sahrul Ramadhani"]
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 
 [lib]
-name = "coucou_lib"
+name = "bubu_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
@@ -30,7 +30,7 @@ ring = "0.17"
 rcgen = { version = "0.13", default-features = false, features = ["ring"] }
 qrcode = { version = "0.14", default-features = false, features = ["svg"] }
 # The phone finds this computer by itself when its address changes: it is announced on the local network
-# (mDNS / DNS-SD, `_coucou._tcp`) only while the phone link is on (phone_link/discovery.rs). Pure Rust,
+# (mDNS / DNS-SD, `_bubu._tcp`) only while the phone link is on (phone_link/discovery.rs). Pure Rust,
 # Apache-2.0 OR MIT, no async runtime or logger (default features off); it adds five small crates
 # (mdns-sd, flume, if-addrs, socket-pktinfo, spin). See docs/ANDROID_LINK.md.
 mdns-sd = { version = "0.21", default-features = false }

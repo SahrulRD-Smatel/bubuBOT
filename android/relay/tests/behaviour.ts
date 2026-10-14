@@ -37,7 +37,7 @@ export interface Harness {
 
 export const randomRoom = () => Buffer.from(crypto.getRandomValues(new Uint8Array(16))).toString("base64url");
 export const proofOf = (seed: number) => Buffer.from(new Uint8Array(32).fill(seed)).toString("base64url");
-export const offer = (proof: string) => `coucou.v1, coucou.join.${proof}`;
+export const offer = (proof: string) => `bubu.v1, bubu.join.${proof}`;
 const isConn = (c: Conn | { refused: number }): c is Conn => !("refused" in c);
 
 export async function open(h: Harness, room: string, role: string, o: Options = {}): Promise<Conn> {
@@ -66,7 +66,7 @@ export function behaviour(name: string, make: () => Promise<Harness>) {
     };
 
     it("answers the health check and nothing else on /", async () => {
-      expect(await h.http("/")).toEqual({ status: 200, text: "Coucou link relay" });
+      expect(await h.http("/")).toEqual({ status: 200, text: "bubu link relay" });
       expect((await h.http("/", "POST")).status).toBe(405);
       expect((await h.http("/elsewhere")).status).toBe(404);
     });
@@ -92,8 +92,8 @@ export function behaviour(name: string, make: () => Promise<Harness>) {
 
     it("refuses a missing or malformed join proof with 400", async () => {
       const room = randomRoom();
-      for (const protocols of ["", "coucou.v1", "coucou.join." + proofOf(1), "coucou.v1, coucou.join.short", "coucou.v1, coucou.join." + proofOf(1) + "A",
-        "coucou.v1, coucou.join." + proofOf(1) + ", coucou.join." + proofOf(2), "other, coucou.join." + proofOf(1)]) {
+      for (const protocols of ["", "bubu.v1", "bubu.join." + proofOf(1), "bubu.v1, bubu.join.short", "bubu.v1, bubu.join." + proofOf(1) + "A",
+        "bubu.v1, bubu.join." + proofOf(1) + ", bubu.join." + proofOf(2), "other, bubu.join." + proofOf(1)]) {
         expect(await h.connect(room, "pc", { protocols }), protocols).toEqual({ refused: 400 });
       }
     });

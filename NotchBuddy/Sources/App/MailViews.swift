@@ -9,7 +9,7 @@ private let mailAccent = "#2F8CFF"
 
 /// The latest messages of every inbox in Apple Mail, newest first, unread ones highlighted.
 /// A click on a message opens it in the card (sender, subject, text) with Open in Mail,
-/// Reply (Mail's own reply window: nothing is sent from Coucou) and Mark as read.
+/// Reply (Mail's own reply window: nothing is sent from Bubu) and Mark as read.
 struct MailCardView: View {
     @ObservedObject private var mail = MailController.shared
     @State private var openId: String? = nil

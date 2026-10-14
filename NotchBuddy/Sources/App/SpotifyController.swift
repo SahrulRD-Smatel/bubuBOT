@@ -45,11 +45,11 @@ final class SpotifyController: ObservableObject {
     @Published private(set) var artwork: NSImage?
     @Published private(set) var automationDenied = false
 
-    nonisolated private static let grantedKey = "coucou.spotifyAutomationGranted"
+    nonisolated private static let grantedKey = "bubu.spotifyAutomationGranted"
 
     private var notifTokens: [Any] = []
     private var cancellables = Set<AnyCancellable>()
-    private let queue = DispatchQueue(label: "fr.louisraille.coucou.spotify")
+    private let queue = DispatchQueue(label: "com.bubu.desktop.spotify")
     private var artworkCache: [String: NSImage] = [:]
     private var artworkCacheOrder: [String] = []
     private var artworkLoadingId: String?

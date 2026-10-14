@@ -1,4 +1,4 @@
-// Coucou link relay: a stateless Cloudflare Worker (docs/RELAY_LINK.md).
+// Bubu link relay: a stateless Cloudflare Worker (docs/RELAY_LINK.md).
 //
 // It forwards opaque, end-to-end encrypted frames between the two peers of a room, a computer and a phone. It never sees a
 // content key, stores nothing (no KV, no R2, no database, no storage API call), logs nothing (observability off) and has
@@ -24,7 +24,7 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
     if (url.pathname === "/") {
-      return request.method === "GET" ? new Response("Coucou link relay", { status: 200, headers: { "content-type": "text/plain" } }) : empty(405);
+      return request.method === "GET" ? new Response("Bubu link relay", { status: 200, headers: { "content-type": "text/plain" } }) : empty(405);
     }
     const target = request.method === "GET" ? parseRoomRequest(url) : null;
     if (!target) return empty(404); // bad path, bad room id, bad role, wrong method: nothing is created

@@ -81,7 +81,7 @@ describe("Node twin only", () => {
       for (let i = 0; i < 5; i++) {
         statuses.push(
           await new Promise<number>((resolve) => {
-            const ws = new WebSocket(`ws://127.0.0.1:${r.port}/v1/room/${randomRoom()}?role=pc`, ["coucou.v1", `coucou.join.${proofOf(1)}`], { headers: { Authorization: "Bearer wrong-wrong-wrong-wrong" } });
+            const ws = new WebSocket(`ws://127.0.0.1:${r.port}/v1/room/${randomRoom()}?role=pc`, ["bubu.v1", `bubu.join.${proofOf(1)}`], { headers: { Authorization: "Bearer wrong-wrong-wrong-wrong" } });
             ws.on("unexpected-response", (_q, res) => (resolve(res.statusCode ?? 0), ws.terminate()));
             ws.on("error", () => {});
           }),
@@ -96,7 +96,7 @@ describe("Node twin only", () => {
   it("leaves no room behind when everyone has left", async () => {
     const r = await startRelay({ accessKey: ACCESS });
     try {
-      const ws = new WebSocket(`ws://127.0.0.1:${r.port}/v1/room/${randomRoom()}?role=pc`, ["coucou.v1", `coucou.join.${proofOf(1)}`], { headers: { Authorization: `Bearer ${ACCESS}` } });
+      const ws = new WebSocket(`ws://127.0.0.1:${r.port}/v1/room/${randomRoom()}?role=pc`, ["bubu.v1", `bubu.join.${proofOf(1)}`], { headers: { Authorization: `Bearer ${ACCESS}` } });
       await new Promise((res) => ws.on("open", res));
       expect(r.rooms()).toBe(1);
       ws.close();
