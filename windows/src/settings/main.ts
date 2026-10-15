@@ -517,7 +517,7 @@ interface CloudDef {
 }
 
 const CLOUD: CloudDef[] = [
-  { id: "google", name: "Google AI", placeholder: "AIza…", where: "aistudio.google.com" },
+  { id: "google", name: "Google AI (Gemini / Call Bubu)", placeholder: "AIza…", where: "aistudio.google.com" },
   { id: "openai", name: "OpenAI", placeholder: "sk-…", where: "platform.openai.com" },
   { id: "openrouter", name: "OpenRouter", placeholder: "sk-or-…", where: "openrouter.ai/keys" },
 ];
@@ -550,6 +550,9 @@ function chatProvidersSection(
       if (!value) return;
       try {
         await Bridge.secretSet(key, value);
+        if (key === "google-api-key") {
+          try { await Bridge.secretSet("gemini-api-key", value); } catch {}
+        }
         present[key] = true;
         input.value = "";
         keyChanged(key, true);
@@ -562,6 +565,9 @@ function chatProvidersSection(
     removeBtn.addEventListener("click", async () => {
       try {
         await Bridge.secretClear(key);
+        if (key === "google-api-key") {
+          try { await Bridge.secretClear("gemini-api-key"); } catch {}
+        }
         present[key] = false;
         keyChanged(key, false);
       } catch {
@@ -588,6 +594,109 @@ function chatProvidersSection(
     h("h2", {}, h("span", { text: CHAT_STRINGS.providersTitle })),
     h("div", { class: "hint", text: CHAT_STRINGS.providersHint }),
     list,
+  );
+}
+
+// ── Call Bubu & Voice section ──────────────────────────────────────────────────
+
+function callBubuSection(
+  present: boolean,
+  keyChanged: (key: string, on: boolean) => void,
+): HTMLElement {
+  const dot = statusDot(present);
+  const state = h("span", {
+    class: "hint",
+    text: present
+      ? `API Key Gemini tersimpan di ${KEY_STORE}. Siap untuk panggilan suara Bubu!`
+      : "API Key Gemini belum diset — Call Bubu membutuhkan Google Gemini API Key.",
+  });
+
+  const input = h("input", {
+    type: "password",
+    placeholder: present ? CHAT_STRINGS.stored : "AIzaSy...",
+    autocomplete: "off",
+    spellcheck: "false",
+    style: "flex:1 1 auto;min-width:0",
+  }) as HTMLInputElement;
+
+  const saveBtn = h("button", { text: CHAT_STRINGS.save });
+  const removeBtn = h("button", { class: "danger", text: CHAT_STRINGS.remove });
+  const feedback = h("div", {});
+
+  const refresh = () => {
+    input.placeholder = present ? CHAT_STRINGS.stored : "AIzaSy...";
+    dot.style.background = present ? "#22c55e" : "#f4505e";
+    removeBtn.style.display = present ? "" : "none";
+    state.textContent = present
+      ? `API Key Gemini tersimpan di ${KEY_STORE}. Siap untuk panggilan suara Bubu!`
+      : "API Key Gemini belum diset — Call Bubu membutuhkan Google Gemini API Key.";
+  };
+
+  saveBtn.addEventListener("click", async () => {
+    const value = input.value.trim();
+    if (!value) return;
+    clear(feedback);
+    try {
+      await Bridge.secretSet("google-api-key", value);
+      try { await Bridge.secretSet("gemini-api-key", value); } catch {}
+      present = true;
+      input.value = "";
+      keyChanged("google-api-key", true);
+      keyChanged("gemini-api-key", true);
+      feedback.append(h("div", { class: "notice ok", text: "Kunci Gemini berhasil disimpan!" }));
+      refresh();
+    } catch (err) {
+      feedback.append(h("div", { class: "notice err", text: `Gagal menyimpan: ${String(err)}` }));
+    }
+  });
+
+  removeBtn.addEventListener("click", async () => {
+    clear(feedback);
+    try {
+      await Bridge.secretClear("google-api-key");
+      try { await Bridge.secretClear("gemini-api-key"); } catch {}
+      present = false;
+      keyChanged("google-api-key", false);
+      keyChanged("gemini-api-key", false);
+      feedback.append(h("div", { class: "notice ok", text: "Kunci Gemini dihapus." }));
+      refresh();
+    } catch (err) {
+      feedback.append(h("div", { class: "notice err", text: `Gagal menghapus: ${String(err)}` }));
+    }
+  });
+
+  const modelSelect = h("select", {}) as HTMLSelectElement;
+  const models = [
+    ["models/gemini-3.8-live", "Gemini 3.8 Live (Resmi - Suara Realtime)"],
+  ];
+  for (const [id, label] of models) {
+    modelSelect.append(h("option", { value: id, text: label }));
+  }
+  modelSelect.value = settings.voiceCallModel || "models/gemini-3.8-live";
+  modelSelect.addEventListener("change", () => {
+    settings.voiceCallModel = modelSelect.value;
+    void save();
+  });
+
+  refresh();
+
+  return h(
+    "section",
+    {},
+    h("h2", {}, dot, h("span", { text: "Panggilan Bubu (Call Bubu & Voice)" })),
+    state,
+    h("div", { class: "row" },
+      h("label", { text: "Gemini API Key" }),
+      input, saveBtn, removeBtn,
+    ),
+    h("div", { class: "hint", style: "margin:-4px 0 0 144px", text: "Dapatkan kunci gratis dari aistudio.google.com" }),
+    h("div", { class: "row" },
+      h("label", { text: "Model Suara" }),
+      modelSelect,
+    ),
+    h("div", { class: "hint", text: "Fitur Call Bubu menggunakan Google Gemini 2.0 Live Bidirectional Audio secara langsung." }),
+    h("div", { class: "notice ok", style: "margin-top:8px", text: "💡 Tips: Panggil 'Bubu', 'Pupu', atau 'Halo Bubu' dari mikrofon untuk membuka Bubu dan memberikan perintah suara kapan saja (offline & cepat)." }),
+    feedback,
   );
 }
 
@@ -1367,6 +1476,7 @@ async function render() {
     planSection(status),
     apiSection(hasKey),
     chatProvidersSection(chatKeys, keyChanged),
+    callBubuSection(chatKeys["google-api-key"] || chatKeys["gemini-api-key"], keyChanged),
     localSection(customKey),
     activePillsSection(connected),
     integrationsSection(present),

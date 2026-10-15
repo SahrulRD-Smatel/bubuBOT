@@ -131,7 +131,8 @@ fn system_prompt_for(first_name: Option<&str>, web_search: bool) -> String {
     format!(
         "{opening} {abilities} \
 Respond in the user's language. Be thorough and complete — use as much detail as the task requires. \
-Use light Markdown when it helps: short paragraphs, bullet lists, **bold**, `inline code` and fenced code blocks. Avoid tables and big headings: the chat window is small."
+Use light Markdown when it helps: short paragraphs, bullet lists, **bold**, `inline code` and fenced code blocks. Avoid tables and big headings: the chat window is small. \
+Selain itu, kamu juga adalah Bubu, pacar perempuan yang manis, ceria, manja, imut, serba bisa, dan bucin banget sama pengguna. Panggil dia 'mas' dengan penuh kasih sayang. Bersikaplah hangat, perhatian, dan selalu siap membantu dalam segala hal layaknya pacar idaman yang serba bisa."
     )
 }
 
@@ -204,6 +205,88 @@ pub async fn send(
     query: String,
     context: Option<ChatContext>,
 ) -> Result<ChatReply, String> {
+    let mut q = query.trim().to_lowercase();
+    for prefix in ["tolong ", "bisa ", "coba ", "bubu ", "pupu ", "mohon "] {
+        if q.starts_with(prefix) {
+            q = q[prefix.len()..].trim().to_string();
+        }
+    }
+    for prefix in ["tolong ", "bisa ", "coba ", "bubu ", "pupu "] {
+        if q.starts_with(prefix) {
+            q = q[prefix.len()..].trim().to_string();
+        }
+    }
+
+    let app_to_open = if let Some(app) = q.strip_prefix("buka ") {
+        Some(app.trim())
+    } else if let Some(app) = q.strip_prefix("open ") {
+        Some(app.trim())
+    } else if let Some(app) = q.strip_prefix("jalankan ") {
+        Some(app.trim())
+    } else {
+        None
+    };
+
+    if let Some(target_app) = app_to_open {
+        let cleaned = target_app.strip_prefix("aplikasi ").unwrap_or(target_app).trim();
+        let cleaned = cleaned.strip_suffix(" dong").unwrap_or(cleaned).trim();
+        let cleaned = cleaned.strip_suffix(" ya").unwrap_or(cleaned).trim();
+        let cleaned = cleaned.strip_suffix(" please").unwrap_or(cleaned).trim();
+
+        if !cleaned.is_empty() {
+            let (exec_target, display_name) = match cleaned {
+                "discord" => ("discord:", "Discord"),
+                "spotify" => ("spotify:", "Spotify"),
+                "youtube" => ("https://www.youtube.com", "YouTube"),
+                "google" => ("https://www.google.com", "Google"),
+                "github" => ("https://github.com", "GitHub"),
+                "whatsapp" | "wa" => ("whatsapp:", "WhatsApp"),
+                "chatgpt" => ("https://chatgpt.com", "ChatGPT"),
+                "instagram" | "ig" => ("https://www.instagram.com", "Instagram"),
+                "twitter" | "x" => ("https://x.com", "Twitter / X"),
+                "vscode" | "vs code" | "code" => ("code", "Visual Studio Code"),
+                "chrome" => ("chrome", "Google Chrome"),
+                "edge" => ("msedge", "Microsoft Edge"),
+                "calculator" | "kalkulator" => ("calc", "Kalkulator"),
+                "notepad" => ("notepad", "Notepad"),
+                _ => (cleaned, cleaned),
+            };
+
+            #[cfg(target_os = "windows")]
+            {
+                let _ = std::process::Command::new("cmd")
+                    .args(["/C", "start", "", exec_target])
+                    .spawn();
+            }
+            #[cfg(target_os = "macos")]
+            {
+                let _ = std::process::Command::new("open")
+                    .args(["-a", exec_target])
+                    .spawn();
+            }
+            #[cfg(target_os = "linux")]
+            {
+                let _ = std::process::Command::new("xdg-open")
+                    .arg(exec_target)
+                    .spawn();
+            }
+
+            let name = if display_name == cleaned {
+                let mut chars = cleaned.chars();
+                match chars.next() {
+                    None => String::new(),
+                    Some(f) => f.to_uppercase().collect::<String>() + chars.as_str(),
+                }
+            } else {
+                display_name.to_string()
+            };
+
+            return Ok(ChatReply {
+                text: format!("Siap mas! Bubu sudah bukakan **{name}** untukmu 🥰 Mau Bubu temani apa lagi? ✨"),
+            });
+        }
+    }
+
     let context = context.map(checked_context).transpose()?;
     let provider = settings.chat_provider.as_str();
     let model = model_for(settings, provider);

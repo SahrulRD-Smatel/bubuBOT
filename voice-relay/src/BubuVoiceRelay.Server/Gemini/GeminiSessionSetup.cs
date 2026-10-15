@@ -44,11 +44,17 @@ public static class GeminiSessionSetup
     /// </summary>
     public static SetupMessage Build(string modelName)
     {
+        string safeModel = "models/gemini-3.8-live";
+        if (!string.IsNullOrWhiteSpace(modelName) && (modelName.Contains("live") || modelName.Contains("gemini-3.8-live")))
+        {
+            safeModel = modelName.StartsWith("models/") ? modelName : $"models/{modelName}";
+        }
+
         return new SetupMessage
         {
             Setup = new SetupPayload
             {
-                Model = string.IsNullOrWhiteSpace(modelName) ? "models/gemini-2.0-flash-exp" : modelName,
+                Model = safeModel,
                 GenerationConfig = new GenerationConfig
                 {
                     ResponseModalities = ["AUDIO"],
@@ -77,7 +83,7 @@ public static class GeminiSessionSetup
                             new FunctionDeclaration
                             {
                                 Name = "open_application",
-                                Description = "Membuka aplikasi di komputer user. Contoh: Chrome, Discord, Spotify, Telegram, VS Code",
+                                Description = "Membuka aplikasi di komputer user. Contoh: Chrome, Discord, Spotify, Microsoft Teams, Microsoft QSL Server, VS Code",
                                 Parameters = new ParameterSchema
                                 {
                                     Properties = new()

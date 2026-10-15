@@ -87,6 +87,7 @@ class Program
             Console.WriteLine("DEBUG: Mic capture started at 16kHz.");
 
             bool wakeWordTriggered = false;
+            DateTime wakeUntil = DateTime.MinValue;
             string lastText = "";
 
             while (true)
@@ -122,43 +123,66 @@ class Program
                     lastText = currentText;
                     Console.WriteLine($"DEBUG_HEARD: {currentText}");
 
-                    // Normalise text: strip whitespace and phonetic delimiters
-                    string clean = currentText.Replace(" ", "").Replace("|", "").Replace("-", "").Replace(".", "");
+                    // Normalise text: strip all punctuation, whitespace and special characters
+                    string clean = new string(currentText.ToLower().Where(char.IsLetter).ToArray());
 
-                    // Check wake word variants: bubu, pupu, bobo, popo, coucou, kuku
+                    // Check wake word variants: bubu, pupu, puru, buru, buku, puku, kupu, kuku, coucou, bobo, popo
                     bool isWake = clean.Contains("bubu") || clean.Contains("pupu") ||
+                                  clean.Contains("puru") || clean.Contains("buru") ||
+                                  clean.Contains("buku") || clean.Contains("puku") ||
+                                  clean.Contains("kupu") || clean.Contains("kuku") ||
                                   clean.Contains("bobo") || clean.Contains("popo") ||
-                                  clean.Contains("kuku") || clean.Contains("coucou") ||
-                                  currentText.Contains("bubu") || currentText.Contains("pupu");
+                                  clean.Contains("coucou") ||
+                                  (clean.Length <= 5 && (clean.Contains("bu") || clean.Contains("pu"))) ||
+                                  (clean.Contains("alo") && (clean.Contains("pu") || clean.Contains("bu") || clean.Contains("ku") || clean.Contains("ru"))) ||
+                                  (clean.Contains("halo") && (clean.Contains("pu") || clean.Contains("bu") || clean.Contains("ku") || clean.Contains("ru"))) ||
+                                  (clean.Contains("hey") && (clean.Contains("pu") || clean.Contains("bu") || clean.Contains("ku") || clean.Contains("ru"))) ||
+                                  (clean.Contains("hai") && (clean.Contains("pu") || clean.Contains("bu") || clean.Contains("ku") || clean.Contains("ru"))) ||
+                                  currentText.Contains("bubu") || currentText.Contains("pupu") ||
+                                  currentText.Contains("puru") || currentText.Contains("buru") ||
+                                  currentText.Contains("buku") || currentText.Contains("puku") || currentText.Contains("kupu");
 
-                    if (!wakeWordTriggered && isWake)
+                    if (isWake)
                     {
-                        Console.WriteLine("WAKE");
-                        wakeWordTriggered = true;
+                        wakeUntil = DateTime.UtcNow.AddSeconds(10);
+                        if (!wakeWordTriggered)
+                        {
+                            Console.WriteLine("WAKE");
+                            wakeWordTriggered = true;
+                        }
                     }
                 }
 
                 if (recognizer.IsEndpoint(stream))
                 {
-                    if (wakeWordTriggered && !string.IsNullOrEmpty(currentText))
+                    bool isWithinWakeSession = (DateTime.UtcNow <= wakeUntil) || wakeWordTriggered;
+                    if (isWithinWakeSession && !string.IsNullOrEmpty(currentText))
                     {
-                        // Clean up "bubu" or "pupu" from the command if it's there
+                        // Clean up wake words from the command if present
                         string command = currentText;
-                        int idx = command.IndexOf("bubu");
-                        if (idx < 0) idx = command.IndexOf("pupu");
-                        if (idx >= 0)
+                        foreach (var w in new[] { "halo bubu", "halo pupu", "halo buku", "alo bubu", "hai bubu", "hey bubu", "bubu", "pupu", "buku", "puku", "kupu", "buru", "puru", "bobo", "popo" })
                         {
-                            command = command.Substring(idx + 4).Trim();
+                            int idx = command.IndexOf(w);
+                            if (idx >= 0)
+                            {
+                                command = (command.Substring(0, idx) + " " + command.Substring(idx + w.Length)).Trim();
+                            }
                         }
 
-                        if (!string.IsNullOrEmpty(command))
+                        command = command.Trim();
+                        if (!string.IsNullOrEmpty(command) && command.Length > 2)
                         {
                             Console.WriteLine($"HEARD: {command}");
+                            wakeUntil = DateTime.MinValue;
+                            wakeWordTriggered = false;
                         }
                     }
 
                     recognizer.Reset(stream);
-                    wakeWordTriggered = false;
+                    if (DateTime.UtcNow > wakeUntil)
+                    {
+                        wakeWordTriggered = false;
+                    }
                     lastText = "";
                 }
 

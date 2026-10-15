@@ -157,6 +157,8 @@ export interface Settings {
   phoneDetails?: boolean;
   /** Which models the phone may use, "provider/model". Rust owns it too. */
   phoneChatModels?: string[];
+  /** Model used for Call Bubu live voice calls. */
+  voiceCallModel?: string;
   /** Mochi on the desktop. Rust owns it: whatever the page sends back is ignored. */
   desktopMochi?: {
     onDesktop: boolean;
@@ -165,6 +167,7 @@ export interface Settings {
 }
 
 export const DEFAULT_SETTINGS: Settings = {
+  voiceCallModel: "models/gemini-3.8-live",
   soundEnabled: true,
   soundVolume: 0.12,
   autoCloseInterval: 15,

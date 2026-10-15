@@ -335,8 +335,16 @@ export function buildPrompt(onHeightChange: () => void): ViewHost {
 
   let isVoiceTriggered = false;
 
-  const startListeningFromWake = () => {
+  const onWakeDetected = () => {
     if (State.view === "voicecall") return;
+    actions.expand();
+    State.view = "chat";
+    State.notify();
+    Sound.play("greet");
+    input.placeholder = "💖 Bubu mendengarkanmu...";
+    setTimeout(() => {
+      input.placeholder = t(State.chatHistory.length === 0 ? STRINGS.placeholderFirst : STRINGS.placeholderNext);
+    }, 6000);
     if (recognition && !isListeningWithSpeech) {
       setTimeout(() => {
         try {
@@ -345,12 +353,24 @@ export function buildPrompt(onHeightChange: () => void): ViewHost {
         } catch (e) {
           console.warn("[Chat] Auto-start speech recognition error:", e);
         }
-      }, 1300);
+      }, 1000);
     }
   };
 
-  void onEvent("wakeword-detected", startListeningFromWake);
-  void onEvent("voice-wake", startListeningFromWake);
+  void onEvent("wakeword-detected", onWakeDetected);
+  void onEvent("voice-wake", onWakeDetected);
+
+  void onEvent("voice-command", (event: any) => {
+    const text = typeof event === "string" ? event : (event?.payload || "");
+    const trimmed = typeof text === "string" ? text.trim() : "";
+    if (!trimmed) return;
+    actions.expand();
+    State.view = "chat";
+    State.notify();
+    input.value = trimmed;
+    isVoiceTriggered = true;
+    void submit();
+  });
 
   const body = h("div", { class: "chat-body" });
   const picker = buildPicker(() => {

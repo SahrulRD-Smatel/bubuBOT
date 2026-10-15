@@ -631,6 +631,13 @@ fn spawn_voice_engine(app: tauri::AppHandle) {
                                     let _ = app.emit("voice-wake", ());
                                     let _ = app.emit("wakeword-detected", ());
                                 }
+                                if let Some(cmd) = trimmed.strip_prefix("HEARD: ") {
+                                    let cmd = cmd.trim();
+                                    if !cmd.is_empty() {
+                                        let _ = app.emit_to(island::WINDOW_LABEL, "voice-command", cmd.to_string());
+                                        let _ = app.emit("voice-command", cmd.to_string());
+                                    }
+                                }
                             }
                             line.clear();
                         }
@@ -699,7 +706,8 @@ fn spawn_voice_relay(app: tauri::AppHandle) {
 
 #[tauri::command]
 fn get_gemini_api_key() -> Result<String, String> {
-    secrets::get("gemini-api-key")
+    secrets::get("google-api-key")
+        .or_else(|| secrets::get("gemini-api-key"))
         .ok_or_else(|| "Gemini API key not set. Open Settings to add it.".to_string())
 }
 

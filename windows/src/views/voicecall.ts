@@ -121,7 +121,7 @@ export function buildVoiceCall(actions: ViewActions, onHeightChange: () => void)
   async function startCall() {
     const client = ensureClient();
     // Get the Gemini API key from Credential Manager via Rust bridge
-    const hasKey = await Bridge.secretPresent("gemini-api-key");
+    const hasKey = (await Bridge.secretPresent("google-api-key")) || (await Bridge.secretPresent("gemini-api-key"));
     if (!hasKey) {
       statusText.textContent = "API key Gemini belum di-set. Buka Settings.";
       Sound.play("error");

@@ -67,12 +67,16 @@ export class VoiceCallClient {
 
       this.ws.onopen = () => {
         // Send session.start with the API key and chosen model
+        const configured = (State.settings as any).voiceModel || (State.settings as any).voiceCallModel;
+        const liveModel = (configured && String(configured).includes("live"))
+          ? String(configured)
+          : "models/gemini-3.8-live";
         this.ws!.send(
           JSON.stringify({
             type: "session.start",
             apiKey,
             language: "id",
-            model: (State.settings as any).geminiModel || State.settings.chatModels?.["gemini"] || "models/gemini-3.8-live",
+            model: liveModel,
           }),
         );
       };

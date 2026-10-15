@@ -10,6 +10,7 @@ pub const KNOWN_KEYS: &[&str] = &[
     "anthropic-api-key",
     "openai-api-key",
     "google-api-key",
+    "gemini-api-key",
     "openrouter-api-key",
     "openai-compatible-key",
     "n8n-url",
@@ -30,6 +31,16 @@ fn entry(key: &str) -> Option<Entry> {
 }
 
 pub fn get(key: &str) -> Option<String> {
+    if key == "gemini-api-key" || key == "google-api-key" {
+        return entry("google-api-key")
+            .and_then(|e| e.get_password().ok())
+            .filter(|v| !v.is_empty())
+            .or_else(|| {
+                entry("gemini-api-key")
+                    .and_then(|e| e.get_password().ok())
+                    .filter(|v| !v.is_empty())
+            });
+    }
     entry(key)?.get_password().ok().filter(|v| !v.is_empty())
 }
 

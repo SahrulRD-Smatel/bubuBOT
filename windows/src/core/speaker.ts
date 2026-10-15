@@ -37,7 +37,7 @@ export class VoiceSpeaker {
       utterance.lang = lang;
       utterance.rate = 1.05;
       utterance.pitch = 1.1; // Friendly lively pitch for Bubu
-      utterance.volume = Math.max(0, Math.min(1, State.settings.soundVolume));
+      utterance.volume = State.settings.soundVolume > 0 ? Math.max(0.7, Math.min(1, State.settings.soundVolume * 6)) : 0;
 
       const voices = this.synth.getVoices();
       const prefix = lang.slice(0, 2).toLowerCase();
