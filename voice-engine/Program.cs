@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading;
 using SherpaOnnx;
 using Silk.NET.OpenAL;
@@ -11,17 +12,40 @@ class Program
         Console.SetOut(new System.IO.StreamWriter(Console.OpenStandardOutput()) { AutoFlush = true });
         Console.WriteLine("DEBUG: Starting Sherpa-ONNX Voice Engine...");
 
+        // Auto-discover model directory
+        string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+        string[] candidates = new[]
+        {
+            Path.Combine(baseDir, "model"),
+            "model",
+            Path.Combine(baseDir, "..", "..", "src-tauri", "model"),
+            Path.Combine(baseDir, "..", "..", "..", "voice-engine", "model"),
+            Path.Combine(baseDir, "..", "..", "..", "windows", "src-tauri", "model"),
+            @"f:\Dhani\JOB\botAI\bubuBOT\voice-engine\model",
+            @"f:\Dhani\JOB\botAI\bubuBOT\windows\src-tauri\model"
+        };
+
+        string modelDir = "model";
+        foreach (var c in candidates)
+        {
+            if (Directory.Exists(c) && File.Exists(Path.Combine(c, "tokens.txt")))
+            {
+                modelDir = Path.GetFullPath(c);
+                break;
+            }
+        }
+        Console.WriteLine($"DEBUG: Using model directory: {modelDir}");
+
         // Setup Sherpa-ONNX Config
         OnlineRecognizerConfig config = new OnlineRecognizerConfig();
         config.FeatConfig.SampleRate = 16000;
         config.FeatConfig.FeatureDim = 80;
-        config.ModelConfig.Transducer.Encoder = "model/encoder-epoch-30-avg-9-with-averaged-model.int8.onnx";
-        config.ModelConfig.Transducer.Decoder = "model/decoder-epoch-30-avg-9-with-averaged-model.onnx";
-        config.ModelConfig.Transducer.Joiner = "model/joiner-epoch-30-avg-9-with-averaged-model.int8.onnx";
-        config.ModelConfig.Tokens = "model/tokens.txt";
+        config.ModelConfig.Transducer.Encoder = Path.Combine(modelDir, "encoder-epoch-30-avg-9-with-averaged-model.int8.onnx");
+        config.ModelConfig.Transducer.Decoder = Path.Combine(modelDir, "decoder-epoch-30-avg-9-with-averaged-model.onnx");
+        config.ModelConfig.Transducer.Joiner = Path.Combine(modelDir, "joiner-epoch-30-avg-9-with-averaged-model.int8.onnx");
+        config.ModelConfig.Tokens = Path.Combine(modelDir, "tokens.txt");
         config.ModelConfig.NumThreads = 1;
         config.ModelConfig.Debug = 0;
-        // config.ModelConfig.ModelType is implicitly inferred or we leave it
 
         config.DecodingMethod = "greedy_search";
         config.EnableEndpoint = 1;
@@ -96,9 +120,18 @@ class Program
                 if (!string.IsNullOrEmpty(currentText) && currentText != lastText)
                 {
                     lastText = currentText;
-                    
-                    // Simple KWS logic
-                    if (!wakeWordTriggered && currentText.Contains("bubu"))
+                    Console.WriteLine($"DEBUG_HEARD: {currentText}");
+
+                    // Normalise text: strip whitespace and phonetic delimiters
+                    string clean = currentText.Replace(" ", "").Replace("|", "").Replace("-", "").Replace(".", "");
+
+                    // Check wake word variants: bubu, pupu, bobo, popo, coucou, kuku
+                    bool isWake = clean.Contains("bubu") || clean.Contains("pupu") ||
+                                  clean.Contains("bobo") || clean.Contains("popo") ||
+                                  clean.Contains("kuku") || clean.Contains("coucou") ||
+                                  currentText.Contains("bubu") || currentText.Contains("pupu");
+
+                    if (!wakeWordTriggered && isWake)
                     {
                         Console.WriteLine("WAKE");
                         wakeWordTriggered = true;
@@ -109,14 +142,15 @@ class Program
                 {
                     if (wakeWordTriggered && !string.IsNullOrEmpty(currentText))
                     {
-                        // Clean up "bubu" from the command if it's there
+                        // Clean up "bubu" or "pupu" from the command if it's there
                         string command = currentText;
                         int idx = command.IndexOf("bubu");
+                        if (idx < 0) idx = command.IndexOf("pupu");
                         if (idx >= 0)
                         {
                             command = command.Substring(idx + 4).Trim();
                         }
-                        
+
                         if (!string.IsNullOrEmpty(command))
                         {
                             Console.WriteLine($"HEARD: {command}");
@@ -133,3 +167,4 @@ class Program
         }
     }
 }
+
