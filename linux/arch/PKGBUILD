@@ -8,7 +8,7 @@ pkgver=0.4.0
 pkgrel=1
 pkgdesc="Mochi lives at the top of your screen and keeps an eye on your Claude Code sessions"
 arch=('x86_64' 'aarch64')
-url="https://github.com/SahrulRamadhani/bubu"
+url="https://github.com/SahrulRD-Smatel/bubuBOT"
 license=("MIT" "LicenseRef-bubu-assets")
 depends=(
   'webkit2gtk-4.1'
@@ -30,7 +30,7 @@ provides=("$_pkgname")
 conflicts=("$_pkgname")
 # makepkg's default LTO and debug flags make the Rust build very slow.
 options=('!lto' '!debug')
-source=("$_pkgname::git+https://github.com/SahrulRamadhani/bubu.git")
+source=("$_pkgname::git+https://github.com/SahrulRD-Smatel/bubuBOT.git")
 sha256sums=('SKIP')
 
 pkgver() {

@@ -158,7 +158,7 @@ fn prepare(raw: &[u8], args: &Args, env: &dyn Fn(&str) -> Option<String>, cwd: &
     // unchanged; invalid names are discarded by the app, not here. A Claude Code
     // session started from the Claude desktop app is tagged `claude-desktop`.
     if let Some(tag) = agent_tag(&args.agent, env) {
-        map.insert("Bubu_agent".into(), Value::String(tag));
+        map.insert("bubu_agent".into(), Value::String(tag));
     }
     // Claude Code in Cursor's terminal goes on the Cursor pill (Mac #120).
     if !map.contains_key("term_editor") {
@@ -244,7 +244,7 @@ fn term_editor(env: &dyn Fn(&str) -> Option<String>) -> Option<&'static str> {
 
 /// Caps the strings of a payload: every field to MAX_FIELD_LEN, except the edit
 /// strings of a finished Edit / MultiEdit / Write, which the live diff needs
-/// whole. If even those had to be cut, `Bubu_diff_truncated` tells the island
+/// whole. If even those had to be cut, `bubu_diff_truncated` tells the island
 /// not to show counts it cannot trust.
 fn truncate_payload(payload: &mut serde_json::Value, event: &str) {
     let keeps_diff = event == "PostToolUse"
@@ -267,7 +267,7 @@ fn truncate_payload(payload: &mut serde_json::Value, event: &str) {
         if let Some(map) = payload.as_object_mut() {
             map.insert("tool_input".into(), input);
             if cut_any {
-                map.insert("Bubu_diff_truncated".into(), serde_json::Value::Bool(true));
+                map.insert("bubu_diff_truncated".into(), serde_json::Value::Bool(true));
             }
         }
     }
@@ -419,7 +419,7 @@ mod tests {
     fn claude_code_payloads_are_forwarded_as_they_are() {
         let (v, ev) = run(r#"{"hook_event_name":"PreToolUse","tool_name":"Bash","cwd":"/p"}"#, "", "PreToolUse");
         assert_eq!(ev.name, "PreToolUse");
-        assert!(v.get("Bubu_agent").is_none());
+        assert!(v.get("bubu_agent").is_none());
         assert_eq!(v["cwd"], "/p");
         assert_eq!(v["tool_name"], "Bash");
     }
@@ -430,7 +430,7 @@ mod tests {
         let (v, ev) = run(r#"{"hook_event_name":"BeforeTool","toolCall":{"name":"shell","args":{"CommandLine":"ls"}}}"#, "gemini", "PreToolUse");
         assert_eq!(ev.name, "PreToolUse");
         assert_eq!(v["hook_event_name"], "PreToolUse");
-        assert_eq!(v["Bubu_agent"], "gemini");
+        assert_eq!(v["bubu_agent"], "gemini");
         assert_eq!(v["tool_input"]["command"], "ls");
         assert_eq!(v["cwd"], "/home/me/here");
 
@@ -498,7 +498,7 @@ mod tests {
         assert_eq!(v["tool_input"]["new_string"].as_str().unwrap().len(), big.len());
         // Everything else keeps the ordinary cap, and nothing says "cut".
         assert!(v["cwd"].as_str().unwrap().len() <= MAX_FIELD_LEN + 4);
-        assert!(v.get("Bubu_diff_truncated").is_none());
+        assert!(v.get("bubu_diff_truncated").is_none());
 
         let mut multi = serde_json::json!({
             "tool_name": "MultiEdit",
@@ -527,7 +527,7 @@ mod tests {
         });
         truncate_payload(&mut v, "PostToolUse");
         assert!(v["tool_input"]["content"].as_str().unwrap().len() <= MAX_DIFF_FIELD_LEN + 4);
-        assert_eq!(v["Bubu_diff_truncated"], serde_json::Value::Bool(true));
+        assert_eq!(v["bubu_diff_truncated"], serde_json::Value::Bool(true));
 
         // Together, the edit strings never pass the shared budget.
         let half = "y".repeat(MAX_DIFF_FIELD_LEN - 1);
@@ -537,6 +537,6 @@ mod tests {
         let mut multi = serde_json::json!({ "tool_name": "MultiEdit", "tool_input": { "edits": edits } });
         truncate_payload(&mut multi, "PostToolUse");
         assert!(multi.to_string().len() < MAX_DIFF_TOTAL + 64 * 1024);
-        assert_eq!(multi["Bubu_diff_truncated"], serde_json::Value::Bool(true));
+        assert_eq!(multi["bubu_diff_truncated"], serde_json::Value::Bool(true));
     }
 }

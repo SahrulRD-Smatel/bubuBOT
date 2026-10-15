@@ -33,7 +33,10 @@ pub fn claude_hooks_present(settings: &Value) -> bool {
             hooks.iter().any(|hook| {
                 hook.get("command")
                     .and_then(Value::as_str)
-                    .is_some_and(|c| c.contains("NotchBuddy") || c.contains("Bubu") || c.contains("bubu"))
+                    .is_some_and(|c| {
+                        let l = c.to_lowercase();
+                        l.contains("notchbuddy") || l.contains("bubu") || l.contains("coucou")
+                    })
             })
         })
     })

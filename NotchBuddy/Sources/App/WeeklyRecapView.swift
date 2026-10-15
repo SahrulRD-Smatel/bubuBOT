@@ -302,7 +302,7 @@ struct RecapShareImageView: View {
 
                 Spacer()
 
-                Text("Bubu · github.com/SahrulRamadhani/bubu")
+                Text("Bubu · github.com/SahrulRD-Smatel/bubuBOT")
                     .font(.system(size: 20, weight: .medium, design: .monospaced))
                     .foregroundColor(Color(hex: "#8E939C").opacity(0.6))
                     .padding(.bottom, 60)

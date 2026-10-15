@@ -21,8 +21,8 @@ Approve Claude Code permissions, watch your session work, drop a file, chat with
 
 ## Install
 
-Download **[Bubu-Windows.msi](https://github.com/Louis-CFM/bubu/releases/download/windows-latest/Bubu-Windows.msi)**
-(Windows Installer) or **[Bubu-Windows-setup.exe](https://github.com/Louis-CFM/bubu/releases/download/windows-latest/Bubu-Windows-setup.exe)**,
+Download **[Bubu-Windows.msi](https://github.com/SahrulRD-Smatel/bubuBOT/releases/download/windows-latest/Bubu-Windows.msi)**
+(Windows Installer) or **[Bubu-Windows-setup.exe](https://github.com/SahrulRD-Smatel/bubuBOT/releases/download/windows-latest/Bubu-Windows-setup.exe)**,
 always the newest version, and run it. The .exe installs for the current user only, with no admin prompt; the .msi may ask for admin rights.
 
 **Windows will show a warning the first time — that's expected.** The installer isn't code-signed yet, so SmartScreen doesn't know the publisher:
@@ -502,8 +502,8 @@ npm run pack           # AppImage, .deb and .rpm in windows/release/
 On Arch Linux, build and install the package from `linux/arch/`:
 
 ```bash
-git clone https://github.com/Louis-CFM/bubu.git
-cd bubu/linux/arch
+git clone https://github.com/SahrulRD-Smatel/bubuBOT.git
+cd bubuBOT/linux/arch
 makepkg -si
 ```
 

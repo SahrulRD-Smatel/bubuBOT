@@ -6,6 +6,6 @@ import org.junit.Test
 class AttributionTest {
     @Test fun nameAndRepoMatchPermission() {
         assertEquals("Bubu for Android", Attribution.APP_NAME)
-        assertEquals("https://github.com/SahrulRamadhani/bubu", Attribution.REPO_URL)
+        assertEquals("https://github.com/SahrulRD-Smatel/bubuBOT", Attribution.REPO_URL)
     }
 }

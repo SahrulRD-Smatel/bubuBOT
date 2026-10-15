@@ -109,10 +109,10 @@ struct AboutView: View {
             }
 
             Section("Bubu") {
-                Link("Website", destination: URL(string: "https://louis-cfm.github.io/bubu/")!)
-                Link("Support", destination: URL(string: "https://louis-cfm.github.io/bubu/support.html")!)
-                Link("Privacy Policy", destination: URL(string: "https://louis-cfm.github.io/bubu/privacy.html")!)
-                Link("Terms", destination: URL(string: "https://louis-cfm.github.io/bubu/terms.html")!)
+                Link("Website", destination: URL(string: "https://sahrulrd-smatel.github.io/bubuBOT/")!)
+                Link("Support", destination: URL(string: "https://sahrulrd-smatel.github.io/bubuBOT/support.html")!)
+                Link("Privacy Policy", destination: URL(string: "https://sahrulrd-smatel.github.io/bubuBOT/privacy.html")!)
+                Link("Terms", destination: URL(string: "https://sahrulrd-smatel.github.io/bubuBOT/terms.html")!)
             }
 
             Section {

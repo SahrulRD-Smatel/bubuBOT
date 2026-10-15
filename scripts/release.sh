@@ -148,7 +148,7 @@ $CHANGES
 2. Move Bubu.app to your Applications folder, replacing the old one if you have it.
 3. Launch it, and click Open when macOS asks you to confirm.
 
-Linux and Windows: see the [README](https://github.com/SahrulRamadhani/bubu#readme)."
+Linux and Windows: see the [README](https://github.com/SahrulRD-Smatel/bubuBOT#readme)."
 
 echo
 echo "──────── Release notes ────────"
@@ -165,9 +165,9 @@ git tag "$TAG" "$COMMIT"
 git push origin "$TAG"
 
 gh release create "$TAG" "$ZIP" \
-  --repo SahrulRamadhani/bubu \
+  --repo SahrulRD-Smatel/bubuBOT \
   --title "Bubu $VERSION" \
   --latest \
   --notes "$NOTES"
 
-echo "✓ $TAG released: https://github.com/SahrulRamadhani/bubu/releases/tag/$TAG"
+echo "✓ $TAG released: https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/$TAG"

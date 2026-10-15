@@ -61,8 +61,11 @@ interface HookPayload {
   tool_input?: Record<string, unknown>;
   /** Set by the relay when an edit was too big to forward whole (> 256 KB). */
   bubu_diff_truncated?: boolean;
+  Bubu_diff_truncated?: boolean;
   /** Optional agent tag: lowercase, digits and hyphens, ≤ 24 chars. */
   bubu_agent?: string;
+  Bubu_agent?: string;
+  coucou_agent?: string;
   /** Hermes: where the session runs (telegram, discord…; "cli" in a terminal). */
   platform?: string;
   /** "cursor" when Claude Code runs in Cursor's terminal (set by the relay). */
@@ -216,7 +219,7 @@ function clearFinalLine(id: string) {
  * would give wrong counts: the PreToolUse step ("Edits · file") stands alone.
  */
 function recordDiff(agentId: string, payload: HookPayload) {
-  if (payload.bubu_diff_truncated) return;
+  if (payload.bubu_diff_truncated || payload.Bubu_diff_truncated) return;
   if (!State.tasks.some((t) => t.id === agentId)) return;
   const diff = buildFileDiff(payload.tool_name ?? "", payload.tool_input ?? {});
   if (!diff) return;
@@ -255,7 +258,8 @@ function handleHook(island: Island, payload: HookPayload) {
   // Route to the right pill. Valid bubu_agent → dynamic "agent_<name>" pill.
   // "claude" is reserved; absent or invalid → Claude Code's own pill: Cursor's
   // when it runs in Cursor's terminal (Mac #120), VS Code's otherwise.
-  const validAgent = validateAgent(payload.bubu_agent);
+  const rawAgent = payload.bubu_agent ?? payload.Bubu_agent ?? payload.coucou_agent;
+  const validAgent = validateAgent(rawAgent);
   const workspaceId = payload.term_editor === "cursor" ? CURSOR_ID : CLAUDE_ID;
   const agentId = validAgent ? `agent_${validAgent}` : workspaceId;
   const isExternalAgent = validAgent !== null;

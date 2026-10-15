@@ -30,4 +30,4 @@ If you fork Bubu to ship your own app, that's welcome under the MIT License: jus
 
 ## Questions or permission requests
 
-Open an issue on [GitHub](https://github.com/Louis-CFM/bubu/issues) or write to raillelouis@gmail.com.
+Open an issue on [GitHub](https://github.com/Louis-CFM/coucou/issues) or write to raillelouis@gmail.com.

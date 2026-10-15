@@ -8,7 +8,7 @@
 
 Approve permissions, watch your agents work, drop a file, chat with Claude — all without leaving what you're doing. Walk away from your Mac and Mochi follows you to your iPhone: Lock Screen, Dynamic Island, widgets, Siri.
 
-[![Version](https://img.shields.io/github/v/release/SahrulRamadhani/bubu?filter=v*&label=version&color=0A84FF)](https://github.com/SahrulRamadhani/bubu/releases)
+[![Version](https://img.shields.io/github/v/release/SahrulRD-Smatel/bubuBOT?filter=v*&label=version&color=0A84FF)](https://github.com/SahrulRD-Smatel/bubuBOT/releases)
 ![macOS 15+](https://img.shields.io/badge/macOS-15%2B-black?logo=apple)
 ![iOS 18+](https://img.shields.io/badge/iOS-18%2B-black?logo=apple)
 ![Android 11+](https://img.shields.io/badge/Android-11%2B-3DDC84?logo=android&logoColor=white)
@@ -18,7 +18,7 @@ Approve permissions, watch your agents work, drop a file, chat with Claude — a
 ![SwiftUI](https://img.shields.io/badge/SwiftUI-native-0A84FF)
 ![Tauri 2](https://img.shields.io/badge/Tauri-2-FFC131?logo=tauri&logoColor=black)
 ![Code: MIT](https://img.shields.io/badge/code-MIT-green)
-![GitHub stars](https://img.shields.io/github/stars/SahrulRamadhani/bubu?style=social)
+![GitHub stars](https://img.shields.io/github/stars/SahrulRD-Smatel/bubuBOT?style=social)
 
 <img src="docs/media/demo.gif" width="760" alt="Bubu in action">
 
@@ -120,30 +120,30 @@ macOS releases are published as `v*` tags. See [CHANGELOG.md](CHANGELOG.md) for 
 
 | Version | Date | Highlights |
 |---------|------|------------|
-| [0.3.0](https://github.com/SahrulRamadhani/bubu/releases/tag/v0.3.0) | Oct 11, 2026 | « OK Bubu »: talk to Mochi, powered by Claude — pills, music, your services, web search, emails |
-| [0.2.3](https://github.com/SahrulRamadhani/bubu/releases/tag/v0.2.3) | Oct 8, 2026 | Terminal sessions, Spotify, a colour per Mochi, dictation in any language, open on hover, your own sounds |
-| [0.2.2](https://github.com/SahrulRamadhani/bubu/releases/tag/v0.2.2) | Oct 8, 2026 | Choose Mochi's screen, Claude Desktop pill, Codex plan usage, full questions, safer settings.json |
-| [0.2.1](https://github.com/SahrulRamadhani/bubu/releases/tag/v0.2.1) | Oct 7, 2026 | Hermes Agent support |
-| [0.2.0](https://github.com/SahrulRamadhani/bubu/releases/tag/v0.2.0) | Oct 6, 2026 | Copilot CLI, Muse Code, OpenCode and Amp, weekly recap, 10 languages |
-| [0.1.9](https://github.com/SahrulRamadhani/bubu/releases/tag/v0.1.9) | Oct 6, 2026 | iPhone services with live details and actions, smarter Live Activity |
-| [0.1.8](https://github.com/SahrulRamadhani/bubu/releases/tag/v0.1.8) | Oct 5, 2026 | Bubu on iPhone: sessions, widgets, approvals with Face ID, Mochi in the Dynamic Island |
-| [0.1.7](https://github.com/SahrulRamadhani/bubu/releases/tag/v0.1.7) | Oct 4, 2026 | Keyboard shortcuts |
-| [0.1.6](https://github.com/SahrulRamadhani/bubu/releases/tag/v0.1.6) | Oct 4, 2026 | Mochi on the desktop |
-| [0.1.5](https://github.com/SahrulRamadhani/bubu/releases/tag/v0.1.5) | Oct 4, 2026 | Wardrobe and seasonal outfits, new launch greeting |
-| [0.1.4](https://github.com/SahrulRamadhani/bubu/releases/tag/v0.1.4) | Oct 3, 2026 | Live diffs, GitHub pull requests, CI, reviews and contribution grid |
-| [0.1.3](https://github.com/SahrulRamadhani/bubu/releases/tag/v0.1.3) | Oct 3, 2026 | Answer Claude's questions from the notch, plan usage, local models, Apple Music |
-| [0.1.2](https://github.com/SahrulRamadhani/bubu/releases/tag/v0.1.2) | Oct 2, 2026 | Codex and Cursor support, the permission card stays until you answer |
-| [0.1.1](https://github.com/SahrulRamadhani/bubu/releases/tag/v0.1.1) | Oct 2, 2026 | Gemini and OpenAI chat, Linux build, more agents and pills, security hardening |
-| [0.1.0](https://github.com/SahrulRamadhani/bubu/releases/tag/v0.1.0) | Sep 27, 2026 | First release: Mochi, Claude Code sessions, chat, file drop, integrations |
+| [0.3.0](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/v0.3.0) | Oct 11, 2026 | « OK Bubu »: talk to Mochi, powered by Claude — pills, music, your services, web search, emails |
+| [0.2.3](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/v0.2.3) | Oct 8, 2026 | Terminal sessions, Spotify, a colour per Mochi, dictation in any language, open on hover, your own sounds |
+| [0.2.2](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/v0.2.2) | Oct 8, 2026 | Choose Mochi's screen, Claude Desktop pill, Codex plan usage, full questions, safer settings.json |
+| [0.2.1](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/v0.2.1) | Oct 7, 2026 | Hermes Agent support |
+| [0.2.0](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/v0.2.0) | Oct 6, 2026 | Copilot CLI, Muse Code, OpenCode and Amp, weekly recap, 10 languages |
+| [0.1.9](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/v0.1.9) | Oct 6, 2026 | iPhone services with live details and actions, smarter Live Activity |
+| [0.1.8](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/v0.1.8) | Oct 5, 2026 | Bubu on iPhone: sessions, widgets, approvals with Face ID, Mochi in the Dynamic Island |
+| [0.1.7](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/v0.1.7) | Oct 4, 2026 | Keyboard shortcuts |
+| [0.1.6](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/v0.1.6) | Oct 4, 2026 | Mochi on the desktop |
+| [0.1.5](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/v0.1.5) | Oct 4, 2026 | Wardrobe and seasonal outfits, new launch greeting |
+| [0.1.4](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/v0.1.4) | Oct 3, 2026 | Live diffs, GitHub pull requests, CI, reviews and contribution grid |
+| [0.1.3](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/v0.1.3) | Oct 3, 2026 | Answer Claude's questions from the notch, plan usage, local models, Apple Music |
+| [0.1.2](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/v0.1.2) | Oct 2, 2026 | Codex and Cursor support, the permission card stays until you answer |
+| [0.1.1](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/v0.1.1) | Oct 2, 2026 | Gemini and OpenAI chat, Linux build, more agents and pills, security hardening |
+| [0.1.0](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/v0.1.0) | Sep 27, 2026 | First release: Mochi, Claude Code sessions, chat, file drop, integrations |
 
-Windows and Linux are released together, under the `windows-v*` and `linux-v*` tags. The newest Windows installer is always at [`windows-latest`](https://github.com/SahrulRamadhani/bubu/releases/tag/windows-latest), the newest Linux AppImage at [`linux-latest`](https://github.com/SahrulRamadhani/bubu/releases/tag/linux-latest).
+Windows and Linux are released together, under the `windows-v*` and `linux-v*` tags. The newest Windows installer is always at [`windows-latest`](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/windows-latest), the newest Linux AppImage at [`linux-latest`](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/linux-latest).
 
 | Windows & Linux | Date | Highlights |
 |---------|------|------------|
-| 0.4.0 · [Windows](https://github.com/SahrulRamadhani/bubu/releases/tag/windows-v0.4.0) · [Linux](https://github.com/SahrulRamadhani/bubu/releases/tag/linux-v0.4.0) | Oct 11, 2026 | Your Android phone: the link for Bubu for Android, by @Rhytam23 — approvals with your fingerprint, answers, chat, off by default |
-| 0.3.0 · [Windows](https://github.com/SahrulRamadhani/bubu/releases/tag/windows-v0.3.0) · [Linux](https://github.com/SahrulRamadhani/bubu/releases/tag/linux-v0.3.0) | Oct 9, 2026 | Linux catches up: Spotify with Mochi dancing, global shortcuts on Wayland, Open terminal brings the terminal back; open on hover, your own sounds, a colour per Mochi |
-| 0.2.0 · [Windows](https://github.com/SahrulRamadhani/bubu/releases/tag/windows-v0.2.0) | Oct 8, 2026 | Catches up with the Mac: nine agents with approvals, chat with any AI, plan usage, GitHub, wardrobe, 10 languages |
-| 0.1.1 · [Linux](https://github.com/SahrulRamadhani/bubu/releases/tag/linux-v0.1.1) | Oct 1, 2026 | First Linux build (beta) |
+| 0.4.0 · [Windows](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/windows-v0.4.0) · [Linux](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/linux-v0.4.0) | Oct 11, 2026 | Your Android phone: the link for Bubu for Android, by @Rhytam23 — approvals with your fingerprint, answers, chat, off by default |
+| 0.3.0 · [Windows](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/windows-v0.3.0) · [Linux](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/linux-v0.3.0) | Oct 9, 2026 | Linux catches up: Spotify with Mochi dancing, global shortcuts on Wayland, Open terminal brings the terminal back; open on hover, your own sounds, a colour per Mochi |
+| 0.2.0 · [Windows](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/windows-v0.2.0) | Oct 8, 2026 | Catches up with the Mac: nine agents with approvals, chat with any AI, plan usage, GitHub, wardrobe, 10 languages |
+| 0.1.1 · [Linux](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/linux-v0.1.1) | Oct 1, 2026 | First Linux build (beta) |
 
 ## Demo mode
 
@@ -181,13 +181,13 @@ Everything else, troubleshooting included, is in [`android/README.md`](android/R
 
 ### Download for macOS
 
-1. Grab the latest `Bubu.zip` from [Releases](https://github.com/SahrulRamadhani/bubu/releases).
+1. Grab the latest `Bubu.zip` from [Releases](https://github.com/SahrulRD-Smatel/bubuBOT/releases).
 2. Unzip and move **Bubu.app** to `/Applications`.
 3. Launch it, and click **Open** when macOS asks you to confirm. Updating from 0.1.0? macOS may ask you, once for each key you saved, to let Bubu use it: enter your Mac password and click **Always Allow**.
 
 ### Windows
 
-Download **[Bubu-Windows.msi](https://github.com/SahrulRamadhani/bubu/releases/download/windows-latest/Bubu-Windows.msi)** or **[Bubu-Windows-setup.exe](https://github.com/SahrulRamadhani/bubu/releases/download/windows-latest/Bubu-Windows-setup.exe)** (Windows 10/11, always the newest version) and run it. You can also [build it from source](#build-from-source).
+Download **[Bubu-Windows.msi](https://github.com/SahrulRD-Smatel/bubuBOT/releases/download/windows-latest/Bubu-Windows.msi)** or **[Bubu-Windows-setup.exe](https://github.com/SahrulRD-Smatel/bubuBOT/releases/download/windows-latest/Bubu-Windows-setup.exe)** (Windows 10/11, always the newest version) and run it. You can also [build it from source](#build-from-source).
 
 **Windows will show a warning the first time — that's expected.** The installer isn't code-signed yet, so SmartScreen doesn't know the publisher:
 
@@ -205,7 +205,7 @@ rest of the differences.
 
 ### Linux
 
-**Bubu for Linux 0.4.0** is out (x86_64): [AppImage](https://github.com/SahrulRamadhani/bubu/releases/download/linux-v0.4.0/Bubu-Linux-0.4.0-x86_64.AppImage) · [.deb](https://github.com/SahrulRamadhani/bubu/releases/download/linux-v0.4.0/Bubu-Linux-0.4.0-amd64.deb) · [.rpm](https://github.com/SahrulRamadhani/bubu/releases/download/linux-v0.4.0/Bubu-Linux-0.4.0-x86_64.rpm) · [all files and checksums](https://github.com/SahrulRamadhani/bubu/releases/tag/linux-v0.4.0). The newest AppImage is always at [`linux-latest`](https://github.com/SahrulRamadhani/bubu/releases/download/linux-latest/Bubu-Linux-x86_64.AppImage).
+**Bubu for Linux 0.4.0** is out (x86_64): [AppImage](https://github.com/SahrulRD-Smatel/bubuBOT/releases/download/linux-v0.4.0/Bubu-Linux-0.4.0-x86_64.AppImage) · [.deb](https://github.com/SahrulRD-Smatel/bubuBOT/releases/download/linux-v0.4.0/Bubu-Linux-0.4.0-amd64.deb) · [.rpm](https://github.com/SahrulRD-Smatel/bubuBOT/releases/download/linux-v0.4.0/Bubu-Linux-0.4.0-x86_64.rpm) · [all files and checksums](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/linux-v0.4.0). The newest AppImage is always at [`linux-latest`](https://github.com/SahrulRD-Smatel/bubuBOT/releases/download/linux-latest/Bubu-Linux-x86_64.AppImage).
 
 - **AppImage** (any distribution): `chmod +x Bubu-Linux-*.AppImage`, then run it.
 - **Debian / Ubuntu**: `sudo apt install ./Bubu-Linux-*.deb`
@@ -223,7 +223,7 @@ so there it runs through XWayland as a dock window at the top of the screen. See
 
 ```bash
 brew install xcodegen
-git clone https://github.com/SahrulRamadhani/bubu.git
+git clone https://github.com/SahrulRD-Smatel/bubuBOT.git
 cd bubu/NotchBuddy
 xcodegen
 open NotchBuddy.xcodeproj   # then ⌘R
@@ -232,7 +232,7 @@ open NotchBuddy.xcodeproj   # then ⌘R
 **Windows** — requirements: [Rust](https://rustup.rs), Node 20+, MSVC build tools.
 
 ```powershell
-git clone https://github.com/SahrulRamadhani/bubu.git
+git clone https://github.com/SahrulRD-Smatel/bubuBOT.git
 cd bubu/windows
 npm install
 npm run pack                # installer lands in windows/release/
@@ -246,7 +246,7 @@ sudo apt install build-essential pkg-config \
   libwebkit2gtk-4.1-dev libgtk-layer-shell-dev libayatana-appindicator3-dev \
   librsvg2-dev libssl-dev libdbus-1-dev patchelf \
   gstreamer1.0-plugins-base gstreamer1.0-plugins-good
-git clone https://github.com/SahrulRamadhani/bubu.git
+git clone https://github.com/SahrulRD-Smatel/bubuBOT.git
 cd bubu/windows
 npm install
 npm run pack                # AppImage, .deb and .rpm land in windows/release/
@@ -255,7 +255,7 @@ npm run pack                # AppImage, .deb and .rpm land in windows/release/
 **Android** — requirements: JDK 17 and the Android SDK (platform 35).
 
 ```bash
-git clone https://github.com/SahrulRamadhani/bubu.git
+git clone https://github.com/SahrulRD-Smatel/bubuBOT.git
 cd bubu/android
 ./gradlew assembleDebug      # the APK lands in app/build/outputs/apk/debug/
 ```
@@ -374,6 +374,6 @@ Thanks to everyone who contributed to the open source ecosystem.
 
 **If Mochi made you smile, a ⭐ helps a lot.**
 
-[Website](https://louis-cfm.github.io/bubu/) · [Privacy](https://louis-cfm.github.io/bubu/privacy.html) · [Terms](https://louis-cfm.github.io/bubu/terms.html) · [Support](https://louis-cfm.github.io/bubu/support.html)
+[Website](https://sahrulrd-smatel.github.io/bubuBOT/) · [Privacy](https://sahrulrd-smatel.github.io/bubuBOT/privacy.html) · [Terms](https://sahrulrd-smatel.github.io/bubuBOT/terms.html) · [Support](https://sahrulrd-smatel.github.io/bubuBOT/support.html)
 
 </div>

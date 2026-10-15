@@ -19,7 +19,7 @@ import org.junit.Test
  * the same rules as the Cloudflare Worker, from the same code). It is a separate implementation of WebSocket (the `ws`
  * package), so it checks this client's framing, masking and upgrade against someone else's reading of RFC 6455.
  *
- * Runs only when COUCOU_NODE_RELAY=1 and `npm ci` was done in android/relay (CI does both).
+ * Runs only when BUBU_NODE_RELAY=1 (or legacy COUCOU_NODE_RELAY=1) and `npm ci` was done in android/relay (CI does both).
  */
 class RelayNodeTwinTest {
     private var process: Process? = null
@@ -29,7 +29,10 @@ class RelayNodeTwinTest {
     private val key = RelayCrypto.PairingKey(ByteArray(32) { 8 })
 
     @Before fun start() {
-        assumeTrue("set COUCOU_NODE_RELAY=1 to run against the relay's Node twin", System.getenv("COUCOU_NODE_RELAY") == "1")
+        assumeTrue(
+            "set BUBU_NODE_RELAY=1 to run against the relay's Node twin",
+            System.getenv("BUBU_NODE_RELAY") == "1" || System.getenv("COUCOU_NODE_RELAY") == "1",
+        )
         val script = listOf(File("../relay/tools/dev-relay.ts"), File("android/relay/tools/dev-relay.ts")).first { it.exists() }
         val node = ProcessBuilder("node", "--experimental-strip-types", "--no-warnings", script.path)
             .also { it.environment().putAll(mapOf("ACCESS_KEY" to access, "PORT" to "0", "HOST" to "127.0.0.1")) }

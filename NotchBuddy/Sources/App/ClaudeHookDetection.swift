@@ -11,7 +11,8 @@ func bubuHooksPresent(inSettings settings: [String: Any]) -> Bool {
     return sessionStart.contains { group in
         (group["hooks"] as? [[String: Any]])?.contains { hook in
             guard let command = hook["command"] as? String else { return false }
-            return command.contains("NotchBuddy") || command.contains("bubu")
+            let lower = command.lowercased()
+            return lower.contains("notchbuddy") || lower.contains("bubu") || lower.contains("coucou")
         } ?? false
     }
 }

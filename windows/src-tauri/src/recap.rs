@@ -473,7 +473,13 @@ fn text<'a>(payload: &'a Value, key: &str) -> &'a str {
 /// Claude Desktop included); otherwise Claude Code's own pill — Cursor's when
 /// it runs in Cursor's terminal, VS Code's else. "claude" is reserved.
 fn agent_id(payload: &Value) -> String {
-    let raw = text(payload, "bubu_agent");
+    let mut raw = text(payload, "bubu_agent");
+    if raw.is_empty() {
+        raw = text(payload, "Bubu_agent");
+    }
+    if raw.is_empty() {
+        raw = text(payload, "coucou_agent");
+    }
     let valid = !raw.is_empty()
         && raw.len() <= 24
         && raw != "claude"
