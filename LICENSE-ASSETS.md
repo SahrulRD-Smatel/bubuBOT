@@ -1,8 +1,8 @@
 # Bubu — name, character and artwork
 
-Copyright (c) 2026 Louis Raillé. All rights reserved, except as stated below.
+Copyright (c) 2026 Sahrul Ramadhani. All rights reserved, except as stated below.
 
-The [MIT License](LICENSE) covers the **source code** of Bubu. It does **not** cover the brand and the artwork listed here, which remain the property of Louis Raillé:
+The [MIT License](LICENSE) covers the **source code** of Bubu. It does **not** cover the brand and the artwork listed here, which remain the property of Sahrul Ramadhani:
 
 - the names **“Bubu”** and **“Mochi”**;
 - the **Mochi character** — its design, look, expressions and animations as a character;
@@ -13,7 +13,7 @@ The [MIT License](LICENSE) covers the **source code** of Bubu. It does **not** c
 
 ## Bubu for Android
 
-Bubu for Android (`android/`) is part of Bubu and uses the name, Mochi, the icon and the sounds with the author's permission. Its code, and the phone link in `windows/src-tauri/src/phone_link/`, are © Rhytam Biswas under the MIT License ([`android/LICENSE`](android/LICENSE)); the assets stay under this file. The app is free, with no ads and no paid features.
+Bubu for Android (`android/`) is part of Bubu and uses the name, Mochi, the icon and the sounds with the author's permission. Its code, and the phone link in `windows/src-tauri/src/phone_link/`, are © Sahrul Ramadhani under the MIT License ([`android/LICENSE`](android/LICENSE)); the assets stay under this file. The app is free, with no ads and no paid features.
 
 ## What you can do
 
@@ -30,4 +30,4 @@ If you fork Bubu to ship your own app, that's welcome under the MIT License: jus
 
 ## Questions or permission requests
 
-Open an issue on [GitHub](https://github.com/Louis-CFM/coucou/issues) or write to raillelouis@gmail.com.
+Open an issue on [GitHub](https://github.com/SahrulRD-Smatel/bubuBOT/issues) or write to SahrulRD-Smatel.

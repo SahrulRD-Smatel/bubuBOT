@@ -23,7 +23,7 @@ cd NotchBuddy && xcodegen && xcodebuild -scheme NotchBuddy -configuration Debug 
 - Never overwrite `~/.claude/settings.json`: dated backup, merge, show the diff, write only after the user confirms.
 - Never send an email or approve a Claude Code or Codex permission without an explicit click.
 - Performance: 0 % CPU when the island is hidden.
-- Keep the bundle identifier `fr.louisraille.NotchBuddy` (Keychain items, preferences and permissions depend on it).
+- Keep the bundle identifier `fr.sahrul.NotchBuddy` (Keychain items, preferences and permissions depend on it).
 - Never restyle what already ships: existing views stay as they are. Change only when explicitly asked.
 - Pill IDs are stable contract values (Keychain, UserDefaults, hook routing): never rename an existing pill ID.
 - Visual changes must match the prototype and the screenshots in `design/captures/`.
