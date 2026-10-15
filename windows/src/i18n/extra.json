@@ -3899,6 +3899,17 @@
       "pt-BR": "Ouvir",
       "ru": "Слушать",
       "id": "Dengarkan"
+    },
+    "Listening…": {
+      "zh-Hans": "正在听…",
+      "hi": "सुन रहा हूँ…",
+      "es": "Escuchando…",
+      "ar": "يستمع…",
+      "fr": "Écoute…",
+      "bn": "শুনছি…",
+      "pt-BR": "Ouvindo…",
+      "ru": "Слушаю…",
+      "id": "Mendengarkan…"
     }
   }
 }

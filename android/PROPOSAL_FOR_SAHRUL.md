@@ -43,5 +43,4 @@ Tested
 The Mac app is untouched; if you ever want the same on macOS, `docs/ANDROID_LINK.md` is the protocol.
 Nothing from the Android app is published until you've approved the build and the listing.
 
-Thanks,
-Rhytam
+Thanks
