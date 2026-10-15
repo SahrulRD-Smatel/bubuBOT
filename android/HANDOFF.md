@@ -4,10 +4,10 @@ For a new coding session with no memory of the earlier work.
 
 ## What this is
 
-**Bubu** (https://github.com/Louis-CFM/bubu, by Louis Raillé) is a macOS app, with a Windows/Linux Tauri port in `windows/`, where
+**Bubu** (https://github.com/SahrulRD-Smatel/bubu, by Louis Raillé) is a macOS app, with a Windows/Linux Tauri port in `windows/`, where
 **Mochi** shows the state of AI coding agents and lets the user approve their permission requests. **Our project** is the
 Android port in `android/` (Kotlin + Compose), built by Sahrul Ramadhani with Claude on branch `android` of the fork
-`SahrulRamadhani/bubu` (`upstream` = Louis-CFM/bubu, read-only for us).
+`SahrulRamadhani/bubu` (`upstream` = SahrulRD-Smatel/bubu, read-only for us).
 
 ## Rules that must never be broken
 
