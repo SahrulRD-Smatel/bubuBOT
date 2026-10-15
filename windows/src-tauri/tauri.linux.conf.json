@@ -1,15 +1,15 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
+  "identifier": "com.bubu.desktop",
   "bundle": {
     "targets": [
       "appimage",
       "deb",
       "rpm"
     ],
-    "resources": {
-      "../target/release/bubu-hook.exe": null,
-      "../target/release/bubu-hook": "bubu-hook"
-    },
+    "resources": [
+      "../target/release/bubu-hook"
+    ],
     "linux": {
       "appimage": {
         "bundleMediaFramework": true
