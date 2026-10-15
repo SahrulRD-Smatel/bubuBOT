@@ -4,21 +4,21 @@ For a new coding session with no memory of the earlier work.
 
 ## What this is
 
-**Bubu** (https://github.com/SahrulRD-Smatel/bubu, by Louis Raillé) is a macOS app, with a Windows/Linux Tauri port in `windows/`, where
+**Bubu** (https://github.com/SahrulRD-Smatel/bubu, by Sahrul Ramadhani ) is a macOS app, with a Windows/Linux Tauri port in `windows/`, where
 **Mochi** shows the state of AI coding agents and lets the user approve their permission requests. **Our project** is the
 Android port in `android/` (Kotlin + Compose), built by Sahrul Ramadhani with Claude on branch `android` of the fork
 `SahrulRamadhani/bubu` (`upstream` = SahrulRD-Smatel/bubu, read-only for us).
 
 ## Rules that must never be broken
 
-Louis agreed by email (`PERMISSION.md`): Mochi, the sounds, visuals, icon and the name "Bubu for Android" for this Android app only, and
+Sahrul Ramadhani agreed by email (`PERMISSION.md`): Mochi, the sounds, visuals, icon and the name "Bubu for Android" for this Android app only, and
 only if it is **free (no ads, paid features or analytics; CI greps for them)**, credits him in the app (About and Licences) with a link to his
 repo, keeps the MIT notice, and **he approves the build and the store listing BEFORE anything is published**. Pushing source to the fork is fine.
 Never create a release, upload an APK, submit to a store, or open a PR to `upstream` without the user saying so.
 
 Repo rules (`CLAUDE.md`): no third-party dependency unless unavoidable; secrets in the keystore; no telemetry; never block the agent; never
-approve a permission without an explicit click; don't restyle Louis's shipped desktop views; pill IDs are never renamed. Don't touch
-`NotchBuddy/`, `relay/` (Louis's APNs relay) or the Mac docs. Android app: English only, dark only. Commit messages end with
+approve a permission without an explicit click; don't restyle Sahrul Ramadhani's shipped desktop views; pill IDs are never renamed. Don't touch
+`NotchBuddy/`, `relay/` (Sahrul Ramadhani's APNs relay) or the Mac docs. Android app: English only, dark only. Commit messages end with
 `Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>`; push only to `origin android`; `change log.md` stays local.
 
 ## Where things are
@@ -30,7 +30,7 @@ approve a permission without an explicit click; don't restyle Louis's shipped de
   `relay_crypto.rs`), front end `windows/src/island/phone-link.ts` and `windows/src/settings/phone.ts`. Protocol: `docs/ANDROID_LINK.md`.
 - Internet relay: `android/relay/` (Worker + Node twin, test vectors), wire `docs/RELAY_LINK.md`, plan and decisions `android/RELAY_PLAN.md`,
   threat check `android/RELAY_THREAT_CHECK.md`, deploy and test with a phone on mobile data `docs/RELAY_DEPLOY.md`, end to end `android/relay/tools/e2e.sh`.
-- `android/tools/dev-desktop.mjs`: a pretend computer for trying the app (fake data, test tool). `android/PROPOSAL_FOR_LOUIS.md`: draft for the user to send; nothing is opened upstream.
+- `android/tools/dev-desktop.mjs`: a pretend computer for trying the app (fake data, test tool). `android/PROPOSAL_FOR_Sahrul Ramadhani.md`: draft for the user to send; nothing is opened upstream.
 - CI: `.github/workflows/phone-link.yml` ("Phone link": Windows tests, Linux interop, relay, relay end to end, Android build/tests/lint).
 
 ## Checks
@@ -54,5 +54,5 @@ interop tests, not how it looks or feels.
 
 ## Still open
 
-- The user tests each feature on the phone; Louis has not approved a build or a listing.
+- The user tests each feature on the phone; Sahrul Ramadhani has not approved a build or a listing.
 - Not built: stage I (send the next instruction to an agent), FCM push, a Play Store listing. Stage G (a VPN) was built and removed.
