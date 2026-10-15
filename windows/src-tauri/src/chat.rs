@@ -197,6 +197,83 @@ fn is_inside(dir: &std::path::Path, path: &std::path::Path) -> bool {
         && std::fs::symlink_metadata(&file).map(|m| m.is_file()).unwrap_or(false)
 }
 
+#[cfg(target_os = "windows")]
+fn find_windows_app(query: &str) -> Option<(std::path::PathBuf, String)> {
+    let q_clean = query.to_lowercase();
+    let q_query = if q_clean == "ssms" {
+        "sql server management".to_string()
+    } else {
+        q_clean.clone()
+    };
+    let q_words: Vec<&str> = q_query.split_whitespace().collect();
+    if q_words.is_empty() {
+        return None;
+    }
+
+    let mut search_dirs = Vec::new();
+    if let Ok(prog_data) = std::env::var("ProgramData") {
+        search_dirs.push(std::path::PathBuf::from(prog_data).join(r"Microsoft\Windows\Start Menu\Programs"));
+    }
+    if let Ok(app_data) = std::env::var("APPDATA") {
+        search_dirs.push(std::path::PathBuf::from(app_data).join(r"Microsoft\Windows\Start Menu\Programs"));
+    }
+
+    let mut best_match: Option<(std::path::PathBuf, String, usize)> = None;
+
+    fn walk_dir(
+        dir: &std::path::Path,
+        q_clean: &str,
+        q_words: &[&str],
+        best: &mut Option<(std::path::PathBuf, String, usize)>,
+    ) {
+        if let Ok(entries) = std::fs::read_dir(dir) {
+            for entry in entries.flatten() {
+                let path = entry.path();
+                if path.is_dir() {
+                    walk_dir(&path, q_clean, q_words, best);
+                } else if path.extension().and_then(|e| e.to_str()).map(|e| e.eq_ignore_ascii_case("lnk")).unwrap_or(false) {
+                    let stem = path.file_stem().and_then(|s| s.to_str()).unwrap_or("").to_string();
+                    if !stem.is_empty() {
+                        let name_lower = stem.to_lowercase();
+                        
+                        // Exact match
+                        if name_lower == q_clean {
+                            *best = Some((path, stem, 100));
+                            return;
+                        }
+
+                        // Check all words match
+                        let mut matches = 0;
+                        for w in q_words {
+                            if name_lower.contains(w) {
+                                matches += 1;
+                            }
+                        }
+
+                        if matches == q_words.len() {
+                            let score = 50 + matches;
+                            if best.as_ref().map_or(true, |(_, _, s)| score > *s) {
+                                *best = Some((path, stem, score));
+                            }
+                        } else if matches > 0 && q_words.len() > 1 && matches >= (q_words.len() / 2 + 1) {
+                            let score = matches;
+                            if best.as_ref().map_or(true, |(_, _, s)| score > *s) {
+                                *best = Some((path, stem, score));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    for dir in search_dirs {
+        walk_dir(&dir, &q_clean, &q_words, &mut best_match);
+    }
+
+    best_match.map(|(p, name, _)| (p, name))
+}
+
 /// One chat turn with the provider chosen in the settings.
 pub async fn send(
     app: &AppHandle,
@@ -234,56 +311,97 @@ pub async fn send(
         let cleaned = cleaned.strip_suffix(" please").unwrap_or(cleaned).trim();
 
         if !cleaned.is_empty() {
-            let (exec_target, display_name) = match cleaned {
-                "discord" => ("discord:", "Discord"),
-                "spotify" => ("spotify:", "Spotify"),
-                "youtube" => ("https://www.youtube.com", "YouTube"),
-                "google" => ("https://www.google.com", "Google"),
-                "github" => ("https://github.com", "GitHub"),
-                "whatsapp" | "wa" => ("whatsapp:", "WhatsApp"),
-                "chatgpt" => ("https://chatgpt.com", "ChatGPT"),
-                "instagram" | "ig" => ("https://www.instagram.com", "Instagram"),
-                "twitter" | "x" => ("https://x.com", "Twitter / X"),
-                "vscode" | "vs code" | "code" => ("code", "Visual Studio Code"),
-                "chrome" => ("chrome", "Google Chrome"),
-                "edge" => ("msedge", "Microsoft Edge"),
-                "calculator" | "kalkulator" => ("calc", "Kalkulator"),
-                "notepad" => ("notepad", "Notepad"),
-                _ => (cleaned, cleaned),
+            let direct_match: Option<(&str, &str)> = match cleaned {
+                "discord" => Some(("discord:", "Discord")),
+                "spotify" => Some(("spotify:", "Spotify")),
+                "youtube" => Some(("https://www.youtube.com", "YouTube")),
+                "google" => Some(("https://www.google.com", "Google")),
+                "github" => Some(("https://github.com", "GitHub")),
+                "whatsapp" | "wa" => Some(("whatsapp:", "WhatsApp")),
+                "chatgpt" => Some(("https://chatgpt.com", "ChatGPT")),
+                "instagram" | "ig" => Some(("https://www.instagram.com", "Instagram")),
+                "twitter" | "x" => Some(("https://x.com", "Twitter / X")),
+                "vscode" | "vs code" | "code" => Some(("code", "Visual Studio Code")),
+                "chrome" => Some(("chrome", "Google Chrome")),
+                "edge" => Some(("msedge", "Microsoft Edge")),
+                "calculator" | "kalkulator" | "calc" => Some(("calc", "Kalkulator")),
+                "notepad" => Some(("notepad", "Notepad")),
+                "terminal" => Some(("wt", "Windows Terminal")),
+                "cmd" | "command prompt" => Some(("cmd", "Command Prompt")),
+                "powershell" => Some(("powershell", "PowerShell")),
+                "explorer" | "file explorer" => Some(("explorer", "File Explorer")),
+                "task manager" | "taskmgr" => Some(("taskmgr", "Task Manager")),
+                "control panel" => Some(("control", "Control Panel")),
+                "settings" | "pengaturan" => Some(("ms-settings:", "Pengaturan Windows")),
+                _ => None,
             };
 
             #[cfg(target_os = "windows")]
             {
-                let _ = std::process::Command::new("cmd")
-                    .args(["/C", "start", "", exec_target])
-                    .spawn();
-            }
-            #[cfg(target_os = "macos")]
-            {
-                let _ = std::process::Command::new("open")
-                    .args(["-a", exec_target])
-                    .spawn();
-            }
-            #[cfg(target_os = "linux")]
-            {
-                let _ = std::process::Command::new("xdg-open")
-                    .arg(exec_target)
-                    .spawn();
-            }
-
-            let name = if display_name == cleaned {
-                let mut chars = cleaned.chars();
-                match chars.next() {
-                    None => String::new(),
-                    Some(f) => f.to_uppercase().collect::<String>() + chars.as_str(),
+                if let Some((target, name)) = direct_match {
+                    let _ = std::process::Command::new("cmd")
+                        .args(["/C", "start", "", target])
+                        .spawn();
+                    return Ok(ChatReply {
+                        text: format!("Siap mas! Bubu sudah bukakan **{name}** untukmu 🥰 Mau Bubu temani apa lagi? ✨"),
+                    });
                 }
-            } else {
-                display_name.to_string()
-            };
 
-            return Ok(ChatReply {
-                text: format!("Siap mas! Bubu sudah bukakan **{name}** untukmu 🥰 Mau Bubu temani apa lagi? ✨"),
-            });
+                if let Some((lnk_path, app_name)) = find_windows_app(cleaned) {
+                    if let Some(path_str) = lnk_path.to_str() {
+                        let _ = std::process::Command::new("cmd")
+                            .args(["/C", "start", "", path_str])
+                            .spawn();
+                        return Ok(ChatReply {
+                            text: format!("Siap mas! Bubu sudah bukakan **{app_name}** untukmu 🥰 Mau Bubu temani apa lagi? ✨"),
+                        });
+                    }
+                }
+
+                // Check if command is on PATH
+                let where_check = std::process::Command::new("cmd")
+                    .args(["/C", "where", cleaned])
+                    .output();
+                if let Ok(output) = where_check {
+                    if output.status.success() {
+                        let _ = std::process::Command::new("cmd")
+                            .args(["/C", "start", "", cleaned])
+                            .spawn();
+                        let mut chars = cleaned.chars();
+                        let app_cap = match chars.next() {
+                            None => String::new(),
+                            Some(f) => f.to_uppercase().collect::<String>() + chars.as_str(),
+                        };
+                        return Ok(ChatReply {
+                            text: format!("Siap mas! Bubu sudah bukakan **{app_cap}** untukmu 🥰 Mau Bubu temani apa lagi? ✨"),
+                        });
+                    }
+                }
+
+                return Ok(ChatReply {
+                    text: format!("Maaf ya mas, Bubu cari aplikasi '**{cleaned}**' di komputer mas belum ketemu 🥺 Coba sebutkan nama aplikasinya lebih lengkap atau cek apakah sudah terpasang ya mas! 🥰"),
+                });
+            }
+
+            #[cfg(not(target_os = "windows"))]
+            {
+                let (exec_target, display_name) = direct_match.unwrap_or((cleaned, cleaned));
+                #[cfg(target_os = "macos")]
+                {
+                    let _ = std::process::Command::new("open")
+                        .args(["-a", exec_target])
+                        .spawn();
+                }
+                #[cfg(target_os = "linux")]
+                {
+                    let _ = std::process::Command::new("xdg-open")
+                        .arg(exec_target)
+                        .spawn();
+                }
+                return Ok(ChatReply {
+                    text: format!("Siap mas! Bubu sudah bukakan **{display_name}** untukmu 🥰 Mau Bubu temani apa lagi? ✨"),
+                });
+            }
         }
     }
 
