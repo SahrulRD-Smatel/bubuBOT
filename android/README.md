@@ -4,7 +4,7 @@ The Android app of [Bubu](https://github.com/SahrulRD-Smatel/bubuBOT), by Sahrul
 agents as Mochi on your phone and lets you approve or deny their permission requests, answer their questions and chat
 through your computer's AI providers.
 
-The name, the Mochi character, the icon and the sounds are © Louis Raillé and used with permission (see
+The name, the Mochi character, the icon and the sounds are © Sahrul Ramadhani and used with permission (see
 [PERMISSION.md](PERMISSION.md)). The Android code is © Sahrul Ramadhani under the MIT License (see [LICENSE](LICENSE)). The app is free: no ads, no billing, no analytics.
 It is English only and dark only. Download the signed APK from the [Releases](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/android-v0.2.0) (Android 11 or later; it needs Bubu 0.4.0 or later on Windows or Linux).
 

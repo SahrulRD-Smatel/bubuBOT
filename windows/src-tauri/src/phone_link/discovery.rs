@@ -204,7 +204,7 @@ pub mod tests {
     fn nothing_secret_can_reach_the_announcement() {
         // The announcement is built from the name, the port and the fingerprint only: the token and the link are
         // not even inputs. Check the output anyway, as the rule is what matters.
-        let ad = advert("Rhytam-PC", 47821, FP).unwrap();
+        let ad = advert("Sahrul-PC", 47821, FP).unwrap();
         let everything = format!("{:?}", ad).to_lowercase();
         for secret in [TOKEN.to_lowercase(), "bubu://".to_string(), "token".to_string(), "password".to_string()] {
             assert!(!everything.contains(&secret), "announcement contains {secret}");
@@ -217,9 +217,9 @@ pub mod tests {
 
     #[test]
     fn the_instance_is_the_computer_name_and_the_host_a_valid_label() {
-        let ad = advert("Rhytam's PC", 47821, FP).unwrap();
-        assert_eq!(ad.instance, "Rhytam's PC");
-        assert_eq!(ad.host, "Rhytam-s-PC.local.");
+        let ad = advert("Sahrul's PC", 47821, FP).unwrap();
+        assert_eq!(ad.instance, "Sahrul's PC");
+        assert_eq!(ad.host, "Sahrul-s-PC.local.");
         assert_eq!(ad.port, 47821);
         assert_eq!(host_label("***"), "Bubu");
         assert_eq!(host_label(&"a".repeat(100)).len(), 63);
