@@ -81,6 +81,19 @@ async function main() {
 
   await onEvent<null>("screen-changed", () => void Bridge.reposition());
 
+  const handleVoiceWake = () => {
+    console.log("[Main] Wake word detected!");
+    if (State.view === "voicecall") return;
+    Sound.play("blip");
+    State.view = "prompt";
+    State.notify();
+    island.alert("prompt");
+    void Bridge.focusWindow(true);
+  };
+
+  await onEvent<null>("voice-wake", handleVoiceWake);
+  await onEvent<null>("wakeword-detected", handleVoiceWake);
+
   // Settings → Reload sounds: read the sounds folder again, and let them hear it.
   await onEvent<null>("sounds-changed", () => {
     void Sound.reload().then(() => Sound.play("pop"));

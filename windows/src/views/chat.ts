@@ -210,8 +210,17 @@ export function buildPrompt(onHeightChange: () => void): ViewHost {
     placeholder: t(STRINGS.placeholderFirst),
     spellcheck: "false",
   }) as HTMLInputElement;
+  const micBtn = h(
+    "button",
+    {
+      class: "icon-btn mic-btn",
+      title: tl("Voice Input"),
+      style: "background:transparent;border:none;cursor:pointer;opacity:0.7;padding:0 8px;display:flex;align-items:center;justify-content:center;color:inherit;",
+    },
+    svg(ICONS.mic, 14),
+  );
   const send = h("button", { class: "send-btn", title: tl(STRINGS.send) }, svg(ICONS.arrowUp, 11));
-  const bar = h("div", { class: "chat-bar" }, input, send);
+  const bar = h("div", { class: "chat-bar" }, micBtn, input, send);
 
   const modelDot = h("i", { class: "model-dot" });
   const modelName = h("span", { class: "model-name" });
@@ -222,7 +231,95 @@ export function buildPrompt(onHeightChange: () => void): ViewHost {
     modelName,
     svg(ICONS.chevronUpDown, 9, { stroke: 2 }),
   );
-  const modelRow = h("div", { class: "model-row" }, modelBtn);
+  const callBtn = h(
+    "button",
+    {
+      class: "icon-btn call-btn",
+      title: tl("Voice Call"),
+      onclick: () => {
+        Sound.play("blip");
+        State.view = "voicecall";
+        State.notify();
+      },
+      style: "margin-left:auto;background:transparent;border:none;cursor:pointer;opacity:0.6;display:flex;align-items:center;padding:2px 6px;color:inherit;",
+    },
+    svg(ICONS.phone, 12),
+  );
+  const modelRow = h("div", { class: "model-row", style: "display:flex;align-items:center;width:100%;" }, modelBtn, callBtn);
+
+  let recognition: any = null;
+  let isListeningWithSpeech = false;
+
+  if (typeof window !== "undefined" && ("webkitSpeechRecognition" in window || "SpeechRecognition" in window)) {
+    const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+    try {
+      recognition = new SpeechRecognition();
+      recognition.lang = State.settings.language === "id" ? "id-ID" : "en-US";
+      recognition.interimResults = true;
+      recognition.continuous = false;
+
+      recognition.onstart = () => {
+        isListeningWithSpeech = true;
+        input.placeholder = "🎤 " + t("Listening…");
+        micBtn.style.color = "#ef4444";
+        micBtn.style.opacity = "1";
+      };
+
+      recognition.onresult = (event: any) => {
+        let interim = "";
+        let final = "";
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) final += event.results[i][0].transcript;
+          else interim += event.results[i][0].transcript;
+        }
+        if (final) input.value = final;
+        else if (interim) input.value = interim;
+      };
+
+      recognition.onerror = () => {
+        isListeningWithSpeech = false;
+        input.placeholder = t(State.chatHistory.length === 0 ? STRINGS.placeholderFirst : STRINGS.placeholderNext);
+        micBtn.style.color = "";
+        micBtn.style.opacity = "0.7";
+      };
+
+      recognition.onend = () => {
+        isListeningWithSpeech = false;
+        input.placeholder = t(State.chatHistory.length === 0 ? STRINGS.placeholderFirst : STRINGS.placeholderNext);
+        micBtn.style.color = "";
+        micBtn.style.opacity = "0.7";
+        if (input.value.trim() && !sending) {
+          void submit();
+        }
+      };
+
+      micBtn.addEventListener("click", () => {
+        if (isListeningWithSpeech) {
+          recognition.stop();
+        } else {
+          try {
+            recognition.lang = State.settings.language === "id" ? "id-ID" : "en-US";
+            recognition.start();
+          } catch (e) {
+            console.warn("Speech recognition error:", e);
+          }
+        }
+      });
+    } catch (e) {
+      console.warn("Could not init speech recognition:", e);
+      micBtn.addEventListener("click", () => {
+        Sound.play("blip");
+        State.view = "voicecall";
+        State.notify();
+      });
+    }
+  } else {
+    micBtn.addEventListener("click", () => {
+      Sound.play("blip");
+      State.view = "voicecall";
+      State.notify();
+    });
+  }
 
   const body = h("div", { class: "chat-body" });
   const picker = buildPicker(() => {
@@ -267,6 +364,25 @@ export function buildPrompt(onHeightChange: () => void): ViewHost {
   async function submit() {
     const query = input.value.trim();
     if (!query || sending) return;
+
+    // Smart intent routing:
+    // If user wants to talk / call, switch to full voice call UI
+    const lowerQuery = query.toLowerCase();
+    if (
+      lowerQuery.includes("ngobrol") ||
+      lowerQuery.includes("telepon") ||
+      lowerQuery.includes("bicara") ||
+      lowerQuery.includes("curhat") ||
+      lowerQuery.includes("call bubu") ||
+      lowerQuery.includes("voice call")
+    ) {
+      input.value = "";
+      Sound.play("blip");
+      State.view = "voicecall";
+      State.notify();
+      return;
+    }
+
     if (picker.isOpen) picker.close();
     input.value = "";
     sending = true;

@@ -626,7 +626,10 @@ fn spawn_voice_engine(app: tauri::AppHandle) {
                             if !trimmed.is_empty() {
                                 crate::log::line(format!("Voice Engine: {}", trimmed));
                                 if trimmed.contains("WAKE") {
-                                    let _ = app.emit_to("main", "voice-wake", ());
+                                    let _ = app.emit_to(island::WINDOW_LABEL, "voice-wake", ());
+                                    let _ = app.emit_to(island::WINDOW_LABEL, "wakeword-detected", ());
+                                    let _ = app.emit("voice-wake", ());
+                                    let _ = app.emit("wakeword-detected", ());
                                 }
                             }
                             line.clear();

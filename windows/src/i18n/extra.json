@@ -3866,6 +3866,28 @@
       "pt-BR": "Ative uma vez com `hermes plugins enable bubu` e depois inicie uma nova sessão do Hermes.",
       "ru": "Включите его один раз командой `hermes plugins enable bubu`, затем начните новую сессию Hermes.",
       "id": "Aktifkan sekali dengan `hermes plugins enable bubu`, lalu mulai sesi Hermes baru."
+    },
+    "Voice Call": {
+      "zh-Hans": "语音通话",
+      "hi": "वॉयस कॉल",
+      "es": "Llamada de voz",
+      "ar": "مكالمة صوتية",
+      "fr": "Appel vocal",
+      "bn": "ভয়েস কল",
+      "pt-BR": "Chamada de voz",
+      "ru": "Голосовой звонок",
+      "id": "Panggilan Suara"
+    },
+    "Voice Input": {
+      "zh-Hans": "语音输入",
+      "hi": "वॉयस इनपुट",
+      "es": "Entrada de voz",
+      "ar": "إدخال صوتي",
+      "fr": "Saisie vocale",
+      "bn": "ভয়েস ইনপুট",
+      "pt-BR": "Entrada de voz",
+      "ru": "Голосовой ввод",
+      "id": "Input Suara"
     }
   }
 }

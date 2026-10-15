@@ -385,6 +385,8 @@ export class Island {
     this.stopSequenceIfLeaving(view);
     if (view !== "overview") closePlanCard();
     State.view = view;
+    if (view === "voicecall") this.fsm.pinned = true;
+    else if (!State.isPinned && !State.pendingApproval) this.fsm.pinned = false;
     if (State.mode !== "expanded") this.setMode("expanded");
     else this.animateGeometry(false);
     State.lastActivity = performance.now();
@@ -394,6 +396,8 @@ export class Island {
   setView(view: IslandViewName) {
     this.stopSequenceIfLeaving(view);
     if (view !== "overview") closePlanCard();
+    if (view === "voicecall") this.fsm.pinned = true;
+    else if (!State.isPinned && !State.pendingApproval) this.fsm.pinned = false;
     if (State.mode !== "expanded") {
       this.fsm.forceHome();
       State.view = view;
