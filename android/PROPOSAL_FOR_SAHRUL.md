@@ -1,8 +1,8 @@
-# Draft message to Louis (the user sends it; nothing is opened on his repo)
+# Draft message to Sahrul Ramadhani (the user sends it; nothing is opened on his repo)
 
 Subject: Bubu for Android: an optional phone link in the Windows/Linux app (your call)
 
-Hi Louis,
+Hi Sahrul Ramadhani,
 
 The Android port you allowed needs something from the desktop app to show real sessions: today Android
 has no CloudKit or APNs, so the phone connects straight to the computer over the local network.
