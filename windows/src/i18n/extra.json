@@ -3888,6 +3888,17 @@
       "pt-BR": "Entrada de voz",
       "ru": "Голосовой ввод",
       "id": "Input Suara"
+    },
+    "Listen": {
+      "zh-Hans": "收听",
+      "hi": "सुनें",
+      "es": "Escuchar",
+      "ar": "استماع",
+      "fr": "Écouter",
+      "bn": "শুনুন",
+      "pt-BR": "Ouvir",
+      "ru": "Слушать",
+      "id": "Dengarkan"
     }
   }
 }

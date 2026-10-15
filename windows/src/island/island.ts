@@ -12,6 +12,7 @@ import {
 } from "../core/layout";
 import { Sound } from "../core/sound";
 import { State } from "../core/state";
+import { VoiceSpeaker } from "../core/speaker";
 import { SPOTIFY_ID, islandDances } from "../core/spotify";
 import { BotEngine, hexToRGB } from "../mochi/engine";
 import { Greeting } from "../mochi/greeting";
@@ -222,6 +223,7 @@ export class Island {
       toggleSound: () => {
         State.settings.soundEnabled = !State.settings.soundEnabled;
         Sound.setEnabled(State.settings.soundEnabled);
+        if (!State.settings.soundEnabled) VoiceSpeaker.stop();
         void Bridge.saveSettings(State.settings);
         State.notify();
       },
@@ -413,6 +415,7 @@ export class Island {
   }
 
   collapse() {
+    VoiceSpeaker.stop();
     // A waiting card is only ever folded, never dropped by a close.
     if (State.pendingApproval) {
       this.foldApproval();

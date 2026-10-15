@@ -12,6 +12,7 @@ import { registerShortcutHandlers } from "./island/shortcuts";
 import { applySpotify, registerSpotifyHandlers } from "./island/spotify";
 import { SPOTIFY_ID } from "./core/spotify";
 import { Recap } from "./recap/recap";
+import { VoiceSpeaker } from "./core/speaker";
 import { onLanguageChange, resolveLanguage, setLanguage, systemLanguages } from "./i18n/i18n";
 
 /** Shows the language Settings asks for ("" = the system's, when Bubu has it). */
@@ -85,6 +86,10 @@ async function main() {
     console.log("[Main] Wake word detected!");
     if (State.view === "voicecall") return;
     Sound.play("blip");
+    if (State.settings.soundEnabled) {
+      const isId = State.settings.language === "id";
+      VoiceSpeaker.speak(isId ? "Ya, Bubu di sini!" : "Yes, I'm here!", isId ? "id-ID" : "en-US");
+    }
     State.view = "prompt";
     State.notify();
     island.alert("prompt");

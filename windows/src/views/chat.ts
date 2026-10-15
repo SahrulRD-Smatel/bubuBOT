@@ -15,6 +15,7 @@ import {
 } from "../core/providers";
 import { Sound } from "../core/sound";
 import { State, type ChatMessage } from "../core/state";
+import { VoiceSpeaker } from "../core/speaker";
 import type { ViewHost } from "./views";
 import { N_, t, tl } from "../i18n/i18n";
 
@@ -41,7 +42,17 @@ function bubble(message: ChatMessage): HTMLElement {
   }
   const reply = h("div", { class: "reply" });
   renderMarkdown(reply, message.content);
-  return h("div", { class: "chat-row" }, reply);
+  const listenBtn = h(
+    "button",
+    {
+      class: "speak-btn",
+      title: tl("Listen"),
+      onclick: () => VoiceSpeaker.speak(message.content, State.settings.language === "id" ? "id-ID" : "en-US"),
+      style: "background:transparent;border:none;cursor:pointer;opacity:0.4;padding:2px 4px;margin-left:4px;display:inline-flex;align-items:center;color:inherit;",
+    },
+    svg(ICONS.speakerOn, 11),
+  );
+  return h("div", { class: "chat-row assistant-row", style: "position:relative;" }, reply, listenBtn);
 }
 
 function typingDots(): HTMLElement {
@@ -289,6 +300,7 @@ export function buildPrompt(onHeightChange: () => void): ViewHost {
         micBtn.style.color = "";
         micBtn.style.opacity = "0.7";
         if (input.value.trim() && !sending) {
+          isVoiceTriggered = true;
           void submit();
         }
       };
@@ -320,6 +332,25 @@ export function buildPrompt(onHeightChange: () => void): ViewHost {
       State.notify();
     });
   }
+
+  let isVoiceTriggered = false;
+
+  const startListeningFromWake = () => {
+    if (State.view === "voicecall") return;
+    if (recognition && !isListeningWithSpeech) {
+      setTimeout(() => {
+        try {
+          recognition.lang = State.settings.language === "id" ? "id-ID" : "en-US";
+          recognition.start();
+        } catch (e) {
+          console.warn("[Chat] Auto-start speech recognition error:", e);
+        }
+      }, 1300);
+    }
+  };
+
+  void onEvent("wakeword-detected", startListeningFromWake);
+  void onEvent("voice-wake", startListeningFromWake);
 
   const body = h("div", { class: "chat-body" });
   const picker = buildPicker(() => {
@@ -365,6 +396,10 @@ export function buildPrompt(onHeightChange: () => void): ViewHost {
     const query = input.value.trim();
     if (!query || sending) return;
 
+    VoiceSpeaker.stop();
+    const viaVoice = isVoiceTriggered;
+    isVoiceTriggered = false;
+
     // Smart intent routing:
     // If user wants to talk / call, switch to full voice call UI
     const lowerQuery = query.toLowerCase();
@@ -403,6 +438,9 @@ export function buildPrompt(onHeightChange: () => void): ViewHost {
       State.chatHistory.push({ id: nextId++, role: "assistant", content: reply.text });
       State.stateOverride = null;
       Sound.play("finish");
+      if (viaVoice || State.settings.soundEnabled) {
+        VoiceSpeaker.speak(reply.text, State.settings.language === "id" ? "id-ID" : "en-US");
+      }
     } catch (err) {
       State.stateOverride = null;
       State.noteMessage = String(err).replace(/^Error:\s*/, "");
@@ -453,8 +491,11 @@ export function buildPrompt(onHeightChange: () => void): ViewHost {
         log.scrollTop = log.scrollHeight;
       }
 
-      // Leaving the chat folds the picker away.
-      if (State.view !== "prompt" && picker.isOpen) picker.close();
+      // Leaving the chat folds the picker away and stops speech.
+      if (State.view !== "prompt") {
+        if (picker.isOpen) picker.close();
+        VoiceSpeaker.stop();
+      }
       drawModelButton();
 
       input.placeholder = t(State.chatHistory.length === 0 ? STRINGS.placeholderFirst : STRINGS.placeholderNext);
