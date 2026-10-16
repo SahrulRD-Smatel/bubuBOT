@@ -62,7 +62,7 @@ Test names are abbreviated: *Rust* = `windows/src-tauri/src/phone_link/` (`relay
 
 ## Rules kept
 
-Nothing published, no release, no store listing, no pull request to upstream; Louis's `relay/` is untouched; no telemetry; the
+Nothing published, no release, no store listing, no pull request to upstream; Sahrul's `relay/` is untouched; no telemetry; the
 agent is never blocked by the relay (its own task, a failure only changes a status line); no permission is approved without an
 explicit tap and the phone's screen-lock check; secrets only in the OS keystore and the Android Keystore; the Android app stays
 English only and the new computer-side strings have all nine translations.

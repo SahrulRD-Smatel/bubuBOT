@@ -38,15 +38,15 @@ Toutes les mesures sont en points macOS. Les valeurs viennent de `reference/notc
 
 Grille compact : pastilles Ø 9,5 autour du point (largeur − 27, hN/2), écart ±6. 1 agent : centré. 2 : côte à côte. 3 : deux en haut, un en bas. 4 : carré.
 
-## 3. Règles de comportement (validées par Louis)
+## 3. Règles de comportement (validées par Sahrul)
 
 1. **Rien ne tourne** → `hidden`. Totalement invisible.
 2. **Souris sur le notch** alors que `hidden` → `peek` immédiatement, le bonhomme sort en faisant bubu (mains + son `peek` + son `greet`). Si la souris reste 650 ms → `expanded` (vue `overview`, ou `empty` s'il n'y a aucune tâche). Si elle part pendant le peek → retour `hidden` après 600 ms.
-3. **Des tâches tournent et Louis est actif** → `compact` : très fin, le bonhomme visible, il suit la souris des yeux partout sur l'écran.
+3. **Des tâches tournent et Sahrul est actif** → `compact` : très fin, le bonhomme visible, il suit la souris des yeux partout sur l'écran.
 4. **Survol en compact** → `expanded` après 200 ms. Clic sur le bonhomme en compact → `expanded` tout de suite.
 5. **Fermeture auto** : une fois ouverte, l'island se replie après **60 s sans activité** (mouvement de souris sur l'island, clic, frappe). Quitter l'island ne la ferme pas. Pendant les 10 dernières secondes, un trait de 2 pt en bas au centre (160 pt → 0, blanc 35 %) montre le compte à rebours. `Échap` ferme.
-6. **Louis absent** (aucun mouvement de souris depuis 3 min, réglable) → `hidden`, même avec des tâches. Au premier mouvement → retour `compact` si des tâches tournent.
-7. **Alertes** (permission, question, erreur) : l'island s'ouvre seule sur la vue de l'alerte, **même si Louis est absent**, et reste ouverte (pas de fermeture auto) jusqu'à sa réponse.
+6. **Sahrul absent** (aucun mouvement de souris depuis 3 min, réglable) → `hidden`, même avec des tâches. Au premier mouvement → retour `compact` si des tâches tournent.
+7. **Alertes** (permission, question, erreur) : l'island s'ouvre seule sur la vue de l'alerte, **même si Sahrul est absent**, et reste ouverte (pas de fermeture auto) jusqu'à sa réponse.
 8. **Terminé** : l'island s'ouvre sur la vue `finished` pendant 5,2 s, puis retire la tâche et se replie.
 9. Plusieurs alertes en même temps : file d'attente, une à la fois, l'ordre d'arrivée.
 10. **Focus** : le gros bonhomme représente la tâche en focus (la dernière alerte, sinon la première qui travaille). Les autres tâches sont les mini-bonhommes. Cliquer un mini-bonhomme le met en focus.
@@ -147,7 +147,7 @@ Section `.activity` de `GitHubDetailView`. En-tête : chevron.left + « Activity
 | SBE Hub | `#2DD4A7` |
 | Morning AI Brief (n8n) | `#F7B32B` |
 | Publication IG (n8n) | `#A78BFA` |
-| louisraille.fr | `#38BDF8` |
+| sahrulrd.com | `#38BDF8` |
 | Autres | prendre dans cet ordre : `#F472B6`, `#34D399`, `#FB923C`, `#60A5FA`, `#E879F9`, puis boucler |
 
 Nom d'une session Claude Code = nom du dossier de travail (`cwd`), avec une table d'alias réglable (ex. `sbe-hub` → « SBE Hub »). Nom d'un workflow n8n = nom du workflow.
@@ -295,7 +295,7 @@ Chaque jalon se termine par build + capture + comparaison aux références + com
 
 ## 12. Critères d'acceptation
 
-- Côte à côte avec le prototype, Louis ne voit pas de différence sur le personnage, les couleurs, les timings et les sons.
+- Côte à côte avec le prototype, Sahrul ne voit pas de différence sur le personnage, les couleurs, les timings et les sons.
 - Aucun clic perdu à cause de la fenêtre transparente.
 - Une session Claude Code n'est jamais bloquée par l'app (app fermée, plantée ou lente → le terminal prend le relais).
 - Hidden = 0 % CPU ; compact < 3 % ; mémoire < 100 Mo.

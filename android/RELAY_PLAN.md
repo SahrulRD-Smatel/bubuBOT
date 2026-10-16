@@ -1,7 +1,7 @@
 # Relay plan: Bubu for Android away from home Wi-Fi (PROPOSAL, nothing is built)
 
 Status: **approved by the user on 2026-10-10**, with the decisions and two additions below. Implementation goes stage by stage
-(R0 first); the user is told the commit id after each stage. Nothing is deployed, published or sent to Louis, and Louis's
+(R0 first); the user is told the commit id after each stage. Nothing is deployed, published or sent to Sahrul, and Sahrul's
 `relay/` is not touched. The earlier "stage G" (VPN switch) was built and then removed at the user's request; this plan replaces it.
 
 ### Approval record
@@ -24,7 +24,7 @@ Status: **approved by the user on 2026-10-10**, with the decisions and two addit
   asserts "no (key, nonce) twice" over thousands of frames, both directions and two sessions; R2 repeats it in Rust and Kotlin.
 - **Stage R0 (done):** `docs/RELAY_LINK.md` (the wire spec) and `android/relay/test-vectors.json` with its generator.
 
-Sources read: `android/HANDOFF.md`, `docs/ANDROID_LINK.md`, `relay/README.md` and `relay/src/index.ts` (Louis's APNs
+Sources read: `android/HANDOFF.md`, `docs/ANDROID_LINK.md`, `relay/README.md` and `relay/src/index.ts` (Sahrul's APNs
 relay, for style), the former parity plan (stage G, row 16; deleted in the cleanup, it is in the git history), `CLAUDE.md`, and the phone-link code on both sides.
 
 ## 1. Goal and non-goals
@@ -51,7 +51,7 @@ Wi-Fi), with no USB, no VPN and no shared Wi-Fi. The direct LAN link stays as th
   holds at most two live WebSockets: one with role `pc`, one with role `phone`.
 - It **forwards binary frames from one socket to the other and nothing else.** It cannot read them (they are end-to-end
   encrypted), stores nothing (no database, no KV, no R2, no storage API call), logs nothing (observability off, as in
-  Louis's `wrangler.toml`), has no accounts and holds no secret at all (unlike Louis's relay, which holds the APNs key).
+  Sahrul's `wrangler.toml`), has no accounts and holds no secret at all (unlike Sahrul's relay, which holds the APNs key).
 - **Both sides connect outward**, so no port opening, no router setting, no dynamic DNS. Works behind NAT and carrier NAT.
 - The Durable Object uses the **WebSocket Hibernation API**, so an idle room is not billed for duration and holds no memory.
   Keep-alive pings are answered by the platform (`setWebSocketAutoResponse`) without waking the object.
@@ -163,7 +163,7 @@ path, approval, chat text or file name, and not K.
 
 ## 6. The relay's rules, in detail
 
-- `GET /` answers `Bubu link relay` (a health check, like Louis's).
+- `GET /` answers `Bubu link relay` (a health check, like Sahrul's).
 - `GET /v1/room/<id>?role=pc|phone` with `Upgrade: websocket`; `<id>` must be 22 base64url characters, else 404 before any
   object is touched; `Authorization: Bearer <access key>` must match the Worker secret (401, constant-time, fail closed).
   Sub-protocol offer `bubu.v1, bubu.join.<K_join>` carries the join proof (base64url of 32 bytes). The wire is specified in `docs/RELAY_LINK.md`.
@@ -250,9 +250,9 @@ The relay transport lives inside the same service. Design:
   keep itself awake for this.
 - **Logging:** the relay URL host and status transitions only. Never K, tokens, frames, rooms or commands.
 
-## 10. What Louis should be told (draft for the user to send, or not)
+## 10. What Sahrul should be told (draft for the user to send, or not)
 
-- Louis's `relay/` is a Cloudflare Worker that holds his **APNs key** and does one job: Live Activity pushes for the iPhone. It is
+- Sahrul's `relay/` is a Cloudflare Worker that holds his **APNs key** and does one job: Live Activity pushes for the iPhone. It is
   not touched.
 - The Android fork would add a **separate, key-less, user-deployed** relay (`android/relay/`, never under his `relay/`), used only
   by Bubu for Android, **off by default, with no URL built in**, and nothing flows to any server he runs or pays for.
@@ -309,7 +309,7 @@ Each stage is a small series of commits with tests, "Phone link" CI green, `Co-A
 - **D3, forward secrecy:** ship now without it (recommended) or add an X25519 exchange first (needs a hand-written X25519 on
   Android below API 33).
 - **D4, one phone per room** in v1 of the relay (recommended); more phones = more pairings.
-- **D5, location:** `android/relay/` (recommended, so Louis's `relay/` is never touched) versus a new top-level folder.
+- **D5, location:** `android/relay/` (recommended, so Sahrul's `relay/` is never touched) versus a new top-level folder.
 - **D6, FCM:** not now, revisit after the Doze test (recommended).
 - **D7, size padding to 128 bytes** (recommended; costs a few bytes per frame).
 - **D8, join proof held in memory only,** with the squatting trade-off in section 6 (recommended), versus persisting a verifier.

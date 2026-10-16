@@ -1,6 +1,6 @@
-# Demo video for Louis (about 90 seconds)
+# Demo video for Sahrul (about 90 seconds)
 
-Louis asked for a short screen recording of the main flow. Nothing is published: the file goes to Louis only.
+Sahrul asked for a short screen recording of the main flow. Nothing is published: the file goes to Sahrul only.
 
 ## Before recording
 
@@ -18,7 +18,7 @@ Louis asked for a short screen recording of the main flow. Nothing is published:
 4. Unlock and tap Allow with the fingerprint. The phone screen is black here, so cut to the PC with the caption "Request sent for approval", then the terminal continuing (20 s).
 5. A second request: the PC shows it waiting, Deny on the phone, the terminal says it was denied, caption "Denied on the phone" (15 s).
 6. Plan usage and the Chat tab, if switched on (15 s).
-7. Settings > About and Licences: the attribution to Louis (10 s).
+7. Settings > About and Licences: the attribution to Sahrul (10 s).
 
 ## The one catch: secure screens record black
 
@@ -29,7 +29,7 @@ does not remove that protection. During those seconds it shows the request from 
 - Put a caption over the black part: **"Request sent for approval"**, then **"Approved on the phone (fingerprint)"** or
   **"Denied on the phone"**. Add the captions when editing (any video editor, or the Windows Clipchamp).
 - Cut between the phone (notification, Home, Settings, About) and the PC (terminal and island), so the viewer always sees
-  something real. Use the other phone as a camera only if Louis wants to see the approval sheet itself.
+  something real. Use the other phone as a camera only if Sahrul wants to see the approval sheet itself.
 
 ## How to record
 
