@@ -13,18 +13,18 @@ Bubu becomes a real app: a window in the Dock, dictation everywhere on the Mac, 
 
 ## Android 0.2.0 — October 13, 2026
 
-- **Home-screen widgets** — nine to pick from, each with a real preview in the widget picker: Mochi at a glance, Mochi's mood, Approvals waiting, Finished today, Plan usage, a one-line status with four buttons, all your agents, Mochi big (Mochi, plan usage and six buttons), and the agents summary, now on the same card. The colour follows your most urgent agent: orange when something waits for you, blue while it works, green when it's done, grey when the computer isn't there. Plan usage has its own colours (teal, yellow from 75 %, red from 90 %, with the time it resets). Read-only: the buttons only open a screen of the app, and a request is always decided in the app, behind your fingerprint. No background refresh: they redraw when something changes, plus once at midnight so Finished today starts again at zero, and that count stays on the phone (#620 by @Rhytam23)
-- Working notes that were not meant to ship are gone from `android/` (#618 by @Rhytam23)
+- **Home-screen widgets** — nine to pick from, each with a real preview in the widget picker: Mochi at a glance, Mochi's mood, Approvals waiting, Finished today, Plan usage, a one-line status with four buttons, all your agents, Mochi big (Mochi, plan usage and six buttons), and the agents summary, now on the same card. The colour follows your most urgent agent: orange when something waits for you, blue while it works, green when it's done, grey when the computer isn't there. Plan usage has its own colours (teal, yellow from 75 %, red from 90 %, with the time it resets). Read-only: the buttons only open a screen of the app, and a request is always decided in the app, behind your fingerprint. No background refresh: they redraw when something changes, plus once at midnight so Finished today starts again at zero, and that count stays on the phone (#620 by @SahrulRD-Smatel)
+- Working notes that were not meant to ship are gone from `android/` (#618 by @SahrulRD-Smatel)
 
 ## Android 0.1.0 — October 11, 2026
 
-- **Bubu for Android**, by @Rhytam23 — your agents, Allow and Deny with your fingerprint or screen lock (even on a locked phone), answers to Claude's questions, chat through the computer's own keys, plan usage and services, an optional island over other apps, a widget, a quick-settings tile and an ongoing notification. It pairs with Bubu 0.4.0 or later on Windows or Linux. Android 11 or later, English only; signed APK on the [release page](https://github.com/SahrulRamadhani/bubu/releases/tag/android-v0.1.0) (#501 by @Rhytam23)
+- **Bubu for Android**, by @SahrulRD-Smatel — your agents, Allow and Deny with your fingerprint or screen lock (even on a locked phone), answers to Claude's questions, chat through the computer's own keys, plan usage and services, an optional island over other apps, a widget, a quick-settings tile and an ongoing notification. It pairs with Bubu 0.4.0 or later on Windows or Linux. Android 11 or later, English only; signed APK on the [release page](https://github.com/SahrulRamadhani/bubu/releases/tag/android-v0.1.0) (#501 by @SahrulRD-Smatel)
 
 ## Windows and Linux 0.4.0 — October 11, 2026
 
-- **Your Android phone** — Settings → Android phone: the link for [Bubu for Android](android/README.md), an opt-in server on your local network, off by default (nothing listens until you turn it on), paired with a QR code and a pinned certificate. "Pair again" disconnects every phone, a command too long to show in full can only be allowed on the computer, and each extra (session details, answers, chat through your own keys, file changes, plan usage, services) has its own switch (#500 by @Rhytam23)
-- **Plan usage**: Settings and the README say that the Claude gauge needs the Claude Code command-line tool, not the Claude desktop app (#479 by @Rhytam23)
-- Newer versions of the GitHub actions in the build workflows (#499 by @Rhytam23)
+- **Your Android phone** — Settings → Android phone: the link for [Bubu for Android](android/README.md), an opt-in server on your local network, off by default (nothing listens until you turn it on), paired with a QR code and a pinned certificate. "Pair again" disconnects every phone, a command too long to show in full can only be allowed on the computer, and each extra (session details, answers, chat through your own keys, file changes, plan usage, services) has its own switch (#500 by @SahrulRD-Smatel)
+- **Plan usage**: Settings and the README say that the Claude gauge needs the Claude Code command-line tool, not the Claude desktop app (#479 by @SahrulRD-Smatel)
+- Newer versions of the GitHub actions in the build workflows (#499 by @SahrulRD-Smatel)
 
 ## 0.3.0 — October 11, 2026
 

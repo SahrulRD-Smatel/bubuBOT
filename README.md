@@ -59,7 +59,7 @@ Meet **Mochi**: a soft little squircle with big eyes that pops out of your notch
 - 🫥 **Invisible when idle** — hides away when nothing is running, peeks out when you hover the notch (the top edge of the screen on Windows and Linux).
 - 🖥️ **Any Mac, notch or not** — on an iMac, a Mac mini, or a MacBook with its lid closed on an external display, Mochi sits in a small bar at the top of the screen. With several displays, pick his screen in Settings → General, or let him follow your mouse *(macOS)*.
 - 📱 **Bubu on iPhone** — your sessions, approvals and services in your pocket, with Live Activities, widgets and Siri. See [Bubu on iPhone](#bubu-on-iphone).
-- 🤖 **Bubu for Android** — your agents, approvals with your fingerprint, questions and chat on an Android phone, linked to Bubu on Windows or Linux over your Wi-Fi. By [@Rhytam23](https://github.com/Rhytam23). See [Bubu for Android](#bubu-for-android).
+- 🤖 **Bubu for Android** — your agents, approvals with your fingerprint, questions and chat on an Android phone, linked to Bubu on Windows or Linux over your Wi-Fi. By [@SahrulRD-Smatel](https://github.com/SahrulRD-Smatel). See [Bubu for Android](#bubu-for-android).
 - 📅 **Weekly recap** *(macOS)* — every Monday morning Bubu shows a summary of the past week: time coding, sessions, files, lines changed, commands, permissions, top agent and project, busiest day and longest session. Share it as a 1080 × 1920 image with Mochi — project names optional. All local, no sync.
 - 🌍 **10 languages** — English, 中文, हिन्दी, Español, العربية, Français, বাংলা, Português, Русский, Bahasa Indonesia. Pick one in Settings → General → Language; community translations welcome.
 - 🔒 **Private by design** — no telemetry, no account. Keys live in your macOS Keychain, Windows Credential Manager or Linux Secret Service (GNOME Keyring, KWallet). The app only talks to the services you plug in.
@@ -93,7 +93,7 @@ The Mac app does the work; the iPhone app keeps you in the loop when you step aw
 
 ## Bubu for Android
 
-**Bubu for Android** brings Mochi to Android phones. It was built by [Rhytam Biswas (@Rhytam23)](https://github.com/Rhytam23) and lives in [`android/`](android/).
+**Bubu for Android** brings Mochi to Android phones. It was built by [Sahrul Ramadhani (@SahrulRD-Smatel)](https://github.com/SahrulRD-Smatel) and lives in [`android/`](android/).
 
 - 🔐 **Approve from your phone** — a permission request rises over any screen, even on a locked phone; **Allow** needs your fingerprint or screen lock, **Deny** doesn't. A command too long to show in full can only be allowed on the computer.
 - 🧑‍💻 **Your agents at a glance** — the agent that needs you, the others below, plan usage and your services when the computer shares them.
@@ -140,7 +140,7 @@ Windows and Linux are released together, under the `windows-v*` and `linux-v*` t
 
 | Windows & Linux | Date | Highlights |
 |---------|------|------------|
-| 0.4.0 · [Windows](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/windows-v0.4.0) · [Linux](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/linux-v0.4.0) | Oct 11, 2026 | Your Android phone: the link for Bubu for Android, by @Rhytam23 — approvals with your fingerprint, answers, chat, off by default |
+| 0.4.0 · [Windows](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/windows-v0.4.0) · [Linux](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/linux-v0.4.0) | Oct 11, 2026 | Your Android phone: the link for Bubu for Android, by @SahrulRD-Smatel — approvals with your fingerprint, answers, chat, off by default |
 | 0.3.0 · [Windows](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/windows-v0.3.0) · [Linux](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/linux-v0.3.0) | Oct 9, 2026 | Linux catches up: Spotify with Mochi dancing, global shortcuts on Wayland, Open terminal brings the terminal back; open on hover, your own sounds, a colour per Mochi |
 | 0.2.0 · [Windows](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/windows-v0.2.0) | Oct 8, 2026 | Catches up with the Mac: nine agents with approvals, chat with any AI, plan usage, GitHub, wardrobe, 10 languages |
 | 0.1.1 · [Linux](https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/linux-v0.1.1) | Oct 1, 2026 | First Linux build (beta) |
@@ -362,12 +362,12 @@ Want to add or improve a translation? Open a PR with changes to `NotchBuddy/Reso
 ## Credits
 
 Built and maintained by **Sahrul Ramadhani**.
-Based on the original notch companion project by Sahrul Ramadhani and Rhytam Biswas.
+Based on the original notch companion project by Sahrul Ramadhani.
 Thanks to everyone who contributed to the open source ecosystem.
 
 ## License
 
-- **Code:** [MIT](LICENSE) — use it, fork it, learn from it, just keep the copyright notice. The Android app and the phone link are © Rhytam Biswas, also under MIT ([android/LICENSE](android/LICENSE)).
+- **Code:** [MIT](LICENSE) — use it, fork it, learn from it, just keep the copyright notice. The Android app and the phone link are © Sahrul Ramadhani, also under MIT ([android/LICENSE](android/LICENSE)).
 - **Name, Mochi character, icon, sounds and media:** © Sahrul Ramadhani, all rights reserved — see [LICENSE-ASSETS.md](LICENSE-ASSETS.md). Shipping your own fork? Give it your own name and character.
 
 <div align="center">

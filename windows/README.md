@@ -552,7 +552,7 @@ What changes on Linux:
   **Settings → Shortcuts** says the shortcuts are registered with the desktop,
   shows next to each one the keys the desktop reports (*Desktop: …*), and flags
   one it left out. Changing or turning off a shortcut in Bubu binds the new
-  set in a new portal session. Bubu names itself `fr.louisraille.bubu` to
+  set in a new portal session. Bubu names itself `fr.sahrul.Bubu` to
   the portal where the portal allows it (`xdg-desktop-portal` 1.19+); a
   desktop that wants an app name may otherwise refuse.
   Where there is no such portal, or the desktop refuses, nothing is registered
