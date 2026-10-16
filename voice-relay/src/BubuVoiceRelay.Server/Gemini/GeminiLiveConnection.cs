@@ -10,7 +10,7 @@ namespace BubuVoiceRelay.Server.Gemini;
 public sealed class GeminiLiveConnection : IAsyncDisposable
 {
     private const string BaseUri =
-        "wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent";
+        "wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent";
 
     private readonly ClientWebSocket _ws = new();
     private readonly ILogger<GeminiLiveConnection> _logger;

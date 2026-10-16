@@ -51,8 +51,8 @@ pub const PROVIDERS: &[Provider] = &[
         base_url: "https://generativelanguage.googleapis.com/v1beta/openai",
         key: "google-api-key",
         models_path: "models",
-        default_model: "gemini-2.0-flash",
-        not_chat: &["embed", "imagen", "veo", "aqa", "tts", "audio", "live"],
+        default_model: "gemini-3.8-flash",
+        not_chat: &["embed", "imagen", "veo", "aqa", "tts", "audio", "live", "lyria", "robotics", "transcribe"],
         max_tokens_field: "max_tokens",
     },
     Provider {
