@@ -1,0 +1,7 @@
+[build]
+# Limit concurrent compilation jobs to prevent Out-Of-Memory (OOM) on systems with limited free RAM
+jobs = 2
+
+[profile.dev]
+# Reduce debuginfo overhead to save memory and disk space
+debug = 1

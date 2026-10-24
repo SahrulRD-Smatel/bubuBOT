@@ -158,7 +158,6 @@ fn language_changed(app: &AppHandle) {
     if let Some(window) = app.get_webview_window(HUB_LABEL) {
         let _ = window.set_title(&i18n::t("Settings — Bubu"));
     }
-    }
 }
 
 /// Hidden island → shrink the window to the invisible wake strip and park the
