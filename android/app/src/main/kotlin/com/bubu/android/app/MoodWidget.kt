@@ -5,8 +5,11 @@ import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.view.View
 import android.widget.RemoteViews
+
 import com.bubu.android.R
 import com.bubu.android.core.WidgetContent
+import com.bubu.android.core.WidgetSpoken
+
 
 /**
  * The Mochi Mood widget: only Mochi's face in the current state, with his glow. Drawn by [WidgetHub] when something changes
@@ -24,6 +27,7 @@ class MoodWidget : AppWidgetProvider() {
             v.setContentDescription(R.id.mood_face, context.getString(R.string.widget_mochi_description, (c.top?.stateWord ?: c.headline).lowercase()))
             v.setViewVisibility(R.id.mood_offline, if (c.connected) View.GONE else View.VISIBLE)
             val top = c.top
+            v.setContentDescription(R.id.mood_root, WidgetSpoken.top(c))
             v.setOnClickPendingIntent(
                 R.id.mood_root,
                 if (top != null) WidgetHub.openSession(context, WidgetHub.CODE_MOOD, top.pillId) else WidgetHub.openApp(context, WidgetHub.CODE_MOOD),

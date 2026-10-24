@@ -1,6 +1,7 @@
 package com.bubu.android
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -113,6 +114,7 @@ import com.bubu.android.ui.DiffSheet
 import com.bubu.android.ui.QuestionSheet
 import com.bubu.android.ui.ServicesPanel
 import com.bubu.android.ui.UsagePanel
+import com.bubu.android.ui.RecapPanel
 import com.bubu.android.ui.WardrobeScreen
 import com.bubu.android.ui.HeroCard
 import com.bubu.android.ui.RecentPanel
@@ -132,6 +134,7 @@ import com.bubu.android.ui.ScreenTitle
 import com.bubu.android.ui.SectionTitle
 import com.bubu.android.ui.linkDotColor
 import com.bubu.android.ui.linkStatusText
+import com.bubu.android.ui.tokens
 
 class MainActivity : ComponentActivity() {
     private val model get() = (application as BubuApp).model
@@ -142,17 +145,27 @@ class MainActivity : ComponentActivity() {
     private var closedApproval by mutableStateOf<String?>(null)
     private var questionPill by mutableStateOf<String?>(null)
     private var confirming = false
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(com.bubu.android.app.AppLanguage.wrap(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        model.languageChanged(com.bubu.android.app.AppLanguage.current(this))
         enableEdgeToEdge()
         if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
         }
         model.resume()
         setContent {
-            BubuTheme {
-                // The app is dark only: the status bar icons are always light.
-                SideEffect { WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars = false }
+            BubuTheme(model.settings.theme, model.settings.dynamicColour) {
+                // Dark icons on a light page; the camera screen is black in both themes, so its icons are light.
+                val lightPage = !tokens().isDark && screen != Screen.SCAN
+                SideEffect {
+                    val bars = WindowCompat.getInsetsController(window, window.decorView)
+                    bars.isAppearanceLightStatusBars = lightPage
+                    bars.isAppearanceLightNavigationBars = lightPage
+                }
                 Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     Box(Modifier.fillMaxSize().windowInsetsPadding(if (screen == Screen.HOME || screen == Screen.SCAN) WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom) else WindowInsets.safeDrawing)) {
                         val tabs = Nav.tabs()
@@ -265,6 +278,8 @@ class MainActivity : ComponentActivity() {
         }
         // A tap on a widget button: a screen of the closed list ([LaunchScreen]), even when the app is locked, not connected or not paired.
         model.launch.takeScreen()?.let { screen = it.screen }
+        // Text shared to Coucou from another app (ShareActivity, which only keeps cleaned text): it waits in the model for the chat box.
+        if (model.shareDraft.pending()) screen = Screen.CHAT
         val launch = model.launch.take() ?: return
         val fp = launch.fingerprint
         if (launch.allow) {
@@ -407,6 +422,7 @@ private fun Home(
             }
         }
 
+        if (model.recap != null) item { Box(Modifier.padding(horizontal = Gutter)) { RecapPanel(model.recap) } }
         if (model.usage != null) item { Box(Modifier.padding(horizontal = Gutter)) { UsagePanel(model.usage) } }
         if (model.services.isNotEmpty()) item { Box(Modifier.padding(horizontal = Gutter)) { ServicesPanel(model.services) } }
         item { Box(Modifier.padding(horizontal = Gutter)) { RecentPanel(model.decisions, onHistory) } }

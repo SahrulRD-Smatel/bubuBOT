@@ -43,6 +43,9 @@ CHANGES=$(awk -v head="## $VERSION" '
 [ -n "$CHANGES" ] || die "CHANGELOG.md has no '## $VERSION' section"
 
 grep -q "| \[$VERSION\]" README.md || die "README.md has no row for $VERSION in the Versions table"
+# Mochi shows it once in the notch after the update: an entry in every language.
+python3 scripts/test-whats-new.py mac >/dev/null \
+  || { python3 scripts/test-whats-new.py mac; die "NotchBuddy/Resources/whats-new.json needs a complete entry for $VERSION (CLAUDE.md, Releases)"; }
 
 if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
   die "tag $TAG already exists here"
@@ -94,14 +97,14 @@ if [ "$MODE" != "--finish" ]; then
   rm -rf "$BUILD_DIR" && mkdir -p "$BUILD_DIR"
   echo "$COMMIT" > "$COMMIT_FILE"
 
+  # Signing comes from project.yml's Release config, which only the app target
+  # has. Set on the command line it would reach the Swift packages' targets too
+  # (FluidAudio), which have no team and fail with "requires a development team".
   xcodebuild \
     -project NotchBuddy.xcodeproj \
     -scheme NotchBuddy \
     -configuration Release \
     build \
-    CODE_SIGN_IDENTITY="$IDENTITY" \
-    CODE_SIGNING_REQUIRED=YES \
-    CODE_SIGNING_ALLOWED=YES \
     CONFIGURATION_BUILD_DIR="$BUILD_DIR"
 
   [ -f "$APP/Contents/embedded.provisionprofile" ] || die "the provisioning profile was not embedded in the app"
@@ -171,3 +174,16 @@ gh release create "$TAG" "$ZIP" \
   --notes "$NOTES"
 
 echo "✓ $TAG released: https://github.com/SahrulRD-Smatel/bubuBOT/releases/tag/$TAG"
+
+# ── 7. Homebrew cask ──────────────────────────────────────────────────────────
+# Casks/coucou.rb points at the zip just published: bump its version and hash.
+CASK="$REPO_ROOT/Casks/coucou.rb"
+if [ -f "$CASK" ]; then
+  SHA=$(shasum -a 256 "$ZIP" | cut -d' ' -f1)
+  sed -i '' -e "s/^  version \".*\"/  version \"$VERSION\"/" -e "s/^  sha256 \".*\"/  sha256 \"$SHA\"/" "$CASK"
+  git add "$CASK"
+  git commit -m "Homebrew cask: $VERSION" -- "$CASK"
+  git push origin HEAD:main \
+    || echo "warning: could not push the cask bump, push it to main yourself so brew upgrade picks up $VERSION" >&2
+  echo "✓ Homebrew cask bumped to $VERSION"
+fi

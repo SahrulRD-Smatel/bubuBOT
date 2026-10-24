@@ -18,7 +18,8 @@ enum ShortcutAction: String, CaseIterable, Sendable {
     case muteToggle        = "muteToggle"         // ⌃⌥M — mute / unmute sounds
     case desktopToggle     = "desktopToggle"      // ⌃⌥D — send Mochi to desktop / bring back
     case wardrobeToggle    = "wardrobeToggle"     // ⌃⌥G — open / close wardrobe
-    case talkToBubu      = "talkToBubu"       // (unset) — start listening without wake phrase (non-AppStore)
+case talkToBubu        = "talkToBubu"       // (unset) — start listening without wake phrase (non-AppStore)
+    case captureScreen     = "captureScreen"      // ⌘⇧S — capture a part of the screen for Claude (non-AppStore)
 
     // MARK: UserDefaults keys
 
@@ -49,13 +50,14 @@ enum ShortcutAction: String, CaseIterable, Sendable {
         case .muteToggle:        return String(localized: "shortcut.mute-toggle")
         case .desktopToggle:     return String(localized: "shortcut.desktop-toggle")
         case .wardrobeToggle:    return String(localized: "shortcut.wardrobe")
-        case .talkToBubu:      return String(localized: "shortcut.talk-to-bubu")
+case .talkToBubu:      return String(localized: "shortcut.talk-to-bubu")
+        case .captureScreen:     return String(localized: "shortcut.capture")
         }
     }
 
     /// Whether this action should be omitted from App Store builds.
     var isAppStoreOnly: Bool { false }
-    var isNonAppStore: Bool  { self == .attachFrontWindow || self == .talkToBubu }
+var isNonAppStore: Bool  { self == .attachFrontWindow || self == .talkToBubu || self == .captureScreen }
 
     /// Whether the shortcut is enabled by default.
     /// `toggleIsland` and `talkToBubu` are off by default; all others are on.
@@ -106,7 +108,8 @@ enum ShortcutLogic {
         .muteToggle:        ShortcutSpec(keyCode: 46, nsFlags: ShortcutSpec.ctrlOpt),  // ⌃⌥M
         .desktopToggle:     ShortcutSpec(keyCode: 2,  nsFlags: ShortcutSpec.ctrlOpt),  // ⌃⌥D
         .wardrobeToggle:    ShortcutSpec(keyCode: 5,  nsFlags: ShortcutSpec.ctrlOpt),  // ⌃⌥G
-        .talkToBubu:      ShortcutSpec(keyCode: 9,  nsFlags: ShortcutSpec.ctrlOpt),  // ⌃⌥V (disabled by default)
+.talkToBubu:      ShortcutSpec(keyCode: 9,  nsFlags: ShortcutSpec.ctrlOpt),  // ⌃⌥V (disabled by default)
+        .captureScreen:     ShortcutSpec(keyCode: 1,  nsFlags: ShortcutSpec.cmdShift), // ⌘⇧S
     ]
 
     // MARK: - Load / save (UserDefaults)

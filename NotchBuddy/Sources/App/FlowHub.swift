@@ -254,13 +254,17 @@ private struct HubSidebar: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 3) {
             HStack(spacing: 10) {
+                // The scene draws Mochi a little below its middle (room for his
+                // hops and hats): lifted so his body lines up with the name.
                 HubLiveMochi(size: 28)
+.offset(y: -4)
                 Text(verbatim: "Bubu")
                     .font(.system(size: 18, weight: .bold))
             }
             .padding(.horizontal, 8)
-            .padding(.top, 44)
-            .padding(.bottom, 12)
+            // Halfway between the window's buttons and "FLOW".
+            .padding(.top, 25)
+            .padding(.bottom, 31)
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 2) {

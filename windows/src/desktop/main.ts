@@ -206,10 +206,15 @@ class DesktopMochi {
       engine.lookX = g.lookX;
       engine.lookY = g.lookY;
     }
-    // Dances while Spotify plays (Linux), by the compact island's rules.
+    // Dances while Spotify plays, by the compact island's rules.
     engine.setDancing(this.snap.dancing && !this.asleep);
     engine.update(dt);
     const dpr = this.dpr();
+    // Dragged onto a monitor of another scale, the bitmap follows the ratio.
+    if (this.canvas.width !== Math.round(PANEL_SIZE * dpr)) {
+      this.canvas.width = Math.round(PANEL_SIZE * dpr);
+      this.canvas.height = Math.round(PANEL_SIZE * dpr);
+    }
     ctx.setTransform(dpr, 0, 0, dpr, SIDE * dpr, 0);
     ctx.clearRect(-SIDE, 0, PANEL_SIZE, PANEL_SIZE);
     ctx.save();

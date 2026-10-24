@@ -7,11 +7,14 @@ import android.content.Context
 import android.util.SizeF
 import android.view.View
 import android.widget.RemoteViews
+
 import com.bubu.android.R
+import com.bubu.android.core.WidgetSpoken
 import com.bubu.android.core.Glance
 import com.bubu.android.core.WidgetTone
 import com.bubu.android.core.look
 import com.bubu.android.core.mood
+
 
 /**
  * The home-screen summary widget (3x2): the same short summary as the notification and the tile ([Glance]: its text and counts
@@ -61,7 +64,7 @@ class GlanceWidget : AppWidgetProvider() {
 
             val mood = g.mood()
             v.setImageViewBitmap(R.id.glance_mochi, MochiBitmap.of(mood, WidgetHub.px(context, 64), glow = true, tone = tone))
-            v.setContentDescription(R.id.glance_mochi, context.getString(R.string.widget_mochi_description, mood.key))
+            v.setContentDescription(R.id.glance_mochi, context.getString(R.string.widget_mochi_description, WidgetSpoken.mood(mood)))
 
             v.setViewVisibility(R.id.glance_offline, if (g.connected) View.GONE else View.VISIBLE)
             v.setTextViewText(R.id.glance_headline, g.headline)
@@ -93,6 +96,7 @@ class GlanceWidget : AppWidgetProvider() {
                 v.setTextViewText(r.text, line.text)
             }
 
+            v.setContentDescription(R.id.widget_root, listOf(g.headline, g.detail).filter { it.isNotBlank() }.joinToString(". "))
             v.setOnClickPendingIntent(R.id.widget_root, WidgetHub.openApp(context, WidgetHub.CODE_GLANCE))
             return v
         }

@@ -17,12 +17,13 @@ class WidgetSurfacesTest {
         "SoloWidget" to "bubu_solo_widget_info", "ListWidget" to "bubu_list_widget_info", "MochiBigWidget" to "bubu_big_widget_info",
         "StatusPillWidget" to "bubu_pill_widget_info", "WaitingAlertWidget" to "bubu_alert_widget_info",
         "UsageRingWidget" to "bubu_ring_widget_info", "TodayWidget" to "bubu_today_widget_info", "MoodWidget" to "bubu_mood_widget_info",
+        "TeamWidget" to "bubu_team_widget_info",
         // The summary widget (3x2): same class, receiver and provider file as ever, in the shared look since Widgets C.
         "GlanceWidget" to "bubu_widget_info",
     )
     private val sources = (
         widgets.map { "app/${it.first}.kt" } +
-            listOf("app/WidgetHub.kt", "app/MochiBitmap.kt", "app/RingBitmap.kt", "app/BarBitmap.kt", "app/TodayStore.kt", "core/WidgetData.kt", "core/TodayCounter.kt", "core/LaunchScreen.kt")
+            listOf("app/WidgetHub.kt", "app/TeamStore.kt", "core/TeamChoice.kt", "app/MochiBitmap.kt", "app/RingBitmap.kt", "app/BarBitmap.kt", "app/TodayStore.kt", "core/WidgetData.kt", "core/TodayCounter.kt", "core/LaunchScreen.kt")
         ).associateWith { read(main + it) }
 
     @Test fun theWidgetsAreRegisteredAndNeverWakeOnATimer() {
@@ -85,7 +86,7 @@ class WidgetSurfacesTest {
     @Test fun everyRowAndEveryWidgetHasItsOwnRequestCode() {
         val hub = sources.getValue("app/WidgetHub.kt")
         val codes = Regex("""const val CODE_\w+ = (0x[0-9A-Fa-f]+)""").findAll(hub).map { it.groupValues[1] }.toList()
-        assertEquals(15, codes.size)
+        assertEquals(16, codes.size)
         assertEquals(codes.size, codes.toSet().size)
         // The rows use CODE_LIST_ROW + index: the ranges must not run into the next code.
         val values = codes.map { it.removePrefix("0x").toInt(16) }.sorted()
@@ -224,6 +225,7 @@ class WidgetSurfacesTest {
             "bubu_solo_widget_info" to (2 to 2), "bubu_list_widget_info" to (4 to 3), "bubu_big_widget_info" to (4 to 4),
             "bubu_pill_widget_info" to (4 to 1), "bubu_alert_widget_info" to (2 to 2), "bubu_ring_widget_info" to (2 to 2),
             "bubu_today_widget_info" to (2 to 2), "bubu_mood_widget_info" to (1 to 1), "bubu_widget_info" to (3 to 2),
+            "bubu_team_widget_info" to (4 to 2),
         )
         assertEquals(widgets.map { it.second }.toSet(), expected.keys)
         for ((info, cells) in expected) {

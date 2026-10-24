@@ -7,8 +7,11 @@ import android.util.SizeF
 import android.util.TypedValue
 import android.view.View
 import android.widget.RemoteViews
+
 import com.bubu.android.R
 import com.bubu.android.core.WidgetContent
+import com.bubu.android.core.WidgetSpoken
+
 
 /**
  * The Solo widget: Mochi with a glow in the state's colour, the name of the most urgent agent with a dot and one state
@@ -36,6 +39,8 @@ class SoloWidget : AppWidgetProvider() {
             v.setImageViewBitmap(R.id.solo_mochi, MochiBitmap.of(c.mood, WidgetHub.px(context, if (large) 150 else if (small) 72 else 104), glow = true, tone = c.look))
             val word = top?.stateWord ?: c.headline
             v.setContentDescription(R.id.solo_mochi, context.getString(R.string.widget_mochi_description, word.lowercase()))
+            // The tapped card says who and what, in one sentence.
+            v.setContentDescription(R.id.solo_root, WidgetSpoken.top(c))
 
             if (top != null) {
                 v.setViewVisibility(R.id.solo_name_row, View.VISIBLE)

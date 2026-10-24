@@ -7,12 +7,15 @@ import android.content.Context
 import android.util.SizeF
 import android.view.View
 import android.widget.RemoteViews
+
 import com.bubu.android.R
 import com.bubu.android.core.LaunchScreen
 import com.bubu.android.core.UsageRing
 import com.bubu.android.core.UsageSide
 import com.bubu.android.core.WidgetContent
+import com.bubu.android.core.WidgetSpoken
 import com.bubu.android.core.WidgetTone
+
 
 /**
  * The Mochi Big widget (4x4). The top is in two sides. On the left, Mochi with his glow and his badge, then the agent's name and
@@ -92,6 +95,7 @@ class MochiBigWidget : AppWidgetProvider() {
             } else {
                 v.setViewVisibility(R.id.big_badge, View.GONE)
             }
+            v.setContentDescription(R.id.big_root, WidgetSpoken.top(c))
             v.setOnClickPendingIntent(
                 R.id.big_root,
                 if (top != null) WidgetHub.openSession(context, WidgetHub.CODE_BIG, top.pillId) else WidgetHub.openApp(context, WidgetHub.CODE_BIG),
@@ -123,6 +127,13 @@ class MochiBigWidget : AppWidgetProvider() {
                     val second = rows.getOrNull(1)?.takeIf { !small }
                     if (second != null) bindRow(v, context, second, BigRow(R.id.big_usage_b, R.id.big_usage_b_label, R.id.big_usage_b_pct, R.id.big_usage_b_pct_big, R.id.big_usage_b_note, R.id.big_usage_b_bar))
                     else v.setViewVisibility(R.id.big_usage_b, View.GONE)
+                    // The whole usage side, in one sentence per plan (a near-limit row says so, and when it resets).
+                    v.setContentDescription(
+                        R.id.big_right,
+                        listOfNotNull(rows[0], second).joinToString(". ") { r ->
+                            listOfNotNull(context.getString(R.string.widget_ring_cd, r.plan, r.shown), r.note).joinToString(", ")
+                        },
+                    )
                     v.setOnClickPendingIntent(R.id.big_right, WidgetHub.openApp(context, WidgetHub.CODE_BIG_USAGE_APP))
                 }
                 UsageSide.OFF, UsageSide.NOT_CONNECTED -> {
@@ -132,10 +143,12 @@ class MochiBigWidget : AppWidgetProvider() {
                     if (c.usageSide == UsageSide.NOT_CONNECTED) {
                         v.setTextViewText(R.id.big_off_title, context.getString(R.string.widget_big_not_connected))
                         v.setTextViewText(R.id.big_off_line, c.emptyLine.orEmpty())
+                        v.setContentDescription(R.id.big_right, "${context.getString(R.string.widget_big_not_connected)}. ${c.emptyLine.orEmpty()}")
                         v.setOnClickPendingIntent(R.id.big_right, WidgetHub.openApp(context, WidgetHub.CODE_BIG_USAGE_APP))
                     } else {
                         v.setTextViewText(R.id.big_off_title, context.getString(R.string.widget_big_usage_off))
                         v.setTextViewText(R.id.big_off_line, context.getString(R.string.widget_big_usage_off_line))
+                        v.setContentDescription(R.id.big_right, "${context.getString(R.string.widget_big_usage_off)}. ${context.getString(R.string.widget_big_usage_off_line)}")
                         v.setOnClickPendingIntent(R.id.big_right, WidgetHub.openScreen(context, WidgetHub.CODE_BIG_USAGE_SETTINGS, LaunchScreen.SETTINGS))
                     }
                 }
