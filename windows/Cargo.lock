@@ -403,6 +403,51 @@ dependencies = [
 ]
 
 [[package]]
+name = "bubu"
+version = "0.5.3"
+dependencies = [
+ "arboard",
+ "cpal",
+ "dbus",
+ "futures-util",
+ "gtk",
+ "keyring",
+ "libc",
+ "mdns-sd",
+ "miniz_oxide 0.8.9",
+ "qrcode",
+ "rcgen",
+ "reqwest 0.12.28",
+ "ring",
+ "rustls",
+ "serde",
+ "serde_json",
+ "sherpa-onnx",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-autostart",
+ "tauri-plugin-global-shortcut",
+ "tauri-plugin-single-instance",
+ "tokio",
+ "tokio-rustls",
+ "tokio-tungstenite",
+ "webpki-roots 1.0.9",
+ "webview2-com",
+ "windows 0.61.3",
+ "windows-core 0.62.2",
+ "x11rb",
+]
+
+[[package]]
+name = "bubu-hook"
+version = "0.5.3"
+dependencies = [
+ "libc",
+ "serde_json",
+ "windows 0.61.3",
+]
+
+[[package]]
 name = "bumpalo"
 version = "3.20.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -715,51 +760,6 @@ dependencies = [
  "objc2-core-audio",
  "objc2-core-audio-types",
  "objc2-core-foundation",
-]
-
-[[package]]
-name = "coucou"
-version = "0.5.3"
-dependencies = [
- "arboard",
- "cpal",
- "dbus",
- "futures-util",
- "gtk",
- "keyring",
- "libc",
- "mdns-sd",
- "miniz_oxide 0.8.9",
- "qrcode",
- "rcgen",
- "reqwest 0.12.28",
- "ring",
- "rustls",
- "serde",
- "serde_json",
- "sherpa-onnx",
- "tauri",
- "tauri-build",
- "tauri-plugin-autostart",
- "tauri-plugin-global-shortcut",
- "tauri-plugin-single-instance",
- "tokio",
- "tokio-rustls",
- "tokio-tungstenite",
- "webpki-roots 1.0.9",
- "webview2-com",
- "windows 0.61.3",
- "windows-core 0.62.2",
- "x11rb",
-]
-
-[[package]]
-name = "coucou-hook"
-version = "0.5.3"
-dependencies = [
- "libc",
- "serde_json",
- "windows 0.61.3",
 ]
 
 [[package]]
