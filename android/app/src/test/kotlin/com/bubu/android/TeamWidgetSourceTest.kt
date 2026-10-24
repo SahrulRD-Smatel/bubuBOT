@@ -13,7 +13,7 @@ class TeamWidgetSourceTest {
     private val config = read(main + "app/TeamConfigActivity.kt")
     private val widget = read(main + "app/TeamWidget.kt")
     private val store = read(main + "app/TeamStore.kt")
-    private val info = read("src/main/res/xml/coucou_team_widget_info.xml")
+    private val info = read("src/main/res/xml/bubu_team_widget_info.xml")
     private val manifest = read("src/main/AndroidManifest.xml")
 
     @Test fun theProviderLetsTheUserSkipTheChoiceAndChangeItLater() {

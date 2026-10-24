@@ -57,6 +57,7 @@ android {
     }
     kotlinOptions { jvmTarget = "17" }
     sourceSets["main"].java.srcDirs("src/main/kotlin")
+    sourceSets["debug"].java.srcDirs("src/debug/kotlin")
     sourceSets["test"].java.srcDirs("src/test/kotlin")
 }
 

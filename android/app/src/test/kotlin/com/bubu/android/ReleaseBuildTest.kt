@@ -70,7 +70,7 @@ class ReleaseBuildTest {
         assertTrue(gradle.contains("tasks.matching { it.name == \"lint\" }.configureEach { dependsOn(verifyReleaseNoLogs) }"))
         assertTrue(gradle.contains("dependsOn(\"assembleRelease\")"))
         // the tags and messages that must not survive in the dex are the ones the sources use
-        val tags = Regex("""(?<![A-Z_])TAG = "(\w+)"|Log\.\w\("(Bubu\w+)"\).findAll(sources().joinToString("\n") { it.readText() })
+        val tags = Regex("""(?<![A-Z_])TAG = "(\w+)"|Log\.\w\("(Bubu\w+)"""").findAll(sources().joinToString("\n") { it.readText() })
             .flatMap { m -> m.groupValues.drop(1).filter { it.isNotEmpty() } }.toSet()
         for (tag in tags) assertTrue("verifyReleaseNoLogs must look for $tag", gradle.contains("\"$tag\""))
     }

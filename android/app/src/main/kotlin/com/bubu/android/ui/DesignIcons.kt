@@ -30,7 +30,6 @@ fun BubuIcon(kind: IconKind, modifier: Modifier = Modifier, tint: Color = tokens
         else drawIcon(kind, tint)
     }
 }
-}
 
 private fun DrawScope.drawIcon(kind: IconKind, tint: Color) {
     val k = (size.minDimension / IconSpec.GRID.toFloat())

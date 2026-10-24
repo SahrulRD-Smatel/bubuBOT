@@ -28,7 +28,6 @@ import com.bubu.android.core.Tokens
  * The look of the Bubu website (docs/site.css): a near-black page (or a pale one in the light theme), slightly lighter cards with a
  * thin border, soft blue accent, rounded corners and pill-shaped buttons. Mochi itself is untouched.
  */
- */
 private fun scheme(p: Palette, t: Tokens): ColorScheme {
     // Surfaces and text come from the tokens, the accent from Palette.
     val base = if (t.isDark) darkColorScheme() else lightColorScheme()
@@ -79,8 +78,6 @@ fun BubuTheme(theme: ThemeChoice = ThemeChoice.SYSTEM, dynamic: Boolean = false,
     }
     CompositionLocalProvider(LocalTokens provides tokens) {
         MaterialTheme(colorScheme = colours, content = content)
-    }
-}
     }
 }
 

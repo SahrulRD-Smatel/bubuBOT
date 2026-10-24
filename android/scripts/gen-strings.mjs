@@ -152,7 +152,7 @@ if (check) {
   for (const [file, content] of outputs) {
     // Windows checkouts may turn LF into CRLF; the content is what matters.
     const stale = !fs.existsSync(file) || fs.readFileSync(file, "utf8").replace(/\r\n/g, "\n") !== content;
-    if (stale) problems.push(`stale: ${path.relative(root, file)}`);
+    if (stale) problems.push(`stale: ${path.relative(root, file).replace(/\\/g, "/")}`);
   }
   for (const d of staleDirs) problems.push(`stale: app/src/main/res/${d} has no translation file`);
   // The list of strings to check is generated too (only once there are translations).

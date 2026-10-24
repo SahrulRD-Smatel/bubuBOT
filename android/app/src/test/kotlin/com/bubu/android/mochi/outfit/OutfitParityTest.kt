@@ -75,7 +75,7 @@ class OutfitParityTest {
 
     private fun trace(): JSONArray {
         assumeTrue("node not available", node())
-        val setup = ReferenceFiles.file("windows/tests/setup.mjs").absolutePath
+        val setup = ReferenceFiles.file("windows/tests/setup.mjs").toURI().toASCIIString()
         val script = ReferenceFiles.file("android/tools/outfit-trace.mjs").absolutePath
         val out = File.createTempFile("outfit-trace", ".json")
         try {

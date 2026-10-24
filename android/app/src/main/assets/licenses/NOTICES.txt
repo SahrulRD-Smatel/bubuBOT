@@ -1,6 +1,6 @@
 BUBU FOR ANDROID: LICENCES AND NOTICES
 
-Bubu for Android, by Sahrul Ramadhani (https://github.com/SahrulRamadhani/bubu). It is free, has no ads and no analytics.
+Bubu for Android, by Sahrul Ramadhani, is part of Bubu by Sahrul Ramadhani (https://github.com/SahrulRD-Smatel/bubuBOT). It is free, has no ads and no analytics.
 
 1. The code of Bubu
 
@@ -8,7 +8,7 @@ The source code of Bubu is Copyright (c) 2026 Sahrul Ramadhani and is released u
 
 2. The name, the character, the icon and the sounds
 
-The names "Bubu" and "Mochi", the Mochi character (its design, look, expressions and animations), the app icon and the sounds are Copyright (c) 2026 Louis Raillé. All rights reserved. They are NOT covered by the MIT License (see LICENSE-ASSETS.md in https://github.com/SahrulRamadhani/bubu). They are used in this app with the written permission of Louis Raillé, for this Android app only, and may not be reused elsewhere without his permission.
+The names "Bubu" and "Mochi", the Mochi character (its design, look, expressions and animations), the app icon and the sounds are Copyright (c) 2026 Louis Raillé. All rights reserved. They are NOT covered by the MIT License (see LICENSE-ASSETS.md in https://github.com/SahrulRD-Smatel/bubuBOT). They are used in this app with the written permission of Louis Raillé, for this Android app only, and may not be reused elsewhere without his permission.
 
 3. ZXing
 
