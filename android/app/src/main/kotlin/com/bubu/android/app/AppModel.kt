@@ -72,7 +72,7 @@ class AppModel(private val context: Context) : LinkListener {
     /** Set only by LaunchActivity (not exported), read by MainActivity: see [com.bubu.android.core.PendingLaunch]. */
     val launch = com.bubu.android.core.PendingLaunch()
 
-    /** Text shared to Coucou from another app, waiting to be put in the chat box (see [com.bubu.android.core.ShareDraft]). */
+    /** Text shared to Bubu from another app, waiting to be put in the chat box (see [com.bubu.android.core.ShareDraft]). */
     val shareDraft = com.bubu.android.core.ShareDraft()
 
     /** Changes with every share, so a chat screen that is already open notices there is a new draft. */

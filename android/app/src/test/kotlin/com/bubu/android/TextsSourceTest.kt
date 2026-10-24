@@ -44,7 +44,7 @@ class TextsSourceTest {
     @Test fun noPureRuleKeepsAnEnglishSentenceOutOfTexts() {
         // The rules that make Home, the Widgets and the notification say something go through Texts.t / Texts.n.
         for (name in listOf("core/HomeText.kt", "core/Glance.kt", "core/ToolLabels.kt", "link/LinkHealth.kt")) {
-            val text = File("src/main/kotlin/com/coucou/android/$name").readText()
+            val text = File("src/main/kotlin/com/bubu/android/$name").readText()
             val code = text.lines().filterNot { it.trimStart().startsWith("*") || it.trimStart().startsWith("//") || it.trimStart().startsWith("/**") }
             for (line in code) {
                 if (line.contains("Texts.") || line.contains("_ENGLISH") || line.trim().matches(Regex(""""[a-z0-9_]+" to .*"""))) continue
@@ -54,12 +54,12 @@ class TextsSourceTest {
     }
 
     @Test fun theTextsSourceReadsStaticReferencesSoTheShrinkerKeepsEveryString() {
-        val lang = File("src/main/kotlin/com/coucou/android/app/AppLanguage.kt").readText()
+        val lang = File("src/main/kotlin/com/bubu/android/app/AppLanguage.kt").readText()
         assertTrue(lang.contains("TextIds.strings[key]") && lang.contains("TextIds.plurals[key]"))
         assertTrue("no lookup by name", !lang.contains("getIdentifier"))
-        val ids = File("src/main/kotlin/com/coucou/android/app/TextIds.kt").readText()
+        val ids = File("src/main/kotlin/com/bubu/android/app/TextIds.kt").readText()
         for (k in strings.keys()) assertTrue("TextIds has $k", ids.contains("\"$k\" to R.string.$k,"))
         for (k in plurals.keys()) assertTrue("TextIds has plural $k", ids.contains("\"$k\" to R.plurals.$k,"))
-        assertTrue(File("src/main/kotlin/com/coucou/android/app/BubuApp.kt").readText().contains("Texts.source = AppLanguage.texts(this)"))
+        assertTrue(File("src/main/kotlin/com/bubu/android/app/BubuApp.kt").readText().contains("Texts.source = AppLanguage.texts(this)"))
     }
 }

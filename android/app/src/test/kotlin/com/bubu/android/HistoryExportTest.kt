@@ -55,7 +55,7 @@ class HistoryExportTest {
     }
 
     @Test fun exportGoesThroughTheShareSheetAndNothingElse() {
-        val ui = File("src/main/kotlin/com/coucou/android/ui/SettingsScreens.kt").readText()
+        val ui = File("src/main/kotlin/com/bubu/android/ui/SettingsScreens.kt").readText()
         val block = ui.substringAfter("fun HistoryScreen").substringBefore("private fun RelayCard")
         assertTrue(block.contains("Intent.createChooser("))
         assertTrue(block.contains("Intent.ACTION_SEND"))

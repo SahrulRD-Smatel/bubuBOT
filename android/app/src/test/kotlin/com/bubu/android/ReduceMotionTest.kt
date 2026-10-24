@@ -78,11 +78,11 @@ class ReduceMotionTest {
     }
 
     @Test fun settingsOffersTheChoice() {
-        val ui = File("src/main/kotlin/com/coucou/android/ui/SettingsScreens.kt").readText()
+        val ui = File("src/main/kotlin/com/bubu/android/ui/SettingsScreens.kt").readText()
         assertTrue(ui.contains("MotionChoice.REDUCE") && ui.contains("R.string.settings_motion"))
         // The island and the Mochi view both ask the one policy.
-        assertTrue(File("src/main/kotlin/com/coucou/android/ui/IslandOverlay.kt").readText().contains("MotionPolicy.reduced"))
-        assertTrue(File("src/main/kotlin/com/coucou/android/ui/DesignSystem.kt").readText().contains("MotionPolicy.reduced"))
-        assertTrue(File("src/main/kotlin/com/coucou/android/mochi/MochiView.kt").readText().contains("engine.reduceMotion"))
+        assertTrue(File("src/main/kotlin/com/bubu/android/ui/IslandOverlay.kt").readText().contains("MotionPolicy.reduced"))
+        assertTrue(File("src/main/kotlin/com/bubu/android/ui/DesignSystem.kt").readText().contains("MotionPolicy.reduced"))
+        assertTrue(File("src/main/kotlin/com/bubu/android/mochi/MochiView.kt").readText().contains("engine.reduceMotion"))
     }
 }

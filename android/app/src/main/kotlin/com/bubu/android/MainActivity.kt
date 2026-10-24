@@ -278,7 +278,7 @@ class MainActivity : ComponentActivity() {
         }
         // A tap on a widget button: a screen of the closed list ([LaunchScreen]), even when the app is locked, not connected or not paired.
         model.launch.takeScreen()?.let { screen = it.screen }
-        // Text shared to Coucou from another app (ShareActivity, which only keeps cleaned text): it waits in the model for the chat box.
+        // Text shared to Bubu from another app (ShareActivity, which only keeps cleaned text): it waits in the model for the chat box.
         if (model.shareDraft.pending()) screen = Screen.CHAT
         val launch = model.launch.take() ?: return
         val fp = launch.fingerprint

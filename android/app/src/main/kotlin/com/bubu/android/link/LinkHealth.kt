@@ -42,10 +42,10 @@ object LinkHealthText {
      */
     fun why(reason: LostReason?, wifiUp: Boolean = true) = when (reason) {
         LostReason.SILENT -> Texts.t("lost_silent", "The computer stopped answering. This is usual after the phone slept.")
-        LostReason.CLOSED -> Texts.t("lost_closed", "The computer closed the connection. Coucou may have been closed or restarted there.")
+        LostReason.CLOSED -> Texts.t("lost_closed", "The computer closed the connection. Bubu may have been closed or restarted there.")
         LostReason.NETWORK ->
             if (!wifiUp) Texts.t("lost_no_wifi", "The phone is not on Wi-Fi. Join the network your computer is on, or use the internet link.")
-            else Texts.t("lost_unreachable", "The phone cannot reach the computer. Coucou may be closed there, its phone link may be off, or it is on another network.")
+            else Texts.t("lost_unreachable", "The phone cannot reach the computer. Bubu may be closed there, its phone link may be off, or it is on another network.")
         null -> ""
     }
 

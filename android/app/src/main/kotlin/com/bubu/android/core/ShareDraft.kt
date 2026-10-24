@@ -3,7 +3,7 @@ package com.bubu.android.core
 import com.bubu.android.link.Protocol
 
 /**
- * "Share to Coucou": text shared from another app lands in the chat box as a draft, never sent by itself. This is the pure part: how the shared
+ * "Share to Bubu": text shared from another app lands in the chat box as a draft, never sent by itself. This is the pure part: how the shared
  * text is cleaned, what to do for the state the chat is in, and the one-shot slot that carries the draft from the share target to the chat screen
  * inside the process. Other apps can start the share target, so the text is only ever treated as typed text: it is cut to the chat's limit, stripped
  * of control characters, and it goes into the box where the user reads it and taps send (or not).

@@ -16,7 +16,7 @@ import org.junit.Test
 class LightThemeTest {
     private val sets = mapOf("dark" to Tokens.DARK, "light" to Tokens.LIGHT)
     private fun c(a: Long, b: Long) = Palette.contrast(a, b)
-    private fun ui(name: String) = File("src/main/kotlin/com/coucou/android/ui/$name").readText()
+    private fun ui(name: String) = File("src/main/kotlin/com/bubu/android/ui/$name").readText()
 
     @Test fun theChoiceDecidesTheSet() {
         assertTrue(ThemePolicy.dark(ThemeChoice.SYSTEM, systemDark = true))
@@ -75,7 +75,7 @@ class LightThemeTest {
 
     @Test fun onlyTheIslandAndTheCameraStayBlack() {
         // The hero, the sheets and every dialog take their colours from the tokens, so they follow the theme.
-        for (f in File("src/main/kotlin/com/coucou/android/ui").listFiles { it.extension == "kt" }!!) {
+        for (f in File("src/main/kotlin/com/bubu/android/ui").listFiles { it.extension == "kt" }!!) {
             if (f.name == "IslandOverlay.kt" || f.name == "ScanScreen.kt") continue
             val text = f.readText()
             assertFalse("${f.name} hard-codes the island's black", text.contains("IslandSurface."))
@@ -93,7 +93,7 @@ class LightThemeTest {
         val theme = ui("Theme.kt")
         assertTrue(theme.contains("isSystemInDarkTheme()") && theme.contains("ThemePolicy.dark(theme"))
         assertTrue(theme.contains("dynamicLightColorScheme") && theme.contains("dynamicDarkColorScheme") && theme.contains("dynamicAvailable"))
-        val main = File("src/main/kotlin/com/coucou/android/MainActivity.kt").readText()
+        val main = File("src/main/kotlin/com/bubu/android/MainActivity.kt").readText()
         assertTrue(main.contains("BubuTheme(model.settings.theme, model.settings.dynamicColour)"))
         // Dark icons on a light page, light icons on the camera.
         assertTrue(main.contains("isAppearanceLightStatusBars = lightPage") && main.contains("screen != Screen.SCAN"))
@@ -109,6 +109,6 @@ class LightThemeTest {
     @Test fun mochiAndTheStateColoursDoNotDependOnTheTheme() {
         val home = ui("HomePanel.kt")
         assertTrue(home.contains("MochiConst.STATES[state]?.color?.let(::rgbColor)"))
-        assertFalse(File("src/main/kotlin/com/coucou/android/mochi/MochiPainter.kt").readText().contains("LocalTokens"))
+        assertFalse(File("src/main/kotlin/com/bubu/android/mochi/MochiPainter.kt").readText().contains("LocalTokens"))
     }
 }

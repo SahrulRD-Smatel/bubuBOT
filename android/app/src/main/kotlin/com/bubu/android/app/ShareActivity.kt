@@ -10,7 +10,7 @@ import com.bubu.android.R
 import com.bubu.android.core.ShareDraft
 
 /**
- * "Share to Coucou": a text shared from another app opens the chat with the text in the box. It is exported (that is how the share sheet finds
+ * "Share to Bubu": a text shared from another app opens the chat with the text in the box. It is exported (that is how the share sheet finds
  * it), so it treats what it gets as plain typed text: one string, cleaned and cut by [ShareDraft.clean], put in the box and never sent. It hands
  * the draft to the app inside the process (the main screen opens on Chat while a draft waits) and opens MainActivity with a plain intent; it does not
  * use the slots of LaunchActivity, which only that private activity may fill. Pictures, files and

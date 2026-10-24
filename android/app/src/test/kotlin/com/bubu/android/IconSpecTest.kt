@@ -46,6 +46,6 @@ class IconSpecTest {
         val mirrored = com.bubu.android.core.IconKind.values().filter { com.bubu.android.core.IconSpec.mirrorsInRtl(it) }
         org.junit.Assert.assertEquals(listOf(com.bubu.android.core.IconKind.BACK, com.bubu.android.core.IconKind.SEND, com.bubu.android.core.IconKind.CHEVRON), mirrored)
         // A chevron turned to point down is not mirrored by its caller.
-        org.junit.Assert.assertTrue(java.io.File("src/main/kotlin/com/coucou/android/ui/ChatScreen.kt").readText().contains("rotate(90f), mirror = false"))
+        org.junit.Assert.assertTrue(java.io.File("src/main/kotlin/com/bubu/android/ui/ChatScreen.kt").readText().contains("rotate(90f), mirror = false"))
     }
 }

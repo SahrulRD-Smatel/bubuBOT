@@ -53,16 +53,16 @@ class AgentMuteTest {
     }
 
     @Test fun theIslandFlashFollowsTheSameRule() {
-        val src = File("src/main/kotlin/com/coucou/android/core/IslandPlan.kt").readText()
+        val src = File("src/main/kotlin/com/bubu/android/core/IslandPlan.kt").readText()
         assertTrue(src.contains("pillId = session.pillId"))
-        assertTrue(File("src/main/kotlin/com/coucou/android/app/AppModel.kt").readText().contains("StatusPolicy.announce(prev, s.state, settings, minute, inForeground, s.pillId)"))
+        assertTrue(File("src/main/kotlin/com/bubu/android/app/AppModel.kt").readText().contains("StatusPolicy.announce(prev, s.state, settings, minute, inForeground, s.pillId)"))
     }
 
     @Test fun approvalsDoNotReadTheMuteList() {
         for (f in listOf("app/Notifications.kt", "core/ApprovalAlerts.kt", "core/OverlayPolicy.kt")) {
-            assertFalse(f, File("src/main/kotlin/com/coucou/android/$f").readText().contains("mutedAgents"))
+            assertFalse(f, File("src/main/kotlin/com/bubu/android/$f").readText().contains("mutedAgents"))
         }
-        val model = File("src/main/kotlin/com/coucou/android/app/AppModel.kt").readText()
+        val model = File("src/main/kotlin/com/bubu/android/app/AppModel.kt").readText()
         assertFalse(model.substringAfter("override fun onApproval(").substringBefore("override fun onQuestion").contains("mutedAgents"))
     }
 }
